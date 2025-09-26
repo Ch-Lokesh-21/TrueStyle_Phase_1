@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TrueStyle - Admin</title>
+    <link rel="shortcut icon" href="/assets/icon.png" type="image/x-icon" />
+
+    <!-- Tailwind (browser build) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Icons & Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="/style/index.css" />
+
+    <style>
+      /* skeleton shimmer */
+      .shimmer { position: relative; overflow: hidden; background: #e5e7eb; }
+      .shimmer::after {
+        content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+        animation: shimmer 1.2s infinite;
+      }
+      @keyframes shimmer { 100% { transform: translateX(100%); } }
+    </style>
+  </head>
+
+  <body class="bg-slate-100 text-slate-900">
+    <!-- central store + auth (loaded once here; fragments read from globals) -->
+    <script src="/Model/appdb.js"></script>
+    <script src="/Auth_Controller/auth.js"></script>
+    <script>
+      // Guard the whole shell
+      TSAuth.requireAdmin();
+    </script>
+
+    <div class="grid grid-cols-1 lg:grid-cols-[270px_1fr] min-h-screen">
+      <!-- Sidebar -->
+      <aside class="bg-white shadow-2xl">
+        <div class="h-16 flex items-center justify-center">
+          <a href="/" class="hover:shadow-lg">
+            <img src="/assets/logo.png" class="h-10" alt="TrueStyle" />
+          </a>
+        </div>
+        <nav class="p-3 text-sm grid gap-1">
+          <a href="#/dashboard"  data-page="dashboard"  class="navlink flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50"><i data-lucide="layout-dashboard"></i>Dashboard</a>
+
+          <div class="px-3 pt-3 pb-1 text-xs uppercase tracking-wide text-slate-500">Management</div>
+          <a href="#/orders"     data-page="orders"     class="navlink flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50 cursor-pointer"><i data-lucide="receipt-text"></i>Orders</a>
+          <a href="#/customers"  data-page="customers"  class="navlink flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50 cursor-pointer"><i data-lucide="users"></i>Customers</a>
+          <a href="#/products"   data-page="products"   class="navlink flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50 cursor-pointer"><i data-lucide="package"></i>Products</a>
+          <a href="#/coupons"    data-page="coupons"    class="navlink flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50 cursor-pointer"><i data-lucide="ticket-percent"></i>Coupons</a>
+          <a href="#/content"    data-page="content"    class="navlink flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50 cursor-pointer"><i data-lucide="file-box"></i>Content</a>
+          <a href="#/reports"    data-page="reports"    class="navlink flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50 cursor-pointer"><i data-lucide="chart-line"></i>Report</a>
+
+          <div class="px-3 pt-3 pb-1 text-xs uppercase tracking-wide text-slate-500">Site</div>
+          <a href="#/backup"     data-page="backup"     class="navlink flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50 cursor-pointer"><i data-lucide="database-backup"></i>Data Backup</a>
+          <a href="#/faq"        data-page="faq"        class="navlink flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50 cursor-pointer"><i data-lucide="help-circle"></i>FAQ</a>
+          <a href="#/help"       data-page="help"       class="navlink flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50 cursor-pointer"><i data-lucide="life-buoy"></i>Help</a>
+
+          <div class="px-3 pt-3 pb-1 text-xs uppercase tracking-wide text-slate-500">Account</div>
+
+          <button class="logoutBtn rounded-xl bg-red-600 text-white hover:bg-red-700 flex items-center justify-center gap-2 shadow-lg cursor-pointer px-4 py-2 mt-4">
+            <i data-lucide="log-out"></i> Logout
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main -->
+      <main class="min-h-screen flex flex-col">
+        <header class="h-16 bg-gradient-to-r from-white via-slate-50 to-blue-50 px-4 flex items-center justify-between top-0 shadow">
+          <div class="font-medium" id="pageTitle">Dashboard</div>
+          <div class="flex items-center gap-3">
+            <div class="hidden sm:flex items-center gap-2 text-sm text-slate-600">
+              <i data-lucide="shield-check" class="text-blue-600"></i>
+              <span>Admin: <b id="who"></b></span>
+            </div>
+            <div>
+                        <a href="#/profile"    data-page="profile"    class="navlink flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-blue-50 cursor-pointer"><i data-lucide="user"></i>Profile</a>
+            </div>
+          </div>
+        </header>
+
+        <section id="outlet" class="p-5 xl:p-8 grow"></section>
+      </main>
+    </div>
+
+    <!-- Router + Loader -->
+    <script>
+      // ---------- PAGE ROUTE MAP (HARD-CODE YOUR NEW PATHS HERE) ----------
+      // Use absolute paths so relative assets inside fragments are stable.
+      // Example values shown; replace with YOUR actual file locations.
+      const PAGE_URLS = {
+        dashboard: '/src/Features/Dashboard/dashboard.html',
+        orders:    '/src/Features/Orders/orders.html',
+        customers: '/src/Features/Customers/customers.html',
+        products:  '/src/Features/Products/products.html',
+        coupons:   '/src/Features/Coupons/coupons.html',
+        content:   '/src/Features/Content/content.html',
+        reports:   '/src/Features/Reports/reports.html',
+        backup:    '/src/Features/Backup/backup.html',
+        faq:       '/src/Features/Faq/faq.html',
+        help:      '/src/Features/Help/help.html',
+        profile:   '/src/Features/Profile/profile.html',
+      };
+
+      // Optional pretty titles (kept here for convenience)
+      const TITLES = {
+        dashboard: 'Dashboard',
+        orders: 'Orders',
+        customers: 'Customers',
+        products: 'Products',
+        coupons: 'Coupons',
+        content: 'Content',
+        faq: 'FAQ',
+        backup: 'Backup',
+        reports: 'Reports',
+        profile: 'Profile',
+        help: 'Help',
+      };
+
+      // ---------- TOPBAR INFO + LOGOUT ----------
+      (function bootTopbar(){
+        const u = TSAuth.user?.() || {};
+        document.getElementById('who').textContent = u.First_Name || 'Admin';
+
+        // Bind all logout buttons
+        document.querySelectorAll('.logoutBtn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            try { TSAuth.logout?.(); } catch(_) {}
+            location.replace('/index.html');
+          });
+        });
+      })();
+
+      const outlet    = document.getElementById('outlet');
+      const pageTitle = document.getElementById('pageTitle');
+
+      // ---------- helpers ----------
+      function destroyChartsIn(container) {
+        if (!window.Chart) return;
+        container.querySelectorAll('canvas').forEach(cv => {
+          const inst = Chart.getChart(cv);
+          if (inst) { try { inst.destroy(); } catch(_){} }
+        });
+      }
+      function clearHooks() {
+        if (typeof window.onPageUnmount === 'function') {
+          try { window.onPageUnmount(); } catch(_) {}
+        }
+        delete window.onPageUnmount;
+        delete window.postPageMount;
+        delete window.initDashboard;
+      }
+      function removeOldFragmentScripts() {
+        document.querySelectorAll('script[data-page-script]').forEach(s => s.remove());
+      }
+      async function runFragmentScriptsSequentially(nodes, page) {
+        for (const old of nodes) {
+          if (old.src) {
+            await new Promise((resolve, reject) => {
+              const s = document.createElement('script');
+              const u = new URL(old.src, location.href);
+              u.searchParams.set('v', Date.now().toString()); // cache-bust
+              s.src = u.toString();
+              s.async = false; s.defer = false;
+              s.setAttribute('data-page-script', page);
+              s.onload = resolve; s.onerror = () => reject(new Error('Failed: ' + s.src));
+              document.body.appendChild(s);
+            });
+          } else {
+            const code = old.textContent || '';
+            try {
+              const fn = new Function(`(function(){\n${code}\n}).call(window);`);
+              fn();
+            } catch (e) { console.error('Inline script error:', e); }
+            const mark = document.createElement('script');
+            mark.setAttribute('data-page-script', page);
+            document.body.appendChild(mark);
+          }
+          old.remove();
+        }
+      }
+      async function waitForHook(name, timeoutMs = 1000) {
+        const start = performance.now();
+        while (!(name in window) || typeof window[name] !== 'function') {
+          if (performance.now() - start > timeoutMs) return false;
+          await new Promise(r => setTimeout(r, 16));
+        }
+        return true;
+      }
+      function showSkeleton() {
+        outlet.innerHTML = `
+          <div class="grid gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-white rounded-2xl p-4 shadow">
+                <div class="h-5 w-28 rounded shimmer mb-4"></div>
+                <div class="h-8 w-24 rounded shimmer"></div>
+              </div>
+              <div class="bg-white rounded-2xl p-4 shadow">
+                <div class="h-5 w-28 rounded shimmer mb-4"></div>
+                <div class="h-8 w-24 rounded shimmer"></div>
+              </div>
+              <div class="bg-white rounded-2xl p-4 shadow">
+                <div class="h-5 w-28 rounded shimmer mb-4"></div>
+                <div class="h-8 w-24 rounded shimmer"></div>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-4 shadow">
+              <div class="h-6 w-36 rounded shimmer mb-4"></div>
+              <div class="h-64 rounded shimmer"></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div class="bg-white rounded-2xl p-4 shadow">
+                <div class="h-6 w-36 rounded shimmer mb-4"></div>
+                <div class="h-44 rounded shimmer"></div>
+              </div>
+              <div class="bg-white rounded-2xl p-4 shadow">
+                <div class="h-6 w-36 rounded shimmer mb-4"></div>
+                <div class="h-44 rounded shimmer"></div>
+              </div>
+            </div>
+          </div>`;
+      }
+
+      // ---------- core page loader ----------
+      async function loadPage(page) {
+        TSAuth.requireAdmin(); // guard per navigation
+
+        // Unmount current page
+        destroyChartsIn(outlet);
+        clearHooks();
+        removeOldFragmentScripts();
+
+        // Skeleton while fetching
+        showSkeleton();
+
+        try {
+          const url = PAGE_URLS[page] || `/admin/pages/${page}.html`; // fallback if not mapped yet
+          const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`, { cache: 'no-store' });
+          if (!res.ok) throw new Error('Page not found');
+          const html = await res.text();
+
+          // Mount HTML
+          outlet.innerHTML = html;
+
+          // Title
+          pageTitle.textContent = TITLES[page] || 'Admin';
+
+          // Collect fragment scripts in DOM order
+          const fragScripts = Array.from(outlet.querySelectorAll('script'));
+          // Execute sequentially and await externals
+          await runFragmentScriptsSequentially(fragScripts, page);
+
+          // Icons
+          if (window.lucide?.createIcons) window.lucide.createIcons();
+
+          // Layout settle
+          await new Promise(r => requestAnimationFrame(() => r()))
+
+          // Hooks (wait briefly to avoid race)
+          let called = false;
+          if (page === 'dashboard' && (await waitForHook('initDashboard'))) {
+            try { window.initDashboard(); called = true; } catch (e) { console.error(e); }
+          }
+          if (await waitForHook('postPageMount')) {
+            try { window.postPageMount(); called = true; } catch (e) { console.error(e); }
+          }
+          // Fallback: refresh icons again if no hooks
+          if (!called && window.lucide?.createIcons) window.lucide.createIcons();
+
+        } catch (err) {
+          console.error(err);
+          outlet.innerHTML = `<div class="p-6 bg-white rounded-2xl shadow">
+            <h2 class="text-lg font-semibold">Page not found</h2>
+            <p class="text-slate-600 text-sm mt-1">${page}.html could not be loaded.</p>
+            <a class="inline-flex items-center gap-2 mt-4 px-4 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white" href="#/dashboard">
+              <i data-lucide='home'></i> Go to Dashboard
+            </a>
+          </div>`;
+          if (window.lucide?.createIcons) window.lucide.createIcons();
+        }
+      }
+
+      // ---------- hash router ----------
+      function parseHash() {
+        // supports #/page and #/page?x=1&y=2
+        const raw = (location.hash || '').replace(/^#\/?/, '');
+        const [path, qs] = raw.split('?');
+        const page = (path || 'dashboard').toLowerCase();
+        const params = Object.fromEntries(new URLSearchParams(qs || ''));
+        return { page, params };
+      }
+
+      let _currentPage = null;
+      let _navTick = 0;
+
+      async function navigateFromHash() {
+        TSAuth.requireAdmin(); // guard per navigation
+        const tick = ++_navTick;
+
+        const { page, params } = parseHash();
+        if (page === _currentPage) { syncActiveNav(); return; }
+        _currentPage = page;
+
+        // expose params to fragments if they want them
+        window.__routeParams = params;
+
+        await loadPage(page);
+
+        if (tick !== _navTick) return; // a newer nav happened
+
+        // scroll to top on route change
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        syncActiveNav();
+      }
+
+      function syncActiveNav() {
+        const { page } = parseHash();
+        document.querySelectorAll('.navlink').forEach(a => {
+          const active = a.dataset.page === page;
+          a.classList.toggle('bg-blue-600', active);
+          a.classList.toggle('text-white',  active);
+        });
+      }
+
+      window.addEventListener('hashchange', navigateFromHash);
+      window.addEventListener('hashchange', syncActiveNav);
+
+      // initial boot
+      if (!location.hash) location.replace('#/dashboard');
+      syncActiveNav();
+      navigateFromHash();
+      // NOTE: we intentionally DO NOT bind click handlers to nav links; hashchange drives routing.
+    </script>
+  </body>
+</html>

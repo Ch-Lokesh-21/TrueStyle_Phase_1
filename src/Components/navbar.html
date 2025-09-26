@@ -1,0 +1,172 @@
+<!-- /user/partials/nav.html -->
+<header class="bg-white sticky top-0 z-[70]">
+  <nav class="w-full px-4 py-3 grid grid-cols-2 lg:grid-cols-3 items-center gap-3">
+    <!-- Left: logo -->
+    <a href="/user/index.html" class="flex items-center gap-2">
+      <img src="/assets/logo.png" class="h-10 w-auto" alt="TrueStyle" />
+    </a>
+
+    <!-- Center: big search -->
+    <div class="hidden lg:flex items-center justify-center">
+      <form id="navSearchForm" class="w-[640px] max-w-full relative">
+        <input
+          id="navSearch"
+          type="search"
+          placeholder="Search"
+          class="w-full h-11 pl-10 pr-4 rounded-full border border-slate-300 bg-white outline-none"
+        />
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+          <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+        </svg>
+      </form>
+    </div>
+
+    <!-- Right: icons -->
+    <div class="flex items-center justify-end gap-2">
+
+      <a href="/user/index.html" class="relative p-2 rounded-xl hover:bg-slate-50" title="Shop">
+        <i data-lucide="home"></i>
+      </a>
+
+      <a href="/src/Features/Wishlist/wishlist.html" class="relative p-2 rounded-xl hover:bg-slate-50" title="Wishlist">
+        <i data-lucide="heart"></i>
+      </a>
+      <a href="/src/Features/Cart/cart.html" class="relative p-2 rounded-xl hover:bg-slate-50" title="Cart">
+        <i data-lucide="shopping-bag"></i>
+        <span id="cartBadge" class="absolute -top-1 -right-1 text-[10px] px-1.5 py-[1px] rounded-full bg-rose-600 text-white hidden">0</span>
+      </a>
+
+      <!-- Profile dropdown trigger (menu is injected/handled by initNavInteractions) -->
+      <div class="relative">
+        <button id="profileBtn" class="p-2 rounded-xl hover:bg-slate-50 cursor-pointer" title="Profile" aria-haspopup="true" aria-expanded="false">
+          <i data-lucide="user"></i>
+        </button>
+        <div id="profileMenu" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl hidden z-[80] p-5">
+          <a href="/src/Features/Profile/user-profile.html" class="block px-4 py-2 hover:bg-blue-600 rounded-lg hover:text-white cursor-pointer mb-2">Profile</a>
+          <a href="/src/Features/Addresses/addresses.html" class="block px-4 py-2 hover:bg-blue-600 rounded-lg hover:text-white cursor-pointer mb-2">Addresses</a>
+          <a href="/src/Features/Orders/view-orders.html" class="block px-4 py-2 hover:bg-blue-600 hover:text-white rounded-lg cursor-pointer mb-2">Orders</a>
+    
+          <button class="block w-full text-left px-4 py-2 hover:bg-red-600 hover:text-white text-red-600 mt-2 rounded-lg cursor-pointer" id="logOut">Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Category bar (modern mega menu) -->
+  <!-- Category bar (compact dropdowns like Profile) -->
+<div class="relative z-[60] flex justify-center">
+  <div class="px-4 h-11 flex items-center gap-10 text-md">
+    <!-- MEN -->
+    <div class="relative">
+      <button class="h-11 inline-flex items-center hover:underline" data-dd-btn="men">Men</button>
+      <div class="absolute left-0 mt-2 w-[560px] max-w-[95vw] bg-white rounded-xl shadow hidden z-[80]" data-dd-panel="men">
+        <div class="grid grid-cols-[160px_1fr] gap-4 p-4">
+          <img src="/assets/categories/man.webp" alt="Men" class="h-50 object-fit rounded-lg border">
+          <div class="grid sm:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-semibold mb-2">Casuals</h4>
+              <ul class="space-y-1 text-slate-700">
+                <li><a href="#" class="hover:text-slate-900">Shirts</a></li>
+                <li><a href="#" class="hover:text-slate-900">T-Shirts</a></li>
+                <li><a href="#" class="hover:text-slate-900">Jeans</a></li>
+                <li><a href="#" class="hover:text-slate-900">Sweatshirts</a></li>
+                <li><a href="#" class="hover:text-slate-900">Hoodies</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-semibold mb-2">Formal</h4>
+              <ul class="space-y-1 text-slate-700">
+                <li><a href="#" class="hover:text-slate-900">Shirts</a></li>
+                <li><a href="#" class="hover:text-slate-900">Trousers</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WOMEN -->
+    <div class="relative">
+      <button class="h-11 inline-flex items-center hover:underline" data-dd-btn="women">Women</button>
+      <div class="absolute left-0 mt-2 w-[560px] max-w-[95vw] bg-white rounded-xl shadow hidden z-[80]" data-dd-panel="women">
+        <div class="grid grid-cols-[160px_1fr] gap-4 p-4">
+          <img src="/assets/categories/women.webp" alt="Women" class="h-50 object-fit rounded-lg border">
+          <div class="grid sm:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-semibold mb-2">Casuals</h4>
+              <ul class="space-y-1 text-slate-700">
+                <li><a href="#" class="hover:text-slate-900">Tops</a></li>
+                <li><a href="#" class="hover:text-slate-900">Dresses</a></li>
+                <li><a href="#" class="hover:text-slate-900">T-Shirts</a></li>
+                <li><a href="#" class="hover:text-slate-900">Jeans</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-semibold mb-2">Formal</h4>
+              <ul class="space-y-1 text-slate-700">
+                <li><a href="#" class="hover:text-slate-900">Shirts</a></li>
+                <li><a href="#" class="hover:text-slate-900">Trousers</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOYS -->
+    <div class="relative">
+      <button class="h-11 inline-flex items-center hover:underline" data-dd-btn="boys">Boys</button>
+      <div class="absolute left-0 mt-2 w-[520px] max-w-[95vw] bg-white rounded-xl shadow hidden z-[80]" data-dd-panel="boys">
+        <div class="grid grid-cols-[160px_1fr] gap-4 p-4">
+          <img src="/assets/categories/boy.webp" alt="Boys" class="h-50 object-fit rounded-lg border">
+          <div class="grid sm:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-semibold mb-2">Essentials</h4>
+              <ul class="space-y-1 text-slate-700">
+                <li><a href="#" class="hover:text-slate-900">T-Shirts</a></li>
+                <li><a href="#" class="hover:text-slate-900">Jeans</a></li>
+                <li><a href="#" class="hover:text-slate-900">Shirts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-semibold mb-2">Seasonal</h4>
+              <ul class="space-y-1 text-slate-700">
+                <li><a href="#" class="hover:text-slate-900">Sweatshirts</a></li>
+                <li><a href="#" class="hover:text-slate-900">Shorts</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GIRLS -->
+    <div class="relative">
+      <button class="h-11 inline-flex items-center hover:underline" data-dd-btn="girls">Girls</button>
+      <div class="absolute left-0 mt-2 w-[520px] max-w-[95vw] bg-white rounded-xl shadow border hidden z-[80]" data-dd-panel="girls">
+        <div class="grid grid-cols-[160px_1fr] gap-4 p-4">
+          <img src="/assets/categories/girl.webp" alt="Girls" class="h-50 bject-fit rounded-lg border">
+          <div class="grid sm:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-semibold mb-2">Essentials</h4>
+              <ul class="space-y-1 text-slate-700">
+                <li><a href="#" class="hover:text-slate-900">Tops</a></li>
+                <li><a href="#" class="hover:text-slate-900">Dresses</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-semibold mb-2">Denim</h4>
+              <ul class="space-y-1 text-slate-700">
+                <li><a href="#" class="hover:text-slate-900">Jeans</a></li>
+                <li><a href="#" class="hover:text-slate-900">Skirts</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</header>

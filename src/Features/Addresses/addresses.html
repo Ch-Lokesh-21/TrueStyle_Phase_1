@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>TrueStyle - Addresses</title>
+  <link rel="icon" href="/assets/icon.png"/>
+  <link rel="stylesheet" href="/style/index.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    :root{
+      --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --surf:#ffffff;
+      --accent:#111827; --accent-ghost:#f1f5f9; --ring:#94a3b8; --bad:#ef4444; --good:#10b981;
+    }
+    *{box-sizing:border-box}
+    .card{background:var(--surf); border:1px solid var(--line); border-radius:16px;}
+    .btn{height:44px; border-radius:12px; padding:0 14px; font-weight:500}
+    .btn-solid{background:var(--accent); color:#fff}
+    .btn-solid:hover{filter:brightness(.92)}
+    .btn-ghost{background:#fff; border:1px solid var(--line)}
+    .btn-ghost:hover{background:var(--accent-ghost)}
+    .btn-danger{border:1px solid #fecaca; color:#b91c1c; background:#fff}
+    .btn-danger:hover{background:#fff1f2}
+    .chip{font-size:11px; padding:.2rem .5rem; border-radius:9999px; border:1px solid #bbf7d0; background:#ecfdf5; color:#065f46}
+    /* FORM FIELDS */
+    input.field, select.field, textarea.field{width:100%; display:block; border:1px solid var(--line); border-radius:12px; padding:0 12px;}
+    input.field, select.field{height:44px;}
+    textarea.field{min-height:112px; padding:10px 12px; line-height:1.4; resize:vertical;}
+    .field:focus{outline:none; box-shadow:0 0 0 3px rgba(148,163,184,.3)}
+    .field-bad{box-shadow:0 0 0 3px rgba(239,68,68,.25)!important; border-color:#fecaca}
+    .titlebar{border-bottom:1px solid var(--line); background:linear-gradient(180deg,#ffffff,#f8fafc)}
+    .addr-card{border-left:4px solid transparent}
+    .addr-card.default{border-left-color:var(--good)}
+  </style>
+</head>
+<body class="bg-[#f6f7fb] text-[var(--ink)]">
+  <!-- Top Nav -->
+  <div data-include="/src/Components/navbar.html"></div>
+
+  <!-- Title -->
+  <header class="titlebar">
+    <div class="max-w-7xl mx-auto px-4 py-5 flex items-center justify-between">
+      <div>
+        <h1 class="text-xl font-semibold tracking-tight">Addresses</h1>
+        <p class="text-sm text-[var(--muted)]">Manage delivery locations and your default address.</p>
+      </div>
+      <button id="addNewBtn" class="px-4 py-2 text-md bg-blue-600 text-white hover:bg-blue-700 rounded-lg cursor-pointer">Add New</button>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 grid lg:grid-cols-[1fr_.5fr] gap-8">
+    <!-- LIST -->
+    <section class="card p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold">Your Addresses</h2>
+        <button id="addNewBtnSm" class="btn btn-solid sm:hidden">+ Add New</button>
+      </div>
+      <div id="addrList" class="grid gap-3"></div>
+
+      <!-- Empty state -->
+      <div id="addrEmpty" class="hidden">
+        <div class="border border-dashed rounded-2xl p-8 text-center bg-white">
+          <div class="mx-auto mb-3 w-10 h-10 rounded-full grid place-items-center bg-slate-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21v-8a2 2 0 0 1 2-2h3l2-2h4l2 2h3a2 2 0 0 1 2 2v8"/><path d="M16 21v-6H8v6"/></svg>
+          </div>
+          <p class="text-sm text-[var(--muted)]">No addresses yet. Add one to speed up checkout.</p>
+          <button class="btn btn-solid mt-3" id="addNewBtnEmpty">+ Add Address</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORM (sticky on desktop) -->
+    <aside class="card p-4 h-fit lg:sticky lg:top-6">
+      <div class="flex items-center justify-between mb-1">
+        <h3 class="font-semibold flex justify-between" id="formTitle"> <span> Add Address  </span> <div class="ml-30"><span class="text-red-600">*</span> <span class="text-gray-600">Required Fields</span></div></h3>
+        <span id="editBadge" class="hidden chip">Editing</span>
+      </div>
+
+      <form id="addrForm" class="grid gap-3" novalidate>
+        <label class="grid gap-1">
+          <span class="text-xs text-[var(--muted)]">Address <span class="text-red-500">*</span></span>
+          <textarea name="Address" class="field" placeholder="Flat / House no., Street, Area"></textarea>
+          <p class="hidden text-xs text-red-600" data-err="Address"></p>
+        </label>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label class="grid gap-1">
+            <span class="text-xs text-[var(--muted)]">City <span class="text-red-500">*</span></span>
+            <input name="City" class="field" placeholder="e.g., Vijayawada"/>
+            <p class="hidden text-xs text-red-600" data-err="City"></p>
+          </label>
+          <label class="grid gap-1">
+            <span class="text-xs text-[var(--muted)]">State <span class="text-red-500">*</span></span>
+            <input name="State" class="field" placeholder="e.g., Andhra Pradesh"/>
+            <p class="hidden text-xs text-red-600" data-err="State"></p>
+          </label>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label class="grid gap-1">
+            <span class="text-xs text-[var(--muted)]">Country <span class="text-red-500">*</span></span>
+            <input name="Country" class="field" value="India"/>
+            <p class="hidden text-xs text-red-600" data-err="Country"></p>
+          </label>
+          <label class="grid gap-1">
+            <span class="text-xs text-[var(--muted)]">Postal Code <span class="text-red-500">*</span></span>
+            <input name="Postal_Code" class="field" inputmode="numeric" maxlength="6" placeholder="6-digit PIN"/>
+            <p class="hidden text-xs text-red-600" data-err="Postal_Code"></p>
+          </label>
+        </div>
+
+        <label class="grid gap-1">
+          <span class="text-xs text-[var(--muted)]">Mobile <span class="text-red-500">*</span></span>
+          <input name="Mobile" class="field" inputmode="tel" maxlength="10" placeholder="10-digit mobile (6–9…)"/>
+          <p class="hidden text-xs text-red-600" data-err="Mobile"></p>
+        </label>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label class="grid gap-1">
+            <span class="text-xs text-[var(--muted)]">Type</span>
+            <select name="Type" class="field">
+              <option>Home</option><option>Work</option><option>Other</option>
+            </select>
+          </label>
+          <label class="flex items-center gap-2 sm:mt-7">
+            <input id="isDefault" type="checkbox" class="size-4 rounded border"/>
+            <span class="text-sm">Set as default</span>
+          </label>
+        </div>
+
+        <input type="hidden" name="__id"/>
+
+        <div class="flex gap-2">
+          <button id="saveBtn" class="px-4 py-2 text-md bg-blue-600 text-white hover:bg-blue-700 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Save</button>
+          <button type="button" id="cancelEdit" class="btn btn-ghost hidden">Cancel</button>
+        </div>
+      </form>
+    </aside>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t">
+    <div class="max-w-7xl mx-auto px-4 py-10 text-sm text-[var(--muted)]">
+      <div class="grid gap-8 md:grid-cols-3">
+        <div>
+          <h4 class="font-semibold text-[var(--ink)] mb-3">Download the App</h4>
+          <div class="flex gap-3">
+            <a href="#" class="btn btn-ghost">Google Play</a>
+            <a href="#" class="btn btn-ghost">App Store</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-semibold text-[var(--ink)] mb-3">Shop</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="hover:text-black">Women’s</a></li>
+            <li><a href="#" class="hover:text-black">Men’s</a></li>
+            <li><a href="#" class="hover:text-black">Kids</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-[var(--ink)] mb-3">About</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="hover:text-black">About Us</a></li>
+            <li><a href="#" class="hover:text-black">Give Feedback</a></li>
+            <li><a href="#" class="hover:text-black">Store Locator</a></li>
+            <li><a href="mailto:truestyle@example.com" class="hover:text-black">Support: truestyle@example.com</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="mt-8 text-center">© 2025 TrueStyle. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Confirm dialog -->
+  <dialog id="confirmDlg" class="rounded-2xl p-0 w-[min(420px,94vw)] shadow-xl">
+    <div class="p-4 border-b bg-slate-50 font-semibold">Confirm</div>
+    <div class="p-4 text-sm" id="confirmMsg">Are you sure?</div>
+    <div class="p-3 border-t flex justify-end gap-2">
+      <button id="dlgCancel" class="btn btn-ghost">Cancel</button>
+      <button id="dlgOk" class="btn btn-solid">OK</button>
+    </div>
+  </dialog>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 hidden bg-black text-white text-sm px-3 py-2 rounded-lg shadow-lg">Saved</div>
+
+  <!-- JS -->
+  <script src="/Model/appdb.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+  <script>
+    // ---------- tiny helpers ----------
+    const $=(q,r=document)=>r.querySelector(q), $$=(q,r=document)=>Array.from(r.querySelectorAll(q));
+    const toast=(m)=>{const t=$('#toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),1200);};
+    const uid=()=>{try{if(window.TSAuth?.user?.id)return TSAuth.user.id; const u=(AppDB.select('User')||[])[0]; return u?.id||2001;}catch{return 2001;}};
+
+    
+
+  async function injectPartials(){
+    const nodes = $$('[data-include]');
+    await Promise.all(nodes.map(async n => {
+      const url = n.getAttribute('data-include');
+      try{
+        const res = await fetch(url, {cache:'no-store'});
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const html = await res.text();
+        // Use a container to preserve multiple root nodes
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        n.replaceWith(...tmp.childNodes);
+      }catch(err){
+        console.error('Include failed:', url, err);
+      }
+    }));
+  }
+
+  // Minimal navbar interactions (profile dropdown + mega menus)
+  function initNavInteractions(){
+        lucide.createIcons();
+        const btn=$("#profileBtn"), menu=$("#profileMenu");
+        btn?.addEventListener("click", ()=>menu?.classList.toggle("hidden"));
+        document.addEventListener("click",(e)=>{
+          if(!menu?.contains(e.target) && !btn?.contains(e.target)) menu?.classList.add("hidden");
+        });
+
+        $("#logOut")?.addEventListener("click", ()=>{
+          localStorage.removeItem("ts_is_logged_in");
+          localStorage.removeItem("ts_role");
+          localStorage.removeItem("ts_user_id");
+          location.replace("/index.html");
+        });
+
+        // Compact category menus
+        function closeAllCatMenus(except){
+          $$('[data-dd-panel]').forEach(p=>{
+            if(p.getAttribute('data-dd-panel')!==except) p.classList.add('hidden');
+          });
+        }
+        $$('[data-dd-btn]').forEach(b=>{
+          const key=b.getAttribute('data-dd-btn');
+          const panel=document.querySelector(`[data-dd-panel="${key}"]`);
+          b.addEventListener('click',(e)=>{
+            e.preventDefault();
+            const willOpen=panel.classList.contains('hidden');
+            closeAllCatMenus(key);
+            panel.classList.toggle('hidden',!willOpen);
+          });
+        });
+        document.addEventListener('click',(e)=>{
+          if(!e.target.closest('[data-dd-btn]') && !e.target.closest('[data-dd-panel]')) closeAllCatMenus();
+        });
+
+        // Navbar search hands off to home search
+        $("#navSearchForm")?.addEventListener("submit",(e)=>{
+          e.preventDefault();
+          const v=$("#navSearch").value.trim();
+          if(!v) return;
+          const anchor=$("#productsSection");
+          if(anchor){
+            $("#homeSearch").value=v;
+            anchor.scrollIntoView({behavior:"smooth"});
+            window.applyHomeFilters?.();
+          }else{
+            location.href=`/user/index.html?q=${encodeURIComponent(v)}`;
+          }
+        });
+
+        // Quick filters (legacy)
+        $$("[data-cat]").forEach(a=>{
+          a.addEventListener("click",(e)=>{
+            e.preventDefault();
+            const name=a.getAttribute("data-cat");
+            localStorage.setItem("ts_user_cat",name);
+            const anchor=$("#productsSection");
+            if(anchor) anchor.scrollIntoView({behavior:"smooth"});
+            window.applyHomeFilters?.();
+          });
+        });
+
+        refreshCartBadge();
+      }
+
+  document.addEventListener('DOMContentLoaded', async ()=>{
+    await injectPartials();          // inject the navbar
+    initNavInteractions();           // then wire it up
+  });
+
+    
+
+    // ---------- validation with "touched" logic ----------
+    const touched = { Address:false, City:false, State:false, Country:false, Postal_Code:false, Mobile:false };
+    let submitAttempted=false;
+
+    const rules = {
+      Address:v=>v.trim().length>=10 || 'Add house no., street, area (≥ 10 chars).',
+      City:v=>v.trim().length>1||'City is required.',
+      State:v=>v.trim().length>1||'State is required.',
+      Country:v=>v.trim().length>1||'Country is required.',
+      Postal_Code:v=>/^\d{6}$/.test(v.trim())||'Enter a valid 6-digit PIN.',
+      Mobile:v=>/^[6-9]\d{9}$/.test(v.trim())||'Valid 10-digit mobile (starts 6–9).'
+    };
+
+    function capWords(s){return s.replace(/\s+/g,' ').trim().replace(/\b\w/g,m=>m.toUpperCase());}
+    function normalize(d){
+      return {
+        ...d,
+        Address:d.Address.replace(/\s+/g,' ').trim(),
+        City:capWords(d.City||''), State:capWords(d.State||''), Country:capWords(d.Country||''),
+        Postal_Code:(d.Postal_Code||'').replace(/\D/g,'').slice(0,6),
+        Mobile:(d.Mobile||'').replace(/\D/g,'').slice(0,10),
+      };
+    }
+
+    function validateField(name, el){
+      const res = rules[name]((el.value||'').trim());
+      return { ok: res===true, msg: res===true?'':res };
+    }
+    function paintField(name, el){
+      const {ok,msg}=validateField(name, el);
+      const show=touched[name]||submitAttempted;
+      const err=$(`[data-err="${name}"]`);
+      if(show && !ok){ el.classList.add('field-bad'); err.textContent=msg; err.classList.remove('hidden');}
+      else{ el.classList.remove('field-bad'); err.classList.add('hidden');}
+      return ok;
+    }
+    function updateSubmit(){
+      const f=$('#addrForm');
+      const names=['Address','City','State','Country','Postal_Code','Mobile'];
+      const all=names.every(n=>paintField(n,f.elements[n]));
+      $('#saveBtn').disabled=!all; return all;
+    }
+    function bindValidation(){
+      const f=$('#addrForm');
+      ['Address','City','State','Country','Postal_Code','Mobile'].forEach(n=>{
+        const el=f.elements[n];
+        el.addEventListener('input',()=>{touched[n]=true; if(n==='Postal_Code'||n==='Mobile'){el.value=el.value.replace(/\D/g,'');} updateSubmit();});
+        el.addEventListener('blur', ()=>{touched[n]=true; updateSubmit();});
+      });
+    }
+
+    // ---------- list render ----------
+    function addrCard(a){
+      const def=a.Is_Default?true:false;
+      return `
+      <article class="card addr-card ${def?'default':''} p-4 hover:shadow-sm transition">
+        <div class="flex items-start justify-between gap-6">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-medium">${a.Type||'Home'}</span>
+              ${def?'<span class="chip">Default</span>':''}
+            </div>
+            <p class="text-sm mt-1">${a.Address}</p>
+            <p class="text-sm text-slate-600">${a.City}, ${a.State}, ${a.Country} • ${a.Postal_Code}</p>
+            <p class="text-sm text-slate-600">Mobile: ${a.Mobile}</p>
+          </div>
+          <div class="shrink-0 grid gap-2 text-sm">
+            ${def?`<button class="btn btn-ghost" data-default="${a.id}">Set Default Again</button>`:`<button class="btn btn-ghost" data-default="${a.id}">Make Default</button>`}
+            <div class="flex gap-2">
+              <button class="btn btn-ghost" data-edit="${a.id}">Edit</button>
+              <button class="btn btn-danger" data-del="${a.id}">Delete</button>
+            </div>
+          </div>
+        </div>
+      </article>`;
+    }
+
+    function render(){
+      const list=(AppDB.select('User_Address')||[]).filter(a=>a.User_Id===uid());
+      const box=$('#addrList'), empty=$('#addrEmpty');
+      if(!list.length){ box.innerHTML=''; empty.classList.remove('hidden'); }
+      else{ empty.classList.add('hidden'); box.innerHTML=list.map(addrCard).join(''); }
+
+      // actions
+      box.querySelectorAll('[data-del]').forEach(b=>{
+        b.addEventListener('click', async ()=>{
+          const id=+b.getAttribute('data-del');
+          const ok=await confirmDialog('Delete this address?');
+          if(!ok) return;
+          AppDB.remove('User_Address', id); toast('Address deleted'); render();
+        });
+      });
+      box.querySelectorAll('[data-edit]').forEach(b=>{
+        b.addEventListener('click', ()=>{
+          const id=+b.getAttribute('data-edit');
+          const a=AppDB.get('User_Address', id);
+          fillForm(a);
+        });
+      });
+      box.querySelectorAll('[data-default]').forEach(b=>{
+        b.addEventListener('click', ()=>{ setDefault(+b.getAttribute('data-default')); });
+      });
+    }
+
+    function setDefault(id){
+      const items=(AppDB.select('User_Address')||[]).filter(x=>x.User_Id===uid());
+      items.forEach(x=>AppDB.update('User_Address', x.id, {...x, Is_Default: x.id===id?1:0}));
+      toast('Default address updated'); render();
+    }
+
+    // ---------- form actions ----------
+    function resetForm(){
+      const f=$('#addrForm'); f.reset(); f.elements['__id'].value='';
+      $('#formTitle').textContent='Add Address'; $('#saveBtn').textContent='Save';
+      $('#cancelEdit').classList.add('hidden'); $('#editBadge').classList.add('hidden');
+      Object.keys(touched).forEach(k=>touched[k]=false); submitAttempted=false;
+      ['Address','City','State','Country','Postal_Code','Mobile'].forEach(n=>{
+        const el=f.elements[n]; el.classList.remove('field-bad'); $(`[data-err="${n}"]`).classList.add('hidden');
+      });
+      $('#saveBtn').disabled=true;
+      if (window.innerWidth<1024) document.querySelector('aside')?.scrollIntoView({behavior:'smooth'});
+    }
+    function fillForm(a){
+      const f=$('#addrForm');
+      f.elements['Address'].value=a.Address||''; f.elements['City'].value=a.City||''; f.elements['State'].value=a.State||'';
+      f.elements['Country'].value=a.Country||'India'; f.elements['Postal_Code'].value=(a.Postal_Code||'').toString().slice(0,6);
+      f.elements['Mobile'].value=(a.Mobile||'').toString().slice(0,10);
+      f.elements['Type'].value=a.Type||'Home'; $('#isDefault').checked=!!a.Is_Default;
+      f.elements['__id'].value=a.id;
+      $('#formTitle').textContent='Edit Address'; $('#saveBtn').textContent='Update';
+      $('#cancelEdit').classList.remove('hidden'); $('#editBadge').classList.remove('hidden');
+      Object.keys(touched).forEach(k=>touched[k]=false); submitAttempted=false; updateSubmit();
+      if (window.innerWidth<1024) document.querySelector('aside')?.scrollIntoView({behavior:'smooth'});
+    }
+
+    async function onSave(e){
+      e.preventDefault(); submitAttempted=true; if(!updateSubmit()) return;
+      const f=e.target; const raw=Object.fromEntries(new FormData(f).entries());
+      const id=+raw.__id||0; delete raw.__id;
+      const data=normalize({...raw, Is_Default: $('#isDefault').checked?1:0, Type: raw.Type||'Home'});
+      if(id){
+        AppDB.update('User_Address', id, data);
+        if(data.Is_Default) setDefault(id); else render();
+        toast('Address updated');
+      }else{
+        const rec=AppDB.insert('User_Address', {...data, User_Id: uid(), Creation_Date:null, Modified_Date:null});
+        if(data.Is_Default) setDefault(rec.id); else render();
+        toast('Address saved');
+      }
+      resetForm();
+    }
+
+    // ---------- confirm dialog ----------
+    function confirmDialog(message){
+      return new Promise(res=>{
+        const dlg=$('#confirmDlg'); $('#confirmMsg').textContent=message||'Are you sure?'; dlg.showModal();
+        const close=v=>{dlg.close(); res(v);};
+        $('#dlgCancel').onclick=()=>close(false); $('#dlgOk').onclick=()=>close(true);
+        dlg.addEventListener('cancel', e=>{e.preventDefault(); close(false);},{once:true});
+      });
+    }
+
+    // ---------- boot ----------
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      await injectPartials();
+      bindValidation(); render();
+      $('#addrForm').addEventListener('submit', onSave);
+      $('#cancelEdit').addEventListener('click', resetForm);
+      $('#addNewBtn').addEventListener('click', resetForm);
+      $('#addNewBtnSm').addEventListener('click', resetForm);
+      $('#addNewBtnEmpty').addEventListener('click', resetForm);
+    });
+  </script>
+</body>
+</html>

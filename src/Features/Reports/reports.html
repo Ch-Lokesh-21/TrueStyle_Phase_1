@@ -1,0 +1,666 @@
+<!-- /admin/pages/reports.html -->
+<section class="grid gap-6 fade-up">
+
+  <!-- CSS-only tabs (radios must be siblings of the panels) -->
+  <style>
+    input[name="reports-tab"]{position:absolute;opacity:0;pointer-events:none;}
+    .report-panel{display:none;}
+    /* Show the selected panel (radios and panels share the same parent <section>) */
+    #tab-products:checked  ~ [data-panel="products"] { display:block; }
+    #tab-orders:checked    ~ [data-panel="orders"]   { display:block; }
+    #tab-customers:checked ~ [data-panel="customers"]{ display:block; }
+
+    /* Selected pill style */
+    #tab-products:checked  ~ .tabs label[for="tab-products"],
+    #tab-orders:checked    ~ .tabs label[for="tab-orders"],
+    #tab-customers:checked ~ .tabs label[for="tab-customers"]{
+      background: linear-gradient(90deg,#2563eb,#4f46e5);
+      color:#fff;
+      box-shadow:0 8px 24px rgba(37,99,235,.25);
+    }
+
+    /* Sort indicator */
+    th[data-sort] { cursor: pointer; user-select: none; }
+    th[data-sort] .chev { opacity:.35; transition: transform .15s ease, opacity .15s ease; }
+    th[aria-sort="asc"]  .chev{ opacity:1; transform: rotate(180deg); }
+    th[aria-sort="desc"] .chev{ opacity:1; transform: rotate(0deg); }
+
+    /* Print header/footer */
+    @media print {
+      #printBanner, #printFooter { display:block !important; }
+      #printBanner {
+        position: fixed; top: 0; left: 0; right: 0;
+        padding: 12px 16px; border-bottom: 1px solid #e5e7eb;
+        font-size: 12px; background: #fff; color:#111827; z-index: 9999;
+      }
+      #printFooter {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        padding: 8px 16px; border-top: 1px solid #e5e7eb;
+        font-size: 11px; background: #fff; color:#374151; z-index: 9999;
+        text-align:center;
+      }
+      #printFooter .page-num::after { content: "Page " counter(page); }
+      /* Give room so content doesn't overlap header/footer */
+      body { margin-top: 70px; margin-bottom: 50px; }
+    }
+  </style>
+
+  <!-- Hidden radios MUST precede the panels (same parent) -->
+  <input type="radio" id="tab-products"  name="reports-tab" checked>
+  <input type="radio" id="tab-orders"    name="reports-tab">
+  <input type="radio" id="tab-customers" name="reports-tab">
+
+  <!-- Tab labels -->
+  <div class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-2 tabs">
+    <div class="flex flex-wrap gap-2">
+      <label for="tab-products"  class="px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 hover:bg-slate-200 transition cursor-pointer">Products</label>
+      <label for="tab-orders"    class="px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 hover:bg-slate-200 transition cursor-pointer">Orders</label>
+      <label for="tab-customers" class="px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 hover:bg-slate-200 transition cursor-pointer">Customers</label>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <section class="report-panel rounded-2xl shadow-md bg-white/80 backdrop-blur p-4" data-panel="products">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+      <h2 class="font-semibold tracking-tight">Product Reports</h2>
+      <div class="flex flex-wrap gap-2">
+        <button id="prodExport" class="h-9 px-4 rounded-lg text-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md cursor-pointer">Export</button>
+        <button class="h-9 px-4 rounded-lg text-md bg-slate-100 hover:bg-slate-200 shadow-sm cursor-pointer open-print" data-report="Products">Print</button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="rounded-xl border border-slate-200 bg-white/70 p-3 mb-3">
+      <div class="grid gap-2 md:grid-cols-5">
+        <input id="pfSearch" type="search" placeholder="Search ... "
+               class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+        <select id="pfCategory" class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+          <option value="">All categories</option>
+        </select>
+        <select id="pfStock" class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+          <option value="">Any stock</option>
+          <option value="in">In stock</option>
+          <option value="out">Out of stock</option>
+        </select>
+        <input id="pfMinPrice" type="number" min="0" placeholder="Min price"
+               class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+        <input id="pfMaxPrice" type="number" min="0" placeholder="Max price"
+               class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+      </div>
+    </div>
+
+    <div class="overflow-x-auto rounded-2xl bg-white/70 shadow-sm">
+      <table class="w-full text-sm" id="prodTable">
+        <thead class="bg-slate-50 text-slate-700">
+          <tr>
+            <th class="p-3 text-left" data-sort="Name">Name <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="Brand">Brand <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="Category">Category <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="price">Price <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="Creation_Date">Created <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="Stock">Stock <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="Reviews_Count">Reviews <span class="chev">▲</span></th>
+          </tr>
+        </thead>
+        <tbody id="prodTbody" class="divide-y divide-slate-100"></tbody>
+      </table>
+    </div>
+    <div class="flex justify-between items-center mt-3">
+      <div class="text-xs text-slate-500" id="prodMeta"></div>
+      <div class="flex items-center gap-2">
+        <button class="h-9 px-3 rounded-lg bg-slate-100 shadow-sm opacity-50 cursor-not-allowed cursor-pointer">Prev</button>
+        <div class="min-w-28 text-center text-slate-600 text-sm" id="prodPage">Page 1 of 1</div>
+        <button class="h-9 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 shadow-sm cursor-pointer">Next</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDERS -->
+  <section class="report-panel rounded-2xl shadow-md bg-white/80 backdrop-blur p-4" data-panel="orders">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+      <h2 class="font-semibold tracking-tight">Order Reports</h2>
+      <div class="flex flex-wrap gap-2">
+        <button id="ordExport" class="h-9 px-4 rounded-lg text-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md cursor-pointer">Export CSV</button>
+        <button class="h-9 px-4 rounded-lg text-sm bg-slate-100 hover:bg-slate-200 shadow-sm cursor-pointer open-print" data-report="Orders">Print</button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="rounded-xl border border-slate-200 bg-white/70 p-3 mb-3">
+      <div class="grid gap-2 md:grid-cols-6">
+        <input id="ofSearch" type="search" placeholder="Search ... "
+               class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+        <select id="ofStatus" class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+          <option value="">Any status</option>
+        </select>
+        <input id="ofFrom" type="date" class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+        <input id="ofTo"   type="date" class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+        <input id="ofMin" type="number" min="0" placeholder="Min total"
+               class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+        <input id="ofMax" type="number" min="0" placeholder="Max total"
+               class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+      </div>
+    </div>
+
+    <div class="overflow-x-auto rounded-2xl bg-white/70 shadow-sm">
+      <table class="w-full text-sm" id="ordTable">
+        <thead class="bg-slate-50 text-slate-700">
+          <tr>
+            <th class="p-3 text-left" data-sort="id">Order # <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="name">Customer <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="email">Email <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="total">Total <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="date">Date <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="status">Status <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="items">Items <span class="chev">▲</span></th>
+          </tr>
+        </thead>
+        <tbody id="ordTbody" class="divide-y divide-slate-100"></tbody>
+      </table>
+    </div>
+    <div class="flex justify-between items-center mt-3">
+      <div class="text-xs text-slate-500" id="ordMeta"></div>
+      <div class="flex items-center gap-2">
+        <button class="h-9 px-3 rounded-lg bg-slate-100 shadow-sm opacity-50 cursor-not-allowed cursor-pointer">Prev</button>
+        <div class="min-w-28 text-center text-slate-600 text-sm" id="ordPage">Page 1 of 1</div>
+        <button class="h-9 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 shadow-sm cursor-pointer">Next</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMERS -->
+  <section class="report-panel rounded-2xl shadow-md bg-white/80 backdrop-blur p-4" data-panel="customers">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+      <h2 class="font-semibold tracking-tight">Customer Reports</h2>
+      <div class="flex flex-wrap gap-2">
+        <button id="cusExport" class="h-9 px-4 rounded-lg text-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md cursor-pointer">Export CSV</button>
+        <button class="h-9 px-4 rounded-lg text-sm bg-slate-100 hover:bg-slate-200 shadow-sm cursor-pointer open-print" data-report="Customers">Print</button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="rounded-xl border border-slate-200 bg-white/70 p-3 mb-3">
+      <div class="grid gap-2 md:grid-cols-5">
+        <input id="cfSearch" type="search" placeholder="Search name ... "
+               class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+        <select id="cfCountry" class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+          <option value="">Any country</option>
+        </select>
+        <input id="cfMinOrders" type="number" min="0" placeholder="Min orders"
+               class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+        <input id="cfMinSpent" type="number" min="0" placeholder="Min spent"
+               class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+        <select id="cfLastOrder" class="h-9 px-3 rounded-lg border border-slate-200 bg-white/80">
+          <option value="">Any recency</option>
+          <option value="30">Last 30 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="365">Last 365 days</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto rounded-2xl bg-white/70 shadow-sm">
+      <table class="w-full text-sm" id="cusTable">
+        <thead class="bg-slate-50 text-slate-700">
+          <tr>
+            <th class="p-3 text-left" data-sort="name">Name <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="email">Email <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="country">Country <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="orders">Orders <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="spent">Total Spent <span class="chev">▲</span></th>
+            <th class="p-3 text-left" data-sort="lastOrder">Last Order <span class="chev">▲</span></th>
+          </tr>
+        </thead>
+        <tbody id="cusTbody" class="divide-y divide-slate-100"></tbody>
+      </table>
+    </div>
+    <div class="flex justify-between items-center mt-3">
+      <div class="text-xs text-slate-500" id="cusMeta"></div>
+      <div class="flex items-center gap-2">
+        <button class="h-9 px-3 rounded-lg bg-slate-100 shadow-sm opacity-50 cursor-not-allowed cursor-pointer">Prev</button>
+        <div class="min-w-28 text-center text-slate-600 text-sm " id="cusPage">Page 1 of 1</div>
+        <button class="h-9 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 shadow-sm cursor-pointer">Next</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Print Options Modal -->
+  <div id="printModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0"></div>
+    <div class="relative z-10 max-w-lg mx-auto mt-24 rounded-2xl bg-white ring-1 ring-slate-200 shadow-xl">
+      <div class="p-4 border-b flex items-center justify-between">
+        <h3 class="font-semibold">Print options</h3>
+        <button id="printClose" class="px-3 py-1.5 rounded-lg ring-1 ring-slate-200 hover:bg-slate-50 cursor-pointer">Close</button>
+      </div>
+      <div class="p-4 space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Organization (optional)</label>
+          <input id="pmOrg" type="text" placeholder="TrueStyle" class="w-full h-10 px-3 rounded-lg border border-slate-200 bg-white/80">
+        </div>
+        <div class="grid gap-2">
+          <label class="inline-flex items-center gap-2">
+            <input id="pmDateTime" type="checkbox" class="h-4 w-4">
+            <span class="text-sm">Show generated date & time</span>
+          </label>
+          <label class="inline-flex items-center gap-2">
+            <input id="pmPageNo" type="checkbox" class="h-4 w-4">
+            <span class="text-sm">Show page number (footer)</span>
+          </label>
+        </div>
+      </div>
+      <div class="p-4 border-t flex items-center justify-end gap-2">
+        <button id="printCancel" class="px-4 h-10 rounded-lg ring-1 ring-slate-200 hover:bg-slate-50 cursor-pointer">Cancel</button>
+        <button id="printGo" class="px-4 h-10 rounded-lg text-white bg-blue-600 hover:bg-blue-700 shadow cursor-pointer">Print</button>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- Render from AppDB with filters + sorting + print modal -->
+<script>
+(function(){
+  const INR = (n)=> '₹' + Number(n||0).toLocaleString('en-IN');
+  const fmtDate = (d)=> { if(!d) return '—'; const t=new Date(d); return isNaN(t)?d:t.toLocaleDateString(); };
+  const fmtDateTime = (d)=> { if(!d) return '—'; const t=new Date(d); return isNaN(t)?d:t.toLocaleString(); };
+  const toISODate = (d)=> new Date(d).toISOString().slice(0,10);
+
+  // --- generic sorting helper
+  function sortRows(rows, key, dir){
+    const m = dir === 'desc' ? -1 : 1;
+    return rows.sort((a,b)=>{
+      const A = a[key], B = b[key];
+      if (typeof A === 'number' && typeof B === 'number') return (A - B) * m;
+      const Ad = (typeof A === 'string' && A.length>9 && !isNaN(new Date(A))) ? new Date(A).getTime() : A;
+      const Bd = (typeof B === 'string' && B.length>9 && !isNaN(new Date(B))) ? new Date(B).getTime() : B;
+      if (!isNaN(Ad) && !isNaN(Bd)) return (Ad - Bd) * m;
+      return String(A||'').localeCompare(String(B||'')) * m;
+    });
+  }
+
+  // --- PRODUCTS ---
+  const prodState = { sortKey:'Name', sortDir:'asc' };
+
+  function renderProducts(){
+    const products = (window.AppDB?.select) ? AppDB.select('Product') : [];
+    const catsArr = (AppDB?.select('Category')||[]);
+    const cats = Object.fromEntries(catsArr.map(c=>[String(c.id), c.Display_Text]));
+
+    // Fill category options (once)
+    const catSel = document.getElementById('pfCategory');
+    if (catSel && catSel.options.length <= 1){
+      catsArr.forEach(c=>{
+        const o = document.createElement('option');
+        o.value = String(c.id); o.textContent = c.Display_Text;
+        catSel.appendChild(o);
+      });
+    }
+
+    // Read filters
+    const q = document.getElementById('pfSearch').value.trim().toLowerCase();
+    const cat = document.getElementById('pfCategory').value;
+    const stock = document.getElementById('pfStock').value; // '', 'in', 'out'
+    const minP = Number(document.getElementById('pfMinPrice').value || 0);
+    const maxP = Number(document.getElementById('pfMaxPrice').value || Number.MAX_SAFE_INTEGER);
+
+    // Map rows
+    let rows = products.map(p => ({
+      Name: p.Name||'—',
+      Brand: p.Brand||'—',
+      Category: cats[String(p.Categories_Id)] || '—',
+      price: Number(p.price||0),
+      Creation_Date: p.Creation_Date || null,
+      Stock: p.Out_of_Stock ? 'Out of Stock' : 'In Stock',
+      Reviews_Count: Number(p.Reviews_Count||0),
+      _raw: p
+    }));
+
+    // Filter
+    rows = rows.filter(r=>{
+      if (q && !(r.Name.toLowerCase().includes(q) || r.Brand.toLowerCase().includes(q))) return false;
+      if (cat && String(r._raw.Categories_Id) !== String(cat)) return false;
+      if (stock === 'in'  && r._raw.Out_of_Stock) return false;
+      if (stock === 'out' && !r._raw.Out_of_Stock) return false;
+      if (r.price < minP || r.price > maxP) return false;
+      return true;
+    });
+
+    // Sort
+    rows = sortRows(rows, prodState.sortKey, prodState.sortDir);
+
+    // Render
+    const tbody = document.getElementById('prodTbody');
+    const meta  = document.getElementById('prodMeta');
+    tbody.innerHTML = rows.map(r => `
+      <tr class="hover:bg-slate-50">
+        <td class="p-3 font-medium">${r.Name}</td>
+        <td class="p-3">${r.Brand}</td>
+        <td class="p-3">${r.Category}</td>
+        <td class="p-3">${INR(r.price)}</td>
+        <td class="p-3">${fmtDate(r.Creation_Date)}</td>
+        <td class="p-3">
+          <span class="inline-flex items-center text-xs rounded-lg px-2 py-1 ${r._raw.Out_of_Stock?'bg-rose-50 text-rose-700':'bg-green-50 text-green-700'}">
+            ${r.Stock}
+          </span>
+        </td>
+        <td class="p-3">${r.Reviews_Count}</td>
+      </tr>
+    `).join('');
+    meta.textContent = `Showing ${rows.length} of ${products.length} products`;
+
+    // CSV export (filtered+sorted)
+    const btn = document.getElementById('prodExport');
+    if (btn) btn.onclick = ()=> exportCSV(
+      'products.csv',
+      ['Name','Brand','Category','price','Creation_Date','Stock','Reviews_Count'],
+      rows.map(r=>({ ...r, price: r.price }))
+    );
+  }
+
+  // --- ORDERS ---
+  const ordState = { sortKey:'date', sortDir:'desc' };
+
+  function renderOrders(){
+    const orders = (window.AppDB?.select) ? AppDB.select('Order') : [];
+    const users = Object.fromEntries((AppDB?.select('User')||[]).map(u=>[String(u.id), u]));
+    const statusMap = Object.fromEntries(((AppDB?._state?.Order_Status)||[]).map(s=>[String(s.id), s.Display_Text]));
+
+    // Fill status options (once)
+    const stSel = document.getElementById('ofStatus');
+    if (stSel && stSel.options.length <= 1){
+      (AppDB?._state?.Order_Status||[]).forEach(s=>{
+        const o = document.createElement('option');
+        o.value = String(s.id); o.textContent = s.Display_Text;
+        stSel.appendChild(o);
+      });
+    }
+
+    const items = (AppDB?.select('Order_Item')||[]);
+    const itemCount = {};
+    items.forEach(i => { const k=String(i.Linked_Order_Id); itemCount[k]=(itemCount[k]||0)+(i.Quantity||1); });
+
+    // Build rows
+    let rows = orders.map(o=>{
+      const u = users[String(o.User_Id)] || {};
+      const name = [u.First_Name, u.Last_Name].filter(Boolean).join(' ') || '—';
+      return {
+        id:o.id,
+        name,
+        email:u.email||'—',
+        total:Number(o.Total||0),
+        date:o.Creation_Date,
+        status:statusMap[String(o.Status)] || String(o.Status) || '—',
+        statusId: String(o.Status),
+        items:itemCount[String(o.id)]||0
+      };
+    });
+
+    // Read filters
+    const q   = document.getElementById('ofSearch').value.trim().toLowerCase();
+    const st  = document.getElementById('ofStatus').value;
+    const dFrom = document.getElementById('ofFrom').value;
+    const dTo   = document.getElementById('ofTo').value;
+    const minT = Number(document.getElementById('ofMin').value || 0);
+    const maxT = Number(document.getElementById('ofMax').value || Number.MAX_SAFE_INTEGER);
+
+    rows = rows.filter(r=>{
+      if (q && !(String(r.id).includes(q) || r.name.toLowerCase().includes(q) || r.email.toLowerCase().includes(q))) return false;
+      if (st && r.statusId !== String(st)) return false;
+      if (dFrom && toISODate(r.date) < dFrom) return false;
+      if (dTo   && toISODate(r.date) > dTo) return false;
+      if (r.total < minT || r.total > maxT) return false;
+      return true;
+    });
+
+    rows = sortRows(rows, ordState.sortKey, ordState.sortDir);
+
+    const tbody = document.getElementById('ordTbody');
+    const meta  = document.getElementById('ordMeta');
+
+    tbody.innerHTML = rows.map(r => `
+      <tr class="hover:bg-slate-50">
+        <td class="p-3 font-medium">#${r.id}</td>
+        <td class="p-3">${r.name}</td>
+        <td class="p-3">${r.email}</td>
+        <td class="p-3">${INR(r.total)}</td>
+        <td class="p-3">${fmtDateTime(r.date)}</td>
+        <td class="p-3"><span class="inline-flex text-xs rounded-lg px-2 py-1 bg-slate-100">${r.status}</span></td>
+        <td class="p-3">${r.items}</td>
+      </tr>
+    `).join('');
+    meta.textContent = `Showing ${rows.length} of ${orders.length} orders`;
+
+    const btn = document.getElementById('ordExport');
+    if (btn) btn.onclick = ()=> exportCSV(
+      'orders.csv',
+      ['id','name','email','total','date','status','items'],
+      rows
+    );
+  }
+
+  // --- CUSTOMERS ---
+  const cusState = { sortKey:'spent', sortDir:'desc' };
+
+  function renderCustomers(){
+    const users  = (window.AppDB?.select) ? AppDB.select('User') : [];
+    const orders = (window.AppDB?.select) ? AppDB.select('Order') : [];
+    const addrs  = (window.AppDB?.select) ? AppDB.select('User_Address') : [];
+
+    const addrByUser = {};
+    addrs.forEach(a => { if (!addrByUser[a.User_Id]) addrByUser[a.User_Id] = a; });
+
+    const agg = {};
+    orders.forEach(o=>{
+      const u = o.User_Id;
+      agg[u] = agg[u] || { orders:0, spent:0, last:null };
+      agg[u].orders += 1;
+      agg[u].spent  += Number(o.Total||0);
+      const t = new Date(o.Creation_Date).getTime();
+      if (!agg[u].last || t > agg[u].last) agg[u].last = t;
+    });
+
+    // Build rows
+    let rows = users.map(u=>{
+      const a = agg[u.id] || { orders:0, spent:0, last:null };
+      const addr = addrByUser[u.id];
+      return {
+        name: [u.First_Name,u.Last_Name].filter(Boolean).join(' ') || '—',
+        email: u.email || '—',
+        country: addr?.Country || '—',
+        orders: a.orders,
+        spent: a.spent,
+        lastOrder: a.last ? new Date(a.last).toISOString() : null
+      };
+    });
+
+    // Fill country select (once)
+    const cSel = document.getElementById('cfCountry');
+    if (cSel && cSel.options.length <= 1){
+      [...new Set(rows.map(r=>r.country).filter(Boolean))]
+        .sort((a,b)=>String(a).localeCompare(String(b)))
+        .forEach(ct=>{
+          const o=document.createElement('option'); o.value=ct; o.textContent=ct; cSel.appendChild(o);
+        });
+    }
+
+    // Filters
+    const q = document.getElementById('cfSearch').value.trim().toLowerCase();
+    const country = document.getElementById('cfCountry').value;
+    const minOrders = Number(document.getElementById('cfMinOrders').value || 0);
+    const minSpent  = Number(document.getElementById('cfMinSpent').value || 0);
+    const recency   = Number(document.getElementById('cfLastOrder').value || 0); // days
+
+    const now = Date.now();
+    rows = rows.filter(r=>{
+      if (q && !(r.name.toLowerCase().includes(q) || r.email.toLowerCase().includes(q))) return false;
+      if (country && r.country !== country) return false;
+      if (r.orders < minOrders) return false;
+      if (r.spent  < minSpent) return false;
+      if (recency && (!r.lastOrder || (now - new Date(r.lastOrder).getTime()) > recency*86400000)) return false;
+      return true;
+    });
+
+    rows = sortRows(rows, cusState.sortKey, cusState.sortDir);
+
+    const tbody = document.getElementById('cusTbody');
+    const meta  = document.getElementById('cusMeta');
+    tbody.innerHTML = rows.map(r => `
+      <tr class="hover:bg-slate-50">
+        <td class="p-3 font-medium">${r.name}</td>
+        <td class="p-3">${r.email}</td>
+        <td class="p-3">${r.country}</td>
+        <td class="p-3">${r.orders}</td>
+        <td class="p-3">${INR(r.spent)}</td>
+        <td class="p-3">${r.lastOrder ? fmtDateTime(r.lastOrder) : '—'}</td>
+      </tr>
+    `).join('');
+    meta.textContent = `Showing ${rows.length} of ${users.length} customers`;
+
+    const btn = document.getElementById('cusExport');
+    if (btn) btn.onclick = ()=> exportCSV(
+      'customers.csv',
+      ['name','email','country','orders','spent','lastOrder'],
+      rows
+    );
+  }
+
+  // --- CSV export (front-end) ---
+  function exportCSV(filename, headers, rows){
+    const esc = (v)=> {
+      const s = (v==null ? '' : String(v));
+      return /[",\n]/.test(s) ? "\"" + s.replace(/"/g,'""') + "\"" : s;
+    };
+    const csv = [headers.join(',')]
+      .concat(rows.map(r => headers.map(h => esc(r[h])).join(',')))
+      .join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  }
+
+  // --- header sorting wiring
+  function wireSorting(tableId, state, render){
+    const thead = document.querySelector(`#${tableId} thead`);
+    if (!thead) return;
+    thead.querySelectorAll('th[data-sort]').forEach(th=>{
+      th.addEventListener('click', ()=>{
+        const key = th.getAttribute('data-sort');
+        if (state.sortKey === key) {
+          state.sortDir = (state.sortDir === 'asc' ? 'desc' : 'asc');
+        } else {
+          state.sortKey = key; state.sortDir = 'asc';
+        }
+        thead.querySelectorAll('th[data-sort]').forEach(x=>x.removeAttribute('aria-sort'));
+        th.setAttribute('aria-sort', state.sortDir);
+        render();
+      });
+    });
+  }
+
+  // --- filter wiring (debounced)
+  function debounce(fn, ms=250){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
+  function onInputs(ids, fn){
+    const handler = debounce(fn, 200);
+    ids.forEach(id=>{ const el = document.getElementById(id); if (el) el.addEventListener('input', handler); });
+    ids.forEach(id=>{ const el = document.getElementById(id); if (el && el.tagName==='SELECT') el.addEventListener('change', handler); });
+  }
+
+  // --- Print Modal wiring ---
+  let currentReportTitle = 'Report';
+  const pm = {
+    root: null, org: null, dt: null, pg: null, go: null, close: null, cancel: null
+  };
+
+  function openPrintModal(reportTitle){
+    currentReportTitle = reportTitle || 'Report';
+    pm.root.classList.remove('hidden');
+    pm.org.value = ''; pm.dt.checked = true; pm.pg.checked = true;
+  }
+  function closePrintModal(){
+    pm.root.classList.add('hidden');
+  }
+
+  function doPrint(){
+    // Create / update banner & footer according to options
+    const org = pm.org.value.trim();
+    const showDT = pm.dt.checked;
+    const showPG = pm.pg.checked;
+
+    let banner = document.getElementById('printBanner');
+    if (!banner){
+      banner = document.createElement('div'); banner.id = 'printBanner'; banner.style.display = 'none';
+      document.body.appendChild(banner);
+    }
+    let footer = document.getElementById('printFooter');
+    if (!footer){
+      footer = document.createElement('div'); footer.id = 'printFooter'; footer.style.display = 'none';
+      document.body.appendChild(footer);
+    }
+
+    // Fill banner
+    const parts = [];
+    parts.push(`<strong>${org || '—'}</strong>`);
+    parts.push(`<span style="color:#6b7280">•</span>`);
+    parts.push(`<span>${currentReportTitle}</span>`);
+    if (showDT){
+      parts.push(`<span style="color:#6b7280">•</span>`);
+      parts.push(`<span>Generated: ${new Date().toLocaleString()}</span>`);
+    }
+    banner.innerHTML = `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">${parts.join(' ')}</div>`;
+    banner.style.display = 'block';
+
+    // Fill footer
+    footer.innerHTML = showPG ? `<span class="page-num"></span>` : '';
+    footer.style.display = showPG ? 'block' : 'none';
+
+    // Print now
+    window.print();
+
+    // Clean up (leave DOM nodes for next time, just hide)
+    banner.style.display = 'none';
+    footer.style.display = 'none';
+  }
+
+  function mount(){
+    // cache modal refs
+    pm.root   = document.getElementById('printModal');
+    pm.org    = document.getElementById('pmOrg');
+    pm.dt     = document.getElementById('pmDateTime');
+    pm.pg     = document.getElementById('pmPageNo');
+    pm.go     = document.getElementById('printGo');
+    pm.close  = document.getElementById('printClose');
+    pm.cancel = document.getElementById('printCancel');
+
+    // open buttons
+    document.querySelectorAll('.open-print').forEach(btn=>{
+      btn.addEventListener('click', ()=> openPrintModal(btn.getAttribute('data-report') || 'Report'));
+    });
+
+    // modal actions
+    pm.close?.addEventListener('click', closePrintModal);
+    pm.cancel?.addEventListener('click', closePrintModal);
+    pm.go?.addEventListener('click', ()=>{ closePrintModal(); doPrint(); });
+
+    // initial renders
+    renderProducts();
+    renderOrders();
+    renderCustomers();
+
+    // sorting
+    wireSorting('prodTable', prodState, renderProducts);
+    wireSorting('ordTable',  ordState,  renderOrders);
+    wireSorting('cusTable',  cusState,  renderCustomers);
+
+    // filters
+    onInputs(['pfSearch','pfCategory','pfStock','pfMinPrice','pfMaxPrice'], renderProducts);
+    onInputs(['ofSearch','ofStatus','ofFrom','ofTo','ofMin','ofMax'], renderOrders);
+    onInputs(['cfSearch','cfCountry','cfMinOrders','cfMinSpent','cfLastOrder'], renderCustomers);
+  }
+
+  // If your SPA calls postPageMount, hook it; else run immediately.
+  const prev = window.postPageMount;
+  window.postPageMount = function(){ prev?.(); mount(); };
+  if (!prev) mount();
+})();
+</script>

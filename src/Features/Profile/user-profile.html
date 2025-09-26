@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>TrueStyle - Profile</title>
+    <link rel="icon" href="/assets/icon.png"/>
+    <link rel="stylesheet" href="/style/index.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="bg-white text-slate-900">
+    <!-- Navbar -->
+    <div data-include="/src/Components/navbar.html"></div>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 grid lg:grid-cols-2 gap-8" id="profileRoot">
+      <!-- Profile -->
+      <section class="rounded-3xl ring-1 ring-slate-200 p-4 bg-white shadow-sm">
+        <h2 class="font-semibold mb-1">Profile</h2>
+        <p class="text-sm text-slate-500 mb-4">Update your personal information.</p>
+
+        <!-- Success / error banners -->
+        <div id="profileBanner" class="hidden mb-3 px-3 py-2 rounded-lg text-sm" aria-live="polite"></div>
+
+        <!-- Avatar -->
+        <div class="flex items-center gap-4 mb-4">
+          <img id="avatarImg" src="" alt="Profile photo" class="h-24 w-24 rounded-full object-cover ring-1 ring-slate-200 shadow-sm bg-slate-100"/>
+          <div class="flex flex-wrap gap-2">
+            <input id="avatarFile" type="file" accept="image/*" class="hidden"/>
+            <button type="button" id="avatarUpload" class="px-4 py-2 rounded-lg cursor-pointer text-md ring-1 ring-slate-200 hover:bg-slate-50">Upload</button>
+            <button type="button" id="avatarRemove" class="px-4 py-2 rounded-lg cursor-pointer text-md ring-1 ring-slate-200 hover:bg-slate-50">Remove</button>
+            <p class="basis-full text-xs text-slate-500">JPG/PNG/WebP, up to 2&nbsp;MB.</p>
+          </div>
+        </div>
+
+        <form id="profileForm" class="grid gap-4 max-w-md" novalidate>
+          <div>
+            <label class="text-sm text-slate-600">First Name</label>
+            <input name="First_Name" class="w-full h-11 rounded-xl ring-1 ring-slate-200 px-3 focus:outline-none focus:ring-2 focus:ring-blue-200"/>
+            <p class="mt-1 text-xs text-rose-600 hidden" data-err="First_Name"></p>
+          </div>
+
+          <div>
+            <label class="text-sm text-slate-600">Last Name</label>
+            <input name="Last_Name" class="w-full h-11 rounded-xl ring-1 ring-slate-200 px-3 focus:outline-none focus:ring-2 focus:ring-blue-200"/>
+            <p class="mt-1 text-xs text-rose-600 hidden" data-err="Last_Name"></p>
+          </div>
+
+          <div>
+            <label class="text-sm text-slate-600">Email</label>
+            <input name="email" type="email" class="w-full h-11 rounded-xl ring-1 ring-slate-200 px-3 focus:outline-none focus:ring-2 focus:ring-blue-200"/>
+            <p class="mt-1 text-xs text-rose-600 hidden" data-err="email"></p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button id="profileSave" type="submit" class="px-4 py-2 rounded-lg cursor-pointer text-md bg-blue-600 text-white hover:bg-blue-700">Save Changes</button>
+            <button type="button" id="profileReset" class="px-4 py-2 rounded-lg cursor-pointer text-md ring-1 ring-slate-200 hover:bg-slate-50">Reset</button>
+            <a href="/src/Features/Addresses/addresses.html" class="px-4 py-2 rounded-lg cursor-pointer text-md bg-green-600 hover:bg-green-700 text-white">Manage Addresses</a>
+          </div>
+        </form>
+      </section>
+
+      <!-- Change Password -->
+      <section class="rounded-3xl ring-1 ring-slate-200 p-4 bg-white shadow-sm">
+        <h2 class="font-semibold mb-1 flex justify-between">Change Password <div><span class="text-red-600">*</span> <span class="text-gray-600">Required Fields</span></div></h2>
+        <p class="text-sm text-slate-500 mb-4">Use a strong password you haven’t used elsewhere.</p>
+
+        <!-- Success / error banners -->
+        <div id="passBanner" class="hidden mb-3 px-3 py-2 rounded-lg text-sm" aria-live="polite"></div>
+
+        <form id="passForm" class="grid gap-4 max-w-md" novalidate>
+          <div>
+            <label class="text-sm text-slate-600">Current Password <span class="text-red-600">*</span> </label>
+            <input name="old" type="password" class="w-full h-11 rounded-xl ring-1 ring-slate-200 px-3 focus:outline-none focus:ring-2 focus:ring-blue-200"/>
+            <p class="mt-1 text-xs text-rose-600 hidden" data-err="old"></p>
+          </div>
+
+          <div>
+            <label class="text-sm text-slate-600">New Password <span class="text-red-600">*</span> </label>
+            <input name="next" type="password" class="w-full h-11 rounded-xl ring-1 ring-slate-200 px-3 focus:outline-none focus:ring-2 focus:ring-blue-200"/>
+            <p class="mt-1 text-xs text-rose-600 hidden" data-err="next"></p>
+            <p class="mt-1 text-xs text-slate-500">Min 8 characters, include a letter and a number, no spaces.</p>
+          </div>
+
+          <div>
+            <label class="text-sm text-slate-600">Confirm New Password <span class="text-red-600">*</span> </label>
+            <input name="confirm" type="password" class="w-full h-11 rounded-xl ring-1 ring-slate-200 px-3 focus:outline-none focus:ring-2 focus:ring-blue-200"/>
+            <p class="mt-1 text-xs text-rose-600 hidden" data-err="confirm"></p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button type="submit" class="px-4 py-2 rounded-lg cursor-pointer text-md bg-slate-900 text-white hover:opacity-95">Update Password</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-8">
+      <div class="w-full p-6 md:p-10">
+        <div class="grid gap-8 md:grid-cols-3">
+          <div>
+            <h3 class="font-semibold text-xl mb-4">Download the App</h3>
+            <div class="flex items-center gap-3">
+              <a href="#" class="inline-flex items-center gap-2 rounded-2xl ring-1 ring-slate-200 px-4 py-2 shadow-sm hover:bg-slate-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3-2l12 7a2 2 0 0 1 0 3l-12 7a2 2 0 0 1-3-2z"/></svg>
+                <span class="text-sm font-medium">Google Play</span>
+              </a>
+              <a href="#" class="inline-flex items-center gap-2 rounded-2xl ring-1 ring-slate-200 px-4 py-2 shadow-sm hover:bg-slate-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16.365 1.43a5.6 5.6 0 0 1-1.382 3.91 4.9 4.9 0 0 1-3.515 1.64 5.45 5.45 0 0 1 1.372-3.97A5.15 5.15 0 0 1 16.365 1.43zM20.5 17.48c-.435 1.01-.658 1.48-1.23 2.39-.8 1.27-1.93 2.85-3.34 2.86-1.25.01-1.58-.84-3.29-.84-1.72 0-2.1.82-3.34.85-1.39.03-2.46-1.37-3.26-2.64-1.78-2.8-3.14-7.92-1.31-11.41.9-1.7 2.5-2.77 4.33-2.8 1.31-.03 2.55.9 3.29.9.73 0 2.26-1.12 3.81-.95.65.03 2.48.26 3.66 1.97-3.22 1.76-2.7 6.41.65 7.67z"/></svg>
+                <span class="text-sm font-medium">App Store</span>
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-xl mb-4">Shop</h3>
+            <ul class="space-y-2 text-sm text-slate-600">
+              <li><a href="#" class="hover:text-[var(--color-primary)]">Women’s</a></li>
+              <li><a href="#" class="hover:text-[var(--color-primary)]">Men’s</a></li>
+              <li><a href="#" class="hover:text-[var(--color-primary)]">Kids</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-xl mb-4">About</h3>
+            <ul class="space-y-2 text-sm text-slate-600">
+              <li><a href="#" class="hover:text-[var(--color-primary)]">About Us</a></li>
+              <li><a href="#" class="hover:text-[var(--color-primary)]">Give Feedback</a></li>
+              <li><a href="#" class="hover:text-[var(--color-primary)]">Store Locator</a></li>
+              <li><a href="mailto:truestyle@example.com" class="hover:text-[var(--color-primary)]">Support: truestyle@example.com | +91 1234567890</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-8 grid gap-4 md:grid-cols-4 text-xs text-slate-500">
+          <a href="#policies" class="hover:text-[var(--color-primary)]">Terms &amp; Conditions</a>
+          <a href="#policies" class="hover:text-[var(--color-primary)]">Return Policy</a>
+          <a href="#policies" class="hover:text-[var(--color-primary)]">Exchange Policy</a>
+          <a href="#policies" class="hover:text-[var(--color-primary)]">Privacy Policy</a>
+        </div>
+
+        <p class="mt-6 text-sm text-slate-500 text-center">&#169; 2025 TrueStyle. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Data / Icons -->
+    <script src="/Model/appdb.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+
+    <script>
+/* ---------- tiny utils (no template literals) ---------- */
+var $  = function(q, root){ return (root||document).querySelector(q); };
+var $$ = function(q, root){ return Array.from((root||document).querySelectorAll(q)); };
+if (!window.CSS || !CSS.escape) { window.CSS = window.CSS || {}; CSS.escape = function (s) { return String(s).replace(/["\\]/g, "\\$&"); }; }
+
+
+function initNavInteractions(){
+        lucide.createIcons();
+        const btn=$("#profileBtn"), menu=$("#profileMenu");
+        btn?.addEventListener("click", ()=>menu?.classList.toggle("hidden"));
+        document.addEventListener("click",(e)=>{
+          if(!menu?.contains(e.target) && !btn?.contains(e.target)) menu?.classList.add("hidden");
+        });
+
+        $("#logOut")?.addEventListener("click", ()=>{
+          localStorage.removeItem("ts_is_logged_in");
+          localStorage.removeItem("ts_role");
+          localStorage.removeItem("ts_user_id");
+          location.replace("/index.html");
+        });
+
+        // Compact category menus
+        function closeAllCatMenus(except){
+          $$('[data-dd-panel]').forEach(p=>{
+            if(p.getAttribute('data-dd-panel')!==except) p.classList.add('hidden');
+          });
+        }
+        $$('[data-dd-btn]').forEach(b=>{
+          const key=b.getAttribute('data-dd-btn');
+          const panel=document.querySelector(`[data-dd-panel="${key}"]`);
+          b.addEventListener('click',(e)=>{
+            e.preventDefault();
+            const willOpen=panel.classList.contains('hidden');
+            closeAllCatMenus(key);
+            panel.classList.toggle('hidden',!willOpen);
+          });
+        });
+        document.addEventListener('click',(e)=>{
+          if(!e.target.closest('[data-dd-btn]') && !e.target.closest('[data-dd-panel]')) closeAllCatMenus();
+        });
+
+        // Navbar search hands off to home search
+        $("#navSearchForm")?.addEventListener("submit",(e)=>{
+          e.preventDefault();
+          const v=$("#navSearch").value.trim();
+          if(!v) return;
+          const anchor=$("#productsSection");
+          if(anchor){
+            $("#homeSearch").value=v;
+            anchor.scrollIntoView({behavior:"smooth"});
+            window.applyHomeFilters?.();
+          }else{
+            location.href=`/user/index.html?q=${encodeURIComponent(v)}`;
+          }
+        });
+
+        // Quick filters (legacy)
+        $$("[data-cat]").forEach(a=>{
+          a.addEventListener("click",(e)=>{
+            e.preventDefault();
+            const name=a.getAttribute("data-cat");
+            localStorage.setItem("ts_user_cat",name);
+            const anchor=$("#productsSection");
+            if(anchor) anchor.scrollIntoView({behavior:"smooth"});
+            window.applyHomeFilters?.();
+          });
+        });
+
+        refreshCartBadge();
+      }
+
+function currentUserId(){
+  try{
+    if (window.TSAuth && TSAuth.user && TSAuth.user.id) return TSAuth.user.id;
+    var u = (AppDB.select('User')||[])[0];
+    return (u && u.id) || 2001;
+  }catch(e){ return 2001; }
+}
+
+async function injectPartials(){
+  var nodes = $$('[data-include]');
+  await Promise.all(nodes.map(async function(n){
+    var url = n.getAttribute('data-include');
+    var html = await fetch(url).then(function(r){ return r.text(); });
+    n.outerHTML = html;
+  }));
+}
+
+function refreshCartBadge(){
+  var uid = currentUserId();
+  var items = (window.AppDBHelpers && AppDBHelpers.getCart(uid)) || [];
+  var total = items.reduce(function(a,i){ return a + (i.Quantity||1); }, 0);
+  var b = $('#cartBadge'); if(!b) return;
+  if (total>0){ b.textContent = String(total); b.classList.remove('hidden'); }
+  else { b.classList.add('hidden'); }
+}
+
+
+
+/* ---------- banners & inline errors ---------- */
+function setFieldError(input, msg){
+  var selector = '[data-err="' + CSS.escape(input.name||'') + '"]';
+  var err = document.querySelector(selector);
+  if (msg){
+    input.setAttribute('aria-invalid','true');
+    input.classList.remove('ring-slate-200');
+    input.classList.add('ring-rose-300');
+    if (err){ err.textContent = msg; err.classList.remove('hidden'); }
+  } else {
+    input.removeAttribute('aria-invalid');
+    input.classList.remove('ring-rose-300');
+    input.classList.add('ring-slate-200');
+    if (err){ err.textContent = ''; err.classList.add('hidden'); }
+  }
+}
+
+function showBanner(el, type, text){
+  el.className = 'mb-3 px-3 py-2 rounded-lg text-sm';
+  if (type === 'success'){
+    el.classList.add('bg-emerald-50','text-emerald-700','ring-1','ring-emerald-200');
+  } else if (type === 'error'){
+    el.classList.add('bg-rose-50','text-rose-700','ring-1','ring-rose-200');
+  } else {
+    el.classList.add('bg-blue-50','text-blue-700','ring-1','ring-blue-200');
+  }
+  el.textContent = text;
+  el.classList.remove('hidden');
+  setTimeout(function(){ el.classList.add('hidden'); }, 2200);
+}
+
+/* ---------- profile validation ---------- */
+function validateEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+function validateProfileForm(f){
+  var ok = true;
+  var first = f.First_Name, last = f.Last_Name, email = f.email;
+
+  if(!first.value.trim() || first.value.trim().length < 2){
+    setFieldError(first, 'Please enter at least 2 characters.'); ok=false;
+  } else setFieldError(first, '');
+
+  if(!last.value.trim() || last.value.trim().length < 2){
+    setFieldError(last, 'Please enter at least 2 characters.'); ok=false;
+  } else setFieldError(last, '');
+
+  if(!email.value.trim() || !validateEmail(email.value.trim())){
+    setFieldError(email, 'Enter a valid email address.'); ok=false;
+  } else setFieldError(email, '');
+
+  return ok;
+}
+
+/* ---------- avatar (front-end only) ---------- */
+var AV_PLACEHOLDER = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><rect width="160" height="160" fill="%23e2e8f0"/><circle cx="80" cy="64" r="28" fill="%23cbd5e1"/><rect x="30" y="104" width="100" height="36" rx="18" fill="%23cbd5e1"/></svg>';
+
+function loadAvatar(uid){
+  var u = AppDB.get('User', uid) || {};
+  var src = u.avatar || AV_PLACEHOLDER;
+  var img = $('#avatarImg');
+  if (img) img.src = src;
+}
+
+function handleAvatarFile(file, uid){
+  var banner = $('#profileBanner');
+  if (!file){ return; }
+  if (!file.type || file.type.indexOf('image/') !== 0){
+    showBanner(banner, 'error', 'Please select an image file.');
+    return;
+  }
+  if (file.size > 2 * 1024 * 1024){
+    showBanner(banner, 'error', 'File too large. Max 2 MB.');
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var dataUrl = e.target.result;
+    AppDB.update('User', uid, { avatar: dataUrl });
+    loadAvatar(uid);
+    showBanner(banner, 'success', 'Photo updated');
+  };
+  reader.onerror = function(){ showBanner(banner, 'error', 'Could not read file.'); };
+  reader.readAsDataURL(file);
+}
+
+/* ---------- password form: gentle, stateful validation ---------- */
+(function(){
+  var __pwState = { submitted:false, touched:{ old:false, next:false, confirm:false } };
+
+  function validatePasswordField(pf, user, name){
+    var oldV = (pf.old.value||'');
+    var nextV = (pf.next.value||'');
+    var confV = (pf.confirm.value||'');
+    var email = (user && user.email) ? String(user.email) : '';
+    var ok = true;
+
+    if (name === 'old'){
+      if (!oldV){ setFieldError(pf.old, 'Current password is required.'); ok = false; }
+      else if (__pwState.submitted && (user.password||'') !== oldV){ setFieldError(pf.old, 'Current password is incorrect.'); ok = false; }
+      else setFieldError(pf.old, '');
+    }
+
+    if (name === 'next'){
+      if (!nextV){ setFieldError(pf.next, 'New password is required.'); ok = false; }
+      else if (nextV.length < 8){ setFieldError(pf.next, 'Use at least 8 characters.'); ok = false; }
+      else if (!/[A-Za-z]/.test(nextV) || !/\d/.test(nextV)){ setFieldError(pf.next, 'Include a letter and a number.'); ok = false; }
+      else if (/\s/.test(nextV)){ setFieldError(pf.next, 'Password cannot contain spaces.'); ok = false; }
+      else if (oldV && nextV === oldV){ setFieldError(pf.next, 'New password must be different.'); ok = false; }
+      else if (email && nextV.toLowerCase() === email.toLowerCase()){ setFieldError(pf.next, 'Password cannot be your email.'); ok = false; }
+      else setFieldError(pf.next, '');
+
+      if (__pwState.submitted || __pwState.touched.confirm){
+        if (confV && confV !== nextV) setFieldError(pf.confirm, 'Passwords do not match.');
+        else if (confV) setFieldError(pf.confirm, '');
+      }
+    }
+
+    if (name === 'confirm'){
+      if (!confV){ setFieldError(pf.confirm, 'Confirm your new password.'); ok = false; }
+      else if (nextV && confV !== nextV){ setFieldError(pf.confirm, 'Passwords do not match.'); ok = false; }
+      else setFieldError(pf.confirm, '');
+    }
+
+    return ok;
+  }
+
+  window.__attachPasswordForm = function(pf, uid){
+    var bannerPw = $('#passBanner');
+    if (!pf) return;
+
+    ['old','next','confirm'].forEach(function(name){
+      var el = pf[name];
+      if (!el) return;
+
+      el.addEventListener('blur', function(){
+        __pwState.touched[name] = true;
+        var fresh = AppDB.get('User', uid) || {};
+        validatePasswordField(pf, fresh, name);
+      });
+
+      el.addEventListener('input', function(){
+        setFieldError(el, '');
+        if (__pwState.submitted){
+          var fresh = AppDB.get('User', uid) || {};
+          validatePasswordField(pf, fresh, name);
+          if (name !== 'confirm'){ validatePasswordField(pf, fresh, 'confirm'); }
+        }
+      });
+    });
+
+    pf.addEventListener('submit', function(e){
+      e.preventDefault();
+      __pwState.submitted = true;
+
+      var fresh = AppDB.get('User', uid) || {};
+      var okOld = validatePasswordField(pf, fresh, 'old');
+      var okNxt = validatePasswordField(pf, fresh, 'next');
+      var okCon = validatePasswordField(pf, fresh, 'confirm');
+
+      if (!(okOld && okNxt && okCon)){
+        showBanner(bannerPw, 'error', 'Please fix the highlighted fields.');
+        return;
+      }
+
+      var fd = new FormData(pf);
+      var next = fd.get('next');
+      AppDB.update('User', uid, { password: next });
+      pf.reset();
+
+      __pwState = { submitted:false, touched:{ old:false, next:false, confirm:false } };
+      ['old','next','confirm'].forEach(function(n){ setFieldError(pf[n], ''); });
+
+      showBanner(bannerPw, 'success', 'Password updated');
+    });
+  };
+})();
+
+/* ---------- Page init ---------- */
+document.addEventListener('DOMContentLoaded', async function(){
+  await injectPartials();
+  initNavInteractions();
+
+  var uid = currentUserId();
+  var user = AppDB.get('User', uid) || {};
+
+  /* Avatar init */
+  loadAvatar(uid);
+  var upBtn = $('#avatarUpload');
+  var rmBtn = $('#avatarRemove');
+  var fileEl = $('#avatarFile');
+  if (upBtn && fileEl){
+    upBtn.addEventListener('click', function(){ fileEl.click(); });
+    fileEl.addEventListener('change', function(){
+      var f = fileEl.files && fileEl.files[0];
+      handleAvatarFile(f, uid);
+      fileEl.value = '';
+    });
+  }
+  if (rmBtn){
+    rmBtn.addEventListener('click', function(){
+      AppDB.update('User', uid, { avatar: null });
+      loadAvatar(uid);
+      var banner = $('#profileBanner');
+      showBanner(banner, 'success', 'Photo removed');
+    });
+  }
+
+  /* Profile form */
+  var f = document.getElementById('profileForm');
+  var bannerP = document.getElementById('profileBanner');
+  if (f){
+    f.First_Name.value = user.First_Name || '';
+    f.Last_Name.value  = user.Last_Name  || '';
+    f.email.value      = user.email      || '';
+
+    $$('#profileForm input').forEach(function(inp){
+      inp.addEventListener('input', function(){ setFieldError(inp, ''); });
+    });
+
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      if (!validateProfileForm(f)){
+        showBanner(bannerP, 'error', 'Please fix the highlighted fields.');
+        return;
+      }
+      var data = Object.fromEntries(new FormData(f).entries());
+      AppDB.update('User', uid, data);
+      showBanner(bannerP, 'success', 'Profile updated');
+    });
+
+    var resetBtn = document.getElementById('profileReset');
+    if (resetBtn){
+      resetBtn.addEventListener('click', function(){
+        var fresh = AppDB.get('User', uid) || {};
+        f.First_Name.value = fresh.First_Name || '';
+        f.Last_Name.value  = fresh.Last_Name  || '';
+        f.email.value      = fresh.email      || '';
+        $$('#profileForm input').forEach(function(i){ setFieldError(i, ''); });
+      });
+    }
+  }
+
+  /* Password form */
+  var pf = document.getElementById('passForm');
+  if (pf){ window.__attachPasswordForm(pf, uid); }
+});
+</script>
+
+  </body>
+</html>

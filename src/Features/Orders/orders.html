@@ -1,0 +1,568 @@
+<!-- /admin/pages/orders.html (Blue theme + Export CSV + Export PDF + Toasts) -->
+<section class="rounded-2xl shadow bg-white p-4 space-y-4 fade-up">
+  <!-- Header -->
+  <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between min-w-0">
+    <div class="flex items-center gap-3 min-w-0">
+      <h2 class="font-semibold text-lg text-blue-900 truncate">Order Management</h2>
+      <span id="oCount" class="text-sm text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md shrink-0"></span>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button id="btnExport" class="h-9 px-3 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 cursor-pointer">
+        Export CSV
+      </button>
+      <button id="btnExportPdf" class="h-9 px-3 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 cursor-pointer">
+        Export PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="flex items-center justify-between mt-4">
+    <div class="md:col-span-5">
+      <div class="relative">
+        <input id="q" type="text" placeholder="Search orders (ID, user, item, status)…"
+               class="w-full h-10 rounded-lg border px-3 pr-9 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300">
+      </div>
+    </div>
+    <div class="md:col-span-3">
+      <select id="fStatus" class="w-full h-10 rounded-lg border px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+        <option value="">All statuses</option>
+      </select>
+    </div>
+    <div class="md:col-span-2">
+      <input id="fFrom" type="date" class="w-full h-10 rounded-lg border px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+    </div>
+    <div class="md:col-span-2">
+      <div class="flex flex-col sm:flex-row gap-2">
+        <input id="fTo" type="date" class="w-full h-10 rounded-lg border px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300" />
+        <button id="btnClearFilters" title="Clear filters"
+                class="h-10 px-3 rounded-lg border text-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-300 shrink-0">
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="rounded-xl overflow-hidden fade-up mt-4">
+    <div class="max-h-[60vh] overflow-auto">
+      <table class="w-full text-sm">
+        <thead class="text-left text-black bg-blue-50 sticky top-0 z-10">
+          <tr>
+            <th class="p-5 cursor-pointer select-none" data-sort="id">Order Id<span class="sort-ind"></span></th>
+            <th class="p-5 cursor-pointer select-none" data-sort="user">User <span class="sort-ind"></span></th>
+            <th class="p-5 cursor-pointer select-none" data-sort="total">Total <span class="sort-ind"></span></th>
+            <th class="p-5 cursor-pointer select-none" data-sort="statusText">Status <span class="sort-ind"></span></th>
+            <th class="p-5 cursor-pointer select-none" data-sort="created">Created <span class="sort-ind"></span></th>
+            <th class="p-5">Items</th>
+            <th class="p-5">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ordersT"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer / Pagination -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div class="text-xs text-blue-800" id="rangeInfo"></div>
+    <div class="flex items-center gap-2">
+      <label class="text-sm text-slate-600">Rows</label>
+      <select id="pageSize" class="h-9 rounded-lg border px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+        <option>10</option>
+        <option selected>25</option>
+        <option>50</option>
+        <option>100</option>
+      </select>
+      <div class="flex items-center gap-1">
+        <button id="prevPage" class="h-9 px-3 rounded-lg border text-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-300 cursor-pointer">Prev</button>
+        <span class="text-sm" id="pageInfo"></span>
+        <button id="nextPage" class="h-9 px-3 rounded-lg border text-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-300 cursor-pointer">Next</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Toast -->
+<div id="toast" class="fixed top-4 right-4 hidden pointer-events-none z-[200]">
+  <div id="toastInner" class="min-w-[220px] max-w-sm rounded-xl shadow-2xl px-4 py-3 text-sm text-white bg-slate-900/95"></div>
+</div>
+
+<!-- Modals -->
+<dialog id="modalView" class="rounded-2xl p-0 w-[min(680px,95vw)]">
+  <div class="p-4 border-b bg-blue-50 text-blue-900 flex items-center justify-between">
+    <h3 class="font-semibold">Order Details</h3>
+    <button class="h-8 px-3 rounded-lg border text-sm hover:bg-blue-100 cursor-pointer" data-close>Close</button>
+  </div>
+  <div class="p-4 space-y-3 text-sm" id="viewBody"></div>
+  <div class="p-4 border-t text-right">
+    <button class="h-9 px-3 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 cursor-pointer" data-close>Done</button>
+  </div>
+</dialog>
+
+<dialog id="modalEdit" class="rounded-2xl p-0 w-[min(520px,95vw)]">
+  <div class="p-4 border-b bg-blue-50 text-blue-900 flex items-center justify-between">
+    <h3 class="font-semibold">Edit Order</h3>
+    <button class="h-8 px-3 rounded-lg border text-sm hover:bg-blue-100 cursor-pointer" data-close>Close</button>
+  </div>
+  <form id="editForm" class="p-4 space-y-3 text-sm">
+    <input type="hidden" name="id">
+    <div>
+      <label class="block text-slate-600 mb-1">Status</label>
+      <select name="status" class="w-full h-10 rounded-lg border px-3 focus:outline-none focus:ring-2 focus:ring-blue-300"></select>
+    </div>
+    <div>
+      <label class="block text-slate-600 mb-1">Admin Note</label>
+      <textarea name="note" rows="3" class="w-full rounded-lg border p-3 focus:outline-none focus:ring-2 focus:ring-blue-300" placeholder="Optional note…"></textarea>
+    </div>
+    <div class="border-t pt-4 text-right">
+      <button type="button" class="h-9 px-3 rounded-lg border text-sm mr-2 hover:bg-blue-50 cursor-pointer" data-close>Cancel</button>
+      <button class="h-9 px-3 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 cursor-pointer">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="modalDelete" class="rounded-2xl p-0 w-[min(480px,95vw)]">
+  <div class="p-4 border-b bg-blue-50 text-blue-900">
+    <h3 class="font-semibold">Delete Order</h3>
+  </div>
+  <div class="p-4 text-sm" id="deleteBody">Are you sure?</div>
+  <div class="p-4 border-t text-right">
+    <button class="h-9 px-3 rounded-lg border text-sm mr-2 hover:bg-blue-50 cursor-pointer" data-close>Cancel</button>
+    <button id="confirmDelete" class="h-9 px-3 rounded-lg bg-red-600 text-white text-sm hover:bg-red-700 cursor-pointer">Delete</button>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  const rupee = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR'}).format(n||0);
+
+  // Toast
+  const toastEl = document.getElementById('toast');
+  const toastInner = document.getElementById('toastInner');
+  let toastTimer;
+  function toast(msg, kind='info'){
+    const colors = {
+      info: 'bg-slate-900/95',
+      success: 'bg-emerald-600',
+      warn: 'bg-amber-600',
+      error: 'bg-rose-600'
+    };
+    toastInner.className = `min-w-[220px] max-w-sm rounded-xl shadow-2xl px-4 py-3 text-sm text-white ${colors[kind]||colors.info}`;
+    toastInner.textContent = msg;
+    toastEl.classList.remove('hidden','opacity-0');
+    toastEl.classList.add('opacity-100');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>{ toastEl.classList.add('hidden'); }, 1600);
+  }
+
+  // UI state
+  const state = { rows:[], filtered:[], page:1, pageSize:25, sortKey:'created', sortDir:'desc', q:'', status:'', from:'', to:'' };
+
+  const el = {
+    tbody:null, oCount:null, rangeInfo:null, pageInfo:null,
+    q:null, fStatus:null, fFrom:null, fTo:null, clear:null,
+    pageSize:null, prev:null, next:null, headers:null,
+    modalView:null, viewBody:null,
+    modalEdit:null, editForm:null,
+    modalDelete:null, deleteBody:null, confirmDelete:null,
+    btnExport:null, btnExportPdf:null,
+  };
+
+  function $(s,r=document){ return r.querySelector(s); }
+  function $all(s,r=document){ return Array.from(r.querySelectorAll(s)); }
+
+  function getStatusText(id){
+    const s = AppDB._state?.Order_Status?.find(x=>x.id===id);
+    return s ? s.Display_Text : 'Unknown';
+  }
+
+  function hydrate(){
+    const rows = (AdminHelpers.listOrders?.() || []).map(o => ({
+      id: o.id,
+      user: `${o.user?.First_Name||''} ${o.user?.Last_Name||''}`.trim(),
+      total: Number(o.Total||0),
+      status: o.Status,
+      statusText: getStatusText(o.Status),
+      created: o.Creation_Date ? new Date(o.Creation_Date) : new Date(0),
+      items: (o.items||[]).map(it => `${it.product?.Name||''} ×${it.Quantity}`).join(', '),
+      raw: o
+    }));
+    state.rows = rows;
+    if (el.oCount) el.oCount.textContent = `${rows.length} orders`;
+  }
+
+  function applyFilters(){
+    const q = state.q.toLowerCase().trim();
+    const from = state.from ? new Date(state.from) : null;
+    const to = state.to ? new Date(state.to) : null;
+
+    let arr = state.rows.filter(r => {
+      if (state.status && String(r.status) !== String(state.status)) return false;
+      if (from && r.created < from) return false;
+      if (to){
+        const end = new Date(to); end.setHours(23,59,59,999);
+        if (r.created > end) return false;
+      }
+      if (!q) return true;
+      const hay = `${r.id} ${r.user} ${r.items} ${r.statusText}`.toLowerCase();
+      return hay.includes(q);
+    });
+
+    const dir = state.sortDir === 'asc' ? 1 : -1;
+    const key = state.sortKey;
+    arr.sort((a,b)=>{
+      let va=a[key], vb=b[key];
+      if (va instanceof Date) va=va.getTime();
+      if (vb instanceof Date) vb=vb.getTime();
+      if (typeof va === 'string') va=va.toLowerCase();
+      if (typeof vb === 'string') vb=vb.toLowerCase();
+      if (va < vb) return -1*dir;
+      if (va > vb) return 1*dir;
+      return 0;
+    });
+
+    state.filtered = arr;
+    state.page = 1;
+  }
+
+  function paginate(arr){
+    const size = state.pageSize;
+    const total = arr.length;
+    const pages = Math.max(1, Math.ceil(total/size));
+    const page = Math.min(state.page, pages);
+    const start = (page-1)*size;
+    const end = Math.min(total, start+size);
+    return { slice: arr.slice(start,end), page, pages, total, start, end };
+  }
+
+  function renderTable(){
+    const { slice, page, pages, total, start, end } = paginate(state.filtered);
+    el.tbody.innerHTML = slice.map(r => `
+      <tr class="hover:bg-blue-50/40">
+        <td class="p-4 font-medium text-blue-900">#${r.id}</td>
+        <td class="p-4">${r.user||'-'}</td>
+        <td class="p-4">${rupee(r.total)}</td>
+        <td class="p-4">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border border-blue-200 bg-blue-50 text-blue-800">
+            ${r.statusText}
+          </span>
+        </td>
+        <td class="p-4 whitespace-nowrap">${r.created.toLocaleString()}</td>
+        <td class="p-4">${r.items}</td>
+        <td class="p-4 whitespace-nowrap flex gap-4">
+          <button class="px-4 py-2 rounded hover:bg-green-700 text-md bg-green-600 text-white cursor-pointer" data-view="${r.id}">View</button>
+          <button class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white text-md cursor-pointer" data-edit="${r.id}">Edit</button>
+          <button class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white text-md cursor-pointer" data-del="${r.id}">Delete</button>
+        </td>
+      </tr>
+    `).join('');
+
+    el.rangeInfo.textContent = total ? `Showing ${start+1}–${end} of ${total}` : 'No results';
+    el.pageInfo.textContent = `Page ${page} / ${pages}`;
+    el.prev.disabled = page<=1;
+    el.next.disabled = page>=pages;
+
+    $all('thead th .sort-ind').forEach(s => s.textContent = '');
+    const th = document.querySelector(`thead th[data-sort="${state.sortKey}"] .sort-ind`);
+    if (th) th.textContent = state.sortDir === 'asc' ? '▲' : '▼';
+  }
+
+  // CSV Export (filtered rows)
+  function exportCSV(){
+    const rows = state.filtered;
+    if (!rows.length){ toast('Nothing to export', 'warn'); return; }
+    const headers = ['Order ID','User','Total (INR)','Status','Created','Items'];
+    const lines = [headers.join(',')];
+    for (const r of rows){
+      const rec = [
+        `#${r.id}`,
+        r.user || '-',
+        r.total.toFixed(2),
+        r.statusText,
+        r.created.toISOString(),
+        (r.items||'').replace(/,/g,';')
+      ].map(v => `"${String(v).replace(/"/g,'""')}"`);
+      lines.push(rec.join(','));
+    }
+    const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const ts = new Date().toISOString().replace(/[:.]/g,'-');
+    a.href = url; a.download = `orders_export_${ts}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast('CSV exported', 'success');
+  }
+
+  // PDF Export (opens print dialog → Save as PDF)
+  
+  // PDF Export (hidden iframe -> Print dialog -> Save as PDF)
+function exportPDF(){
+  const rows = state.filtered;
+  if (!rows.length){ toast('Nothing to export', 'warn'); return; }
+
+  const esc = (s)=> String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const ts = new Date().toISOString().replace(/[:.]/g,'-');
+  const title = `orders_report_${ts}`;
+
+  const filters = [
+    state.q ? `Query: “${esc(state.q)}”` : '',
+    state.status ? `Status: ${esc(getStatusText(Number(state.status)))}` : '',
+    state.from ? `From: ${esc(state.from)}` : '',
+    state.to ? `To: ${esc(state.to)}` : ''
+  ].filter(Boolean).join(' • ');
+
+  const rowsHtml = rows.map(r=>`
+    <tr>
+      <td>#${esc(r.id)}</td>
+      <td>${esc(r.user||'-')}</td>
+      <td class="num">${esc(new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR'}).format(r.total||0))}</td>
+      <td>${esc(r.statusText)}</td>
+      <td>${esc(r.created.toLocaleString())}</td>
+      <td>${esc(r.items||'')}</td>
+    </tr>
+  `).join('');
+
+  // No inline <script> (CSP-safe). Parent triggers print.
+  const html = `
+<!doctype html>
+<meta charset="utf-8">
+<title>${title}</title>
+<style>
+  @page { size: A4; margin: 16mm; }
+  body{ font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; color:#0f172a; }
+  h1{ font-size:18px; margin:0 0 6px; }
+  .sub{ color:#475569; font-size:12px; margin-bottom:12px; }
+  table{ width:100%; border-collapse:collapse; }
+  th,td{ border:1px solid #e2e8f0; padding:8px; font-size:12px; vertical-align:top; }
+  th{ background:#f1f5f9; text-align:left; }
+  .num{ text-align:right; }
+  footer{ margin-top:10px; font-size:11px; color:#64748b; }
+  /* Force page breaks nicely if long */
+  tr { page-break-inside: avoid; }
+</style>
+<h1>Orders Report</h1>
+<div class="sub">${new Date().toLocaleString()}${filters ? ' • '+filters : ''}</div>
+<table>
+  <thead>
+    <tr>
+      <th>Order ID</th><th>User</th><th class="num">Total</th><th>Status</th><th>Created</th><th>Items</th>
+    </tr>
+  </thead>
+  <tbody>${rowsHtml}</tbody>
+</table>
+<footer>Generated • ${rows.length} row(s)</footer>`;
+
+  // Create a Blob URL and print via hidden iframe (no popup blockers)
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+
+  const frame = document.createElement('iframe');
+  frame.style.position = 'fixed';
+  frame.style.right = '0';
+  frame.style.bottom = '0';
+  frame.style.width = '1px';
+  frame.style.height = '1px';
+  frame.style.border = '0';
+  frame.src = url;
+
+  const cleanup = () => {
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+      frame.remove();
+    }, 1000);
+  };
+
+  frame.onload = () => {
+    // Some browsers (Safari) need a tiny delay
+    try {
+      setTimeout(() => {
+        frame.contentWindow?.focus();
+        frame.contentWindow?.print();
+        toast('PDF ready (use “Save as PDF”)', 'success');
+        cleanup();
+      }, 200);
+    } catch (e) {
+      // Fallback: open in a new tab
+      const w = window.open(url, '_blank', 'noopener');
+      if (!w) toast('Popup blocked. Allow popups to export PDF.', 'error');
+      cleanup();
+    }
+  };
+
+  document.body.appendChild(frame);
+}
+
+
+  function openDialog(d){ if (!d) return; d.showModal?.(); }
+  function closeDialog(d){ if (!d) return; d.close?.(); }
+
+  function bindEvents(){
+    // Filters
+    el.q.addEventListener('input', (e)=>{ state.q = e.target.value; applyFilters(); renderTable(); });
+    el.fStatus.addEventListener('change', (e)=>{ state.status = e.target.value; applyFilters(); renderTable(); toast('Status filter applied','info'); });
+    el.fFrom.addEventListener('change', (e)=>{ state.from = e.target.value; applyFilters(); renderTable(); });
+    el.fTo.addEventListener('change', (e)=>{ state.to = e.target.value; applyFilters(); renderTable(); });
+    el.clear.addEventListener('click', ()=>{
+      el.q.value = ''; el.fStatus.value=''; el.fFrom.value=''; el.fTo.value='';
+      state.q=''; state.status=''; state.from=''; state.to='';
+      applyFilters(); renderTable();
+      toast('Filters cleared','success');
+    });
+
+    // Sorting
+    el.headers.forEach(h=>{
+      h.addEventListener('click', ()=>{
+        const key = h.dataset.sort;
+        if (!key) return;
+        if (state.sortKey === key){
+          state.sortDir = (state.sortDir === 'asc') ? 'desc' : 'asc';
+        } else {
+          state.sortKey = key;
+          state.sortDir = (key==='id' || key==='created' || key==='total') ? 'desc' : 'asc';
+        }
+        applyFilters(); renderTable();
+      });
+    });
+
+    // Pagination
+    el.pageSize.addEventListener('change', (e)=>{
+      state.pageSize = Number(e.target.value)||25;
+      state.page = 1;
+      renderTable();
+      toast(`Rows per page: ${state.pageSize}`,'info');
+    });
+    el.prev.addEventListener('click', ()=>{ state.page = Math.max(1, state.page-1); renderTable(); });
+    el.next.addEventListener('click', ()=>{ state.page = state.page+1; renderTable(); });
+
+    // Row actions
+    el.tbody.addEventListener('click', (e)=>{
+      const v = e.target.closest('[data-view]'); if (v) return onView(Number(v.dataset.view));
+      const ed = e.target.closest('[data-edit]'); if (ed) return onEdit(Number(ed.dataset.edit));
+      const dl = e.target.closest('[data-del]'); if (dl) return onDelete(Number(dl.dataset.del));
+    });
+
+    // Modals close
+    $all('dialog [data-close]').forEach(b => b.addEventListener('click', (e)=> { closeDialog(e.target.closest('dialog')); }));
+
+    // Edit (front-end only)
+    el.editForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const fd = new FormData(el.editForm);
+      const id = Number(fd.get('id'));
+      const status = Number(fd.get('status'));
+      if (typeof AdminHelpers.setOrderStatus === 'function'){ AdminHelpers.setOrderStatus(id, status); }
+      const idx = state.rows.findIndex(r=>r.id===id);
+      if (idx>-1){ state.rows[idx].status=status; state.rows[idx].statusText=getStatusText(status); }
+      applyFilters(); renderTable();
+      closeDialog(el.modalEdit);
+      toast(`Order #${id} updated`,'success');
+    });
+
+    // Delete (UI only)
+    el.confirmDelete.addEventListener('click', ()=>{
+      const id = Number(el.confirmDelete.dataset.id);
+      state.rows = state.rows.filter(r=>r.id!==id);
+      applyFilters(); renderTable();
+      closeDialog(el.modalDelete);
+      toast(`Order #${id} deleted`,'success');
+    });
+
+    // Export
+    el.btnExport.addEventListener('click', exportCSV);
+    el.btnExportPdf.addEventListener('click', exportPDF);
+  }
+
+  function onView(id){
+    const r = state.rows.find(x=>x.id===id); if (!r) return;
+    const o = r.raw;
+    el.viewBody.innerHTML = `
+      <div><span class="text-slate-500">Order #</span> <span class="font-medium text-blue-900">#${r.id}</span></div>
+      <div class="grid md:grid-cols-2 gap-3">
+        <div>
+          <div class="text-slate-500">User</div>
+          <div class="font-medium">${r.user||'-'}</div>
+        </div>
+        <div>
+          <div class="text-slate-500">Status</div>
+          <div class="font-medium">${r.statusText}</div>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-3">
+        <div>
+          <div class="text-slate-500">Created</div>
+          <div class="font-medium">${r.created.toLocaleString()}</div>
+        </div>
+        <div>
+          <div class="text-slate-500">Total</div>
+          <div class="font-medium">${rupee(r.total)}</div>
+        </div>
+      </div>
+      <div>
+        <div class="text-slate-500 mb-1">Items</div>
+        <ul class="space-y-1">${(o.items||[]).map(i=>`
+          <li class="flex items-center justify-between gap-2">
+            <span>${i.product?.Name||'-'}</span>
+            <span class="text-slate-600 text-xs">×${i.Quantity}</span>
+          </li>`).join('')}
+        </ul>
+      </div>
+      ${o.shipping_address ? `
+      <div>
+        <div class="text-slate-500 mb-1">Shipping</div>
+        <div class="text-slate-700">${o.shipping_address}</div>
+      </div>`:''}
+    `;
+    openDialog(el.modalView);
+    toast(`Opened order #${id}`,'info');
+  }
+
+  function onEdit(id){
+    const r = state.rows.find(x=>x.id===id); if (!r) return;
+    el.editForm.id.value = r.id;
+    el.editForm.status.innerHTML = (AppDB._state?.Order_Status||[])
+      .map(s=>`<option value="${s.id}" ${String(s.id)===String(r.status)?'selected':''}>${s.Display_Text}</option>`).join('');
+    el.editForm.note.value = '';
+    openDialog(el.modalEdit);
+  }
+
+  function onDelete(id){
+    el.deleteBody.textContent = `Delete Order #${id}? This will delete the entire order.`;
+    el.confirmDelete.dataset.id = id;
+    openDialog(el.modalDelete);
+  }
+
+  // Mount
+  window.postPageMount = function(){
+    el.tbody = $('#ordersT');
+    el.oCount = $('#oCount');
+    el.rangeInfo = $('#rangeInfo');
+    el.pageInfo = $('#pageInfo');
+    el.pageSize = $('#pageSize');
+    el.prev = $('#prevPage');
+    el.next = $('#nextPage');
+
+    el.q = $('#q'); el.fStatus = $('#fStatus'); el.fFrom = $('#fFrom'); el.fTo = $('#fTo'); el.clear = $('#btnClearFilters');
+    el.headers = $all('thead th[data-sort]');
+
+    el.modalView = $('#modalView'); el.viewBody = $('#viewBody');
+    el.modalEdit = $('#modalEdit'); el.editForm = $('#editForm');
+    el.modalDelete = $('#modalDelete'); el.deleteBody = $('#deleteBody'); el.confirmDelete = $('#confirmDelete');
+
+    el.btnExport = $('#btnExport');
+    el.btnExportPdf = $('#btnExportPdf');
+
+    // Status filter options
+    const statuses = (AppDB._state?.Order_Status||[]);
+    el.fStatus.innerHTML = `<option value="">All statuses</option>` + statuses.map(s=>`<option value="${s.id}">${s.Display_Text}</option>`).join('');
+
+    state.pageSize = Number(el.pageSize.value)||25;
+
+    hydrate();
+    applyFilters();
+    renderTable();
+    bindEvents();
+  };
+})();
+</script>

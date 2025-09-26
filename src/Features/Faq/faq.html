@@ -1,0 +1,368 @@
+<section class="grid gap-6 fade-up">
+  <!-- Header + toolbar -->
+  <div class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div>
+        <h2 class="font-semibold tracking-tight">FAQ Management (Admin)</h2>
+      </div>
+      <div class="flex flex-wrap gap-2 items-center">
+        <div class="relative">
+          <input id="faqSearch" class="h-10 w-64 pl-3 pr-8 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 ring-blue-200 shadow-inner"
+                 placeholder="Search question or answer" />
+          <button id="faqClearSearch" title="Clear" class="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 rounded-lg text-slate-500 hover:bg-slate-200 hidden">✕</button>
+        </div>
+        <button id="faqAddBtn"
+                class="py-2 px-4 rounded-lg text-md cursor-pointer text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md">
+          Add FAQ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- List -->
+  <div id="faqList" class="grid gap-3"></div>
+
+  <!-- Footer meta -->
+  <div class="text-xs text-slate-500" id="faqMeta"></div>
+</section>
+
+<!-- Add/Edit Modal -->
+<div id="faqModal" class="fixed inset-0 bg-black/40 hidden items-center justify-center p-4 z-50">
+  <div class="w-full max-w-xl rounded-2xl bg-white/90 backdrop-blur shadow-2xl p-6" role="dialog" aria-modal="true">
+    <h3 id="faqModalTitle" class="text-lg font-semibold mb-4">Add FAQ</h3>
+    <form id="faqForm" class="grid gap-3">
+      <label class="grid gap-1">
+        <span class="text-xs text-slate-600">Question</span>
+        <input name="Question" id="faqQuestion" class="h-10 px-3 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 ring-blue-200 shadow-inner"
+               placeholder="e.g., How do I add a product?" autocomplete="off" />
+      </label>
+      <label class="grid gap-1">
+        <span class="text-xs text-slate-600">Answer</span>
+        <textarea name="Answer" id="faqAnswer" rows="6"
+                  class="px-3 py-2 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 ring-blue-200 shadow-inner"
+                  placeholder="Enter the clear, concise answer here."></textarea>
+      </label>
+      <div class="mt-2 flex justify-end gap-2">
+        <button type="button" id="faqCancel"
+                class="h-9 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 shadow-sm transition">Cancel</button>
+        <button type="submit" id="faqSave"
+                class="h-9 px-4 rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md transition">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="faqDeleteModal" class="fixed inset-0 bg-black/40 hidden items-center justify-center p-4 z-50">
+  <div class="w-full max-w-md rounded-2xl bg-white/90 backdrop-blur shadow-2xl p-6" role="dialog" aria-modal="true">
+    <h3 class="text-lg font-semibold mb-2">Delete FAQ</h3>
+    <p id="faqDeleteText" class="text-sm text-slate-600"></p>
+    <div class="mt-5 flex justify-end gap-2">
+      <button id="faqDeleteCancel"
+              class="h-9 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 shadow-sm transition">Cancel</button>
+      <button id="faqDeleteConfirm"
+              class="h-9 px-4 rounded-lg text-white bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 shadow-md transition">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="faqToast"
+     class="fixed bottom-4 left-1/2 -translate-x-1/2 hidden bg-slate-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg"></div>
+
+<script>
+(() => {
+  if (window.__FAQ_WIRED__) return; // avoid double wiring on re-mounts
+  window.__FAQ_WIRED__ = true;
+
+  // --- Minimal in-memory fallback if AppDB is absent (Phase-1 safe)
+  if (!window.AppDB) {
+    const _tables = { FAQ: [] };
+    let _id = 1;
+    window.AppDB = {
+      select: (t) => JSON.parse(JSON.stringify(_tables[t] || [])),
+      insert: (t, row) => {
+        _tables[t] ||= [];
+        const r = { id: _id++, ...row };
+        _tables[t].push(r);
+        return r.id;
+      },
+      update: (t, id, patch) => {
+        const tbl = _tables[t] || [];
+        const idx = tbl.findIndex(r => String(r.id) === String(id));
+        if (idx >= 0) tbl[idx] = { ...tbl[idx], ...patch };
+      },
+      remove: (t, id) => {
+        const tbl = _tables[t] || [];
+        const i = tbl.findIndex(r => String(r.id) === String(id));
+        if (i >= 0) tbl.splice(i,1);
+      }
+    };
+  }
+
+  // --- Hard-coded Admin FAQs (seed once)
+  const ADMIN_FAQS = [
+    { Question: "How do I add a new product?",
+      Answer: "Go to Products → Add Product.\n- Fill Name, Price, Stock, Brand, Category.\n- Upload Thumbnail (JPG/PNG ≤ 2MB).\n- Click Save.\nTip: Use Bulk Upload for CSV imports." },
+    { Question: "How does Bulk Upload (CSV) work?",
+      Answer: "Products → Bulk Upload → Download template → Fill rows → Upload CSV.\nRequired headers: Name, price, stock, Brand, Category, Thumbnail.\nValidation:\n- price: number ≥ 0\n- stock: integer ≥ 0\n- thumbnail: public URL" },
+    { Question: "How do I edit or delete a product?",
+      Answer: "Products table → Row actions:\n- Edit: opens modal; change fields then Save.\n- Delete: confirmation dialog; permanent." },
+    { Question: "How do I manage orders and status flow?",
+      Answer: "Orders → open an order → change Status.\nFlow:\nPlaced → Packed → Shipped → Delivered\nor Placed → Cancelled\nEach change writes a timeline entry." },
+    { Question: "How do refunds and cancellations work?",
+      Answer: "Orders → select order → Cancel/Refund.\n- Prepaid: mark Refund Initiated; add reference ID after gateway confirms.\n- COD: set Cancelled; no refund entry." },
+    { Question: "How to export reports?",
+      Answer: "Reports → choose tab → Export.\n- CSV / PDF / Print\nFilters & search apply to export." },
+    { Question: "Can I schedule automatic backups?",
+      Answer: "Backup → Schedule Backup → choose frequency/time.\nInstant actions: Export JSON / Import JSON.\nAll actions appear in Logs." },
+    { Question: "Where can I see backup/restore history?",
+      Answer: "Backup → Logs table.\nColumns: Timestamp, Action, Size, User, Status." },
+    { Question: "How do I manage FAQs for users?",
+      Answer: "Use this page: Add / Edit / Delete.\nBest practices:\n- Keep answers concise.\n- Use line breaks for steps.\n- Avoid duplicates." },
+    { Question: "How to control admin access?",
+      Answer: "(Phase-1 UI only)\nPhase-2: Roles (Owner/Manager/Agent) in Settings." },
+    { Question: "How do I reset my admin password?",
+      Answer: "Profile → Change Password.\nEnter current, new, confirm.\nRules: ≥ 8 chars, at least 1 letter & 1 number." },
+    { Question: "Why can’t I see data on a page?",
+      Answer: "Check:\n- AppDB seeded? (Products/Orders data)\n- Clear filters/search\n- Console errors (F12): invalid JSON, broken URLs, CORS on images." }
+  ];
+
+  // --- State
+  let EDIT_CTX = null;       // { id } when editing; null when adding
+  let DELETE_CTX = null;     // { id, Question }
+  let query = '';
+  let searchTimer = null;
+
+  // --- Elements
+  const $ = (sel) => document.querySelector(sel);
+  const listEl   = $('#faqList');
+  const metaEl   = $('#faqMeta');
+  const searchEl = $('#faqSearch');
+  const clearEl  = $('#faqClearSearch');
+  const addBtn   = $('#faqAddBtn');
+
+  const modalWrap   = $('#faqModal');
+  const modal       = $('#faqModal > div');
+  const modalTitle  = $('#faqModalTitle');
+  const form        = $('#faqForm');
+  const qInput      = $('#faqQuestion');
+  const aInput      = $('#faqAnswer');
+  const cancelBtn   = $('#faqCancel');
+
+  const delWrap     = $('#faqDeleteModal');
+  const delModal    = $('#faqDeleteModal > div');
+  const delText     = $('#faqDeleteText');
+  const delCancel   = $('#faqDeleteCancel');
+  const delConfirm  = $('#faqDeleteConfirm');
+
+  const toast       = $('#faqToast');
+
+  // --- Helpers
+  const show = (el)=> el?.classList.remove('hidden');
+  const hide = (el)=> el?.classList.add('hidden');
+
+  function escapeHTML(s) {
+    return String(s ?? '').replace(/[&<>"']/g, m => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[m]));
+  }
+  function nl2br(s) {
+    return escapeHTML(s).replace(/\n/g, '<br>');
+  }
+  function toastMsg(msg){
+    toast.textContent = msg;
+    show(toast);
+    setTimeout(()=> hide(toast), 1400);
+  }
+  function lockBody(lock) {
+    document.documentElement.style.overflow = lock ? 'hidden' : '';
+    document.body.style.overflow = lock ? 'hidden' : '';
+  }
+
+  // Click-outside close for modals
+  function wireClickOutside(wrapper, panel) {
+    wrapper?.addEventListener('mousedown', (e) => {
+      if (!panel.contains(e.target)) {
+        hide(wrapper);
+        lockBody(false);
+      }
+    });
+  }
+
+  // Seed admin FAQs (idempotent)
+  function seedAdminFaqs(){
+    if (!window.AppDB?.select || !window.AppDB?.insert) return;
+    const existing = AppDB.select('FAQ') || [];
+    const existingQuestions = new Set(existing.map(r => (r.Question || '').trim().toLowerCase()));
+    ADMIN_FAQS.forEach(item => {
+      const key = (item.Question || '').trim().toLowerCase();
+      if (!existingQuestions.has(key)) {
+        AppDB.insert('FAQ', item);
+      }
+    });
+  }
+
+  // Data
+  function getRows(){
+    const rows = (window.AppDB?.select) ? AppDB.select('FAQ') : [];
+    if (!query) return rows;
+    const q = query.toLowerCase();
+    return rows.filter(r =>
+      String(r.Question||'').toLowerCase().includes(q) ||
+      String(r.Answer||'').toLowerCase().includes(q)
+    );
+  }
+
+  // Render
+  function render(){
+    const rows = getRows();
+    if (!rows.length){
+      listEl.innerHTML = `
+        <div class="rounded-2xl bg-white/80 backdrop-blur shadow-md p-6 text-center text-slate-500">
+          No FAQs found. Click <span class="font-medium">“Add FAQ”</span> to create one.
+        </div>`;
+      metaEl.textContent = 'Total FAQs: 0';
+      return;
+    }
+
+    listEl.innerHTML = rows.map(r => `
+      <article class="group rounded-2xl bg-white/80 backdrop-blur shadow-md p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex-1">
+            <button class="flex items-center gap-2 w-full text-left"
+                    data-action="toggle" data-id="${escapeHTML(r.id)}">
+              <span class="font-semibold">${escapeHTML(r.Question)}</span>
+            </button>
+            <div class="mt-3 text-sm text-slate-700 hidden" data-answer="${escapeHTML(r.id)}">
+              ${nl2br(r.Answer)}
+            </div>
+          </div>
+          <div class="flex gap-2 shrink-0">
+            <button class="py-2 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 text-md shadow-sm transition cursor-pointer"
+                    data-action="edit" data-id="${escapeHTML(r.id)}">Edit</button>
+            <button class="py-2 px-4 rounded-lg bg-gradient-to-r from-rose-500 to-red-600 text-white text-md shadow-md transition cursor-pointer"
+                    data-action="delete" data-id="${escapeHTML(r.id)}" data-question="${escapeHTML(r.Question)}">Delete</button>
+          </div>
+        </div>
+      </article>
+    `).join('');
+    metaEl.textContent = `Total FAQs: ${rows.length}`;
+  }
+
+  // Delegated actions
+  document.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const action = btn.dataset.action;
+    const id = btn.dataset.id;
+
+    if (action === 'toggle'){
+      const ans = document.querySelector(`[data-answer="${CSS.escape(String(id))}"]`);
+      if (ans) ans.classList.toggle('hidden');
+      btn.closest('article')?.classList.toggle('open');
+      return;
+    }
+
+    if (action === 'edit'){
+      const table = AppDB.select('FAQ') || [];
+      const row = table.find(x => String(x.id) === String(id)) || null;
+      EDIT_CTX = { id: row?.id ?? null };
+      modalTitle.textContent = EDIT_CTX.id ? 'Edit FAQ' : 'Add FAQ';
+      qInput.value = row?.Question || '';
+      aInput.value = row?.Answer || '';
+      show(modalWrap);
+      lockBody(true);
+      setTimeout(()=> qInput.focus(), 0);
+      return;
+    }
+
+    if (action === 'delete'){
+      DELETE_CTX = { id, Question: btn.dataset.question || 'this FAQ' };
+      delText.innerHTML = `Delete “<span class="font-medium">${escapeHTML(DELETE_CTX.Question)}</span>”? This cannot be undone.`;
+      show(delWrap);
+      lockBody(true);
+      return;
+    }
+  });
+
+  // Toolbar
+  searchEl.addEventListener('input', ()=>{
+    clearTimeout(searchTimer);
+    const val = searchEl.value.trim();
+    clearEl.classList.toggle('hidden', val.length === 0);
+    searchTimer = setTimeout(() => {
+      query = val;
+      render();
+    }, 120);
+  });
+  clearEl.addEventListener('click', ()=>{
+    searchEl.value = '';
+    query = '';
+    clearEl.classList.add('hidden');
+    render();
+    searchEl.focus();
+  });
+
+  // Modal actions
+  cancelBtn.addEventListener('click', ()=> { hide(modalWrap); lockBody(false); });
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const Question = qInput.value.trim();
+    const Answer   = aInput.value.trim();
+    if (!Question){ toastMsg('Question is required'); qInput.focus(); return; }
+    if (!Answer){ toastMsg('Answer is required'); aInput.focus(); return; }
+
+    if (EDIT_CTX?.id != null){
+      AppDB.update('FAQ', EDIT_CTX.id, { Question, Answer });
+      toastMsg('FAQ updated');
+    } else {
+      AppDB.insert('FAQ', { Question, Answer });
+      toastMsg('FAQ added');
+    }
+    hide(modalWrap);
+    lockBody(false);
+    render();
+  });
+
+  // Delete actions
+  delCancel.addEventListener('click', ()=> { hide(delWrap); lockBody(false); });
+  delConfirm.addEventListener('click', ()=>{
+    if (DELETE_CTX?.id != null){
+      const id = isNaN(Number(DELETE_CTX.id)) ? DELETE_CTX.id : Number(DELETE_CTX.id);
+      AppDB.remove('FAQ', id);
+      toastMsg('FAQ deleted');
+      render();
+    }
+    hide(delWrap);
+    lockBody(false);
+  });
+
+  // Global keys: ESC to close modals; Enter to submit on form focus
+  document.addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape') {
+      if (!modalWrap.classList.contains('hidden')) { hide(modalWrap); lockBody(false); }
+      if (!delWrap.classList.contains('hidden'))  { hide(delWrap);  lockBody(false); }
+    }
+    if (e.key === 'Enter' && !modalWrap.classList.contains('hidden')) {
+      // submit only when focused inside the form to avoid accidental toggles
+      if (document.activeElement && form.contains(document.activeElement)) {
+        e.preventDefault();
+        form.requestSubmit();
+      }
+    }
+  });
+
+  wireClickOutside(modalWrap, modal);
+  wireClickOutside(delWrap, delModal);
+
+  // Mount
+  function mount(){
+    seedAdminFaqs();
+    render();
+  }
+  const prev = window.postPageMount;
+  window.postPageMount = function(){ prev?.(); mount(); };
+  if (!prev) mount();
+})();
+</script>

@@ -1,0 +1,500 @@
+<!-- /admin/pages/dashboard.html -->
+<section class="grid gap-6 fade-up">
+  <!-- Shortcuts -->
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+    <button onclick="loadPage('orders')" class="h-12 rounded-xl bg-white shadow flex items-center justify-center gap-2 hover:bg-blue-50 cursor-pointer">
+      <i data-lucide="receipt-text" class="text-blue-600"></i><span class="text-sm font-medium">Orders</span>
+    </button>
+    <button onclick="loadPage('customers')" class="h-12 rounded-xl bg-white shadow flex items-center justify-center gap-2 hover:bg-blue-50 cursor-pointer">
+      <i data-lucide="users" class="text-blue-600"></i><span class="text-sm font-medium">Customers</span>
+    </button>
+    <button onclick="loadPage('products')" class="h-12 rounded-xl bg-white shadow flex items-center justify-center gap-2 hover:bg-blue-50 cursor-pointer">
+      <i data-lucide="package" class="text-blue-600"></i><span class="text-sm font-medium">Products</span>
+    </button>
+    <button onclick="loadPage('coupons')" class="h-12 rounded-xl bg-white shadow flex items-center justify-center gap-2 hover:bg-blue-50 cursor-pointer">
+      <i data-lucide="ticket-percent" class="text-blue-600"></i><span class="text-sm font-medium">Coupons</span>
+    </button>
+    <button onclick="loadPage('reports')" class="h-12 rounded-xl bg-white shadow flex items-center justify-center gap-2 hover:bg-blue-50 cursor-pointer">
+      <i data-lucide="chart-line" class="text-blue-600"></i><span class="text-sm font-medium">Reports</span>
+    </button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+    <div class="bg-white rounded-2xl p-4 shadow">
+      <div class="text-slate-500 text-xs">Revenue</div>
+      <div class="text-2xl font-semibold mt-1" id="kpiRevenue">₹0</div>
+      <canvas id="sparkRevenue" height="40" class="mt-2"></canvas>
+    </div>
+    <div class="bg-white rounded-2xl p-4 shadow">
+      <div class="text-slate-500 text-xs">Orders</div>
+      <div class="text-2xl font-semibold mt-1" id="kpiOrders">0</div>
+      <canvas id="sparkOrders" height="40" class="mt-2"></canvas>
+    </div>
+    <div class="bg-white rounded-2xl p-4 shadow">
+      <div class="text-slate-500 text-xs">Customers</div>
+      <div class="text-2xl font-semibold mt-1" id="kpiCustomers">0</div>
+      <div class="text-xs text-slate-500 mt-2">Unique purchasers</div>
+    </div>
+    <div class="bg-white rounded-2xl p-4 shadow">
+      <div class="text-slate-500 text-xs">Average Order Value</div>
+      <div class="text-2xl font-semibold mt-1" id="kpiAOV">₹0</div>
+      <div class="text-xs text-slate-500 mt-2">Revenue / Orders</div>
+    </div>
+    <div class="bg-white rounded-2xl p-4 shadow">
+      <div class="text-slate-500 text-xs">Fulfillment Rate</div>
+      <div class="text-2xl font-semibold mt-1" id="kpiFulfill">0%</div>
+      <div class="text-xs text-slate-500 mt-2">Fulfilled / All orders</div>
+    </div>
+  </div>
+
+  <!-- Big charts with controls -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <!-- Orders by Status -->
+    <div class="bg-white rounded-2xl p-4 shadow">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold">Orders by Status</h3>
+        <div class="flex items-center gap-2">
+          <select id="ctlStatusRange" class="text-xs border rounded-md px-2 py-1">
+            <option value="7">7d</option>
+            <option value="30" selected>30d</option>
+            <option value="90">90d</option>
+            <option value="all">All</option>
+          </select>
+          <i data-lucide="receipt-text" class="text-blue-600"></i>
+        </div>
+      </div>
+      <canvas id="chartStatus" height="220"></canvas>
+    </div>
+
+    <!-- Revenue -->
+    <div class="bg-white rounded-2xl p-4 shadow">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold">Revenue</h3>
+        <div class="flex items-center gap-2">
+          <select id="ctlRevenueRange" class="text-xs border rounded-md px-2 py-1">
+            <option value="7" selected>7d</option>
+            <option value="14">14d</option>
+            <option value="30">30d</option>
+            <option value="90">90d</option>
+          </select>
+          <i data-lucide="chart-line" class="text-blue-600"></i>
+        </div>
+      </div>
+      <canvas id="chartRevenue" height="220"></canvas>
+    </div>
+
+    <!-- Orders -->
+    <div class="bg-white rounded-2xl p-4 shadow">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold">Orders</h3>
+        <div class="flex items-center gap-2">
+          <select id="ctlOrdersRange" class="text-xs border rounded-md px-2 py-1">
+            <option value="7" selected>7d</option>
+            <option value="14">14d</option>
+            <option value="30">30d</option>
+            <option value="90">90d</option>
+          </select>
+          <i data-lucide="bar-chart-3" class="text-blue-600"></i>
+        </div>
+      </div>
+      <canvas id="chartOrders" height="220"></canvas>
+    </div>
+  </div>
+
+  <!-- Category mix + Top products -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div class="bg-white rounded-2xl p-4 shadow">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold">Category Mix</h3>
+        <div class="flex items-center gap-2">
+          <select id="ctlCategoryMode" class="text-xs border rounded-md px-2 py-1">
+            <option value="products" selected>Products</option>
+            <option value="rev30">Revenue 30d</option>
+            <option value="rev90">Revenue 90d</option>
+          </select>
+          <i data-lucide="pie-chart" class="text-blue-600"></i>
+        </div>
+      </div>
+      <div class="h-[240px]">
+        <canvas id="chartCategory" height="240"></canvas>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 shadow">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold">Top Products</h3>
+        <a href="#products" class="text-green-600 hover:underline">View all</a>
+      </div>
+      <div class="overflow-auto">
+        <table class="min-w-full border border-blue-200 rounded-lg overflow-hidden shadow">
+          <thead class="bg-blue-600 text-white">
+            <tr>
+              <th class="px-4 py-2 text-left text-sm font-semibold">Name</th>
+              <th class="px-4 py-2 text-left text-sm font-semibold">Category</th>
+              <th class="px-4 py-2 text-center text-sm font-semibold">Reviews</th>
+              <th class="px-4 py-2 text-right text-sm font-semibold">Price</th>
+            </tr>
+          </thead>
+          <tbody id="topProducts" class="divide-y divide-blue-100 bg-white text-slate-700"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- New vs Returning + Recent Orders -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <div class="bg-white rounded-2xl p-4 shadow xl:col-span-2">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold">New vs Returning</h3>
+        <div class="flex items-center gap-2">
+          <select id="ctlNRRange" class="text-xs border rounded-md px-2 py-1">
+            <option value="14" selected>14d</option>
+            <option value="30">30d</option>
+            <option value="90">90d</option>
+          </select>
+          <i data-lucide="users" class="text-blue-600"></i>
+        </div>
+      </div>
+      <canvas id="chartNewReturning" height="220"></canvas>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 shadow">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-slate-800">Recent Orders</h3>
+        <button onclick="loadPage('orders')" class="h-8 px-3 rounded-lg bg-blue-600 text-white text-xs hover:bg-blue-700 transition">View all</button>
+      </div>
+      <ul id="recentOrders" class="space-y-2"></ul>
+    </div>
+  </div>
+</section>
+
+<script>
+  const BRAND = { blue: "#274690", blueSoft: "rgba(39,70,144,.12)" };
+  const rupee = (n) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(n || 0);
+
+  // ---- Utilities
+  const dayKey = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString().slice(0,10);
+  const lastNDays = (n) => Array.from({length:n}, (_,i)=>{ const d = new Date(); d.setDate(d.getDate()-(n-1-i)); return new Date(d.getFullYear(),d.getMonth(),d.getDate()); });
+  const dayLabel = (d) => d.toLocaleDateString("en-IN", { day: "2-digit", month: "short" });
+  const PALETTE = ["#274690","#16a34a","#f59e0b","#ef4444","#8b5cf6","#0ea5e9","#f97316","#e11d48","#22c55e","#a855f7"];
+  const colorAt = (i)=> PALETTE[i % PALETTE.length];
+
+  // Status mapping
+  const statusIdToLabel = (() => {
+    const fromDB = (AppDB._state?.Order_Status || []).reduce((m,s)=> (m[s.id]=s.Display_Text, m), {});
+    const fallback = {1:"Placed",2:"Confirmed",3:"Packed",4:"Shipped",5:"Out for Delivery",6:"Delivered",7:"Cancelled",8:"Returned"};
+    return (id)=> fromDB[id] || fallback[id] || `Status ${id}`;
+  })();
+  const isCancelledOrReturned = (label)=> /cancelled|returned/i.test(label);
+  const isDelivered = (label)=> /delivered/i.test(label);
+
+  // ---- Data pulls
+  const ORDERS = AppDB.select("Order") || [];
+  const ORDER_ITEMS = AppDB.select("Order_Item") || [];
+  const PRODUCTS = AppDB.select("Product") || [];
+  const CATEGORIES = AppDB.select("Category") || [];
+  const productMap = Object.fromEntries(PRODUCTS.map(p=>[p.id,p]));
+
+  // ---- Robust Category helpers
+  const CATS = CATEGORIES || [];
+  const categoriesMap = Object.fromEntries(
+    CATS.map(c => [c.id, c.Display_Text || c.DisplayText || c.Name || c.Title || `Category ${c.id}`])
+  );
+
+  const getOrderIdFromItem = (it) =>
+    it?.Order_Id ?? it?.OrderId ?? it?.OrderID ?? it?.Linked_Order_Id ?? null;
+
+  const getProductIdFromItem = (it) =>
+    it?.Linked_Product_Id ?? it?.Product_Id ?? it?.ProductId ?? it?.ProductID ?? null;
+
+  const getCategoryId = (p) =>
+    p?.Categories_Id ?? p?.Category_Id ?? p?.CategoryId ?? p?.CategoryID ?? null;
+
+  const getPrice = (product, item) => {
+    const v = item?.Unit_Price ?? product?.price ?? product?.Price ?? 0;
+    return Number(v) || 0;
+  };
+
+  const catName = (id) => categoriesMap[id] || "Uncategorized";
+
+  function categoryMixProducts(products) {
+    const counts = {};
+    (products || []).forEach(p => {
+      const cid = getCategoryId(p);
+      const key = cid ?? "__uncat__";
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    const entries = Object.entries(counts).map(([id, cnt]) => ({
+      label: id === "__uncat__" ? "Uncategorized" : catName(Number(id)),
+      count: cnt
+    }));
+    entries.sort((a,b)=>b.count - a.count);
+    return entries;
+  }
+
+  function revenueByCategory(rangeDays) {
+    const ordersInRange = filterOrdersByRange(rangeDays);
+    const allowedIds = new Set(
+      ordersInRange
+        .filter(o => !isCancelledOrReturned(statusIdToLabel(o.Status)))
+        .map(o => o.id)
+    );
+
+    const totals = {};
+    (ORDER_ITEMS || []).forEach(it => {
+      const oid = getOrderIdFromItem(it);
+      if (!allowedIds.has(oid)) return;
+      const pid = getProductIdFromItem(it);
+      const p = productMap[pid];
+      if (!p) return;
+
+      const line = getPrice(p, it) * (it.Quantity || 1);
+      const cid = getCategoryId(p);
+      const key = cid ?? "__uncat__";
+      totals[key] = (totals[key] || 0) + line;
+    });
+
+    const sorted = Object.entries(totals).sort((a,b)=>b[1]-a[1]).slice(0, 12);
+    const labels = sorted.map(([cid]) => cid === "__uncat__" ? "Uncategorized" : catName(Number(cid)));
+    const data   = sorted.map(([, val]) => val);
+    return { labels, data };
+  }
+
+  // ---- Range helpers
+  function filterOrdersByRange(daysOrAll) {
+    if (daysOrAll === "all") return ORDERS.slice().sort((a,b)=> new Date(a.Creation_Date)-new Date(b.Creation_Date));
+    const days = Number(daysOrAll);
+    const from = new Date(); from.setDate(from.getDate()-(days-1)); from.setHours(0,0,0,0);
+    return ORDERS.filter(o => new Date(o.Creation_Date) >= from);
+  }
+  function ordersPerDay(days, list) {
+    const base = Object.fromEntries(days.map(d=>[dayKey(d),0]));
+    list.forEach(o=>{ const k = dayKey(new Date(o.Creation_Date)); if (k in base) base[k] += 1; });
+    return Object.values(base);
+  }
+  function revenuePerDay(days, list) {
+    const base = Object.fromEntries(days.map(d=>[dayKey(d),0]));
+    list.forEach(o=>{
+      const label = statusIdToLabel(o.Status);
+      if (isCancelledOrReturned(label)) return;
+      const k = dayKey(new Date(o.Creation_Date)); if (k in base) base[k] += (o.Total||0);
+    });
+    return Object.values(base);
+  }
+  function statusCountsInRange(range) {
+    const list = filterOrdersByRange(range);
+    const counts = {};
+    list.forEach(o=>{
+      const label = statusIdToLabel(o.Status);
+      counts[label] = (counts[label]||0) + 1;
+    });
+    const labels = Object.keys(counts);
+    return { labels, data: labels.map(l=>counts[l]) };
+  }
+
+  // ---- KPIs + Sparklines
+  function initKPIs() {
+    const a = AppDB.analytics?.() || {
+      totals: {revenue:0, orders:0, customers:0},
+      revenue7: {labels: lastNDays(7).map(d=>dayLabel(d)), data: Array(7).fill(0)},
+      ordersByStatus: [],
+      categoryMix: []
+    };
+    const deliveredRow = a.ordersByStatus.find(x=>/delivered/i.test(x.label)) || {count:0};
+    const delivered = deliveredRow.count || 0;
+    const aov = a.totals.orders ? a.totals.revenue / a.totals.orders : 0;
+    const fulfillRate = a.totals.orders ? Math.round((delivered / a.totals.orders)*100) : 0;
+
+    document.getElementById("kpiRevenue").textContent = rupee(a.totals.revenue);
+    document.getElementById("kpiOrders").textContent = a.totals.orders;
+    document.getElementById("kpiCustomers").textContent = a.totals.customers;
+    document.getElementById("kpiAOV").textContent = rupee(aov);
+    document.getElementById("kpiFulfill").textContent = `${fulfillRate}%`;
+
+    const last7labels = a.revenue7.labels;
+    const last7rev = a.revenue7.data;
+    const last7days = lastNDays(7);
+    const last7orders = ordersPerDay(last7days, ORDERS);
+
+    new Chart(document.getElementById("sparkRevenue").getContext("2d"), {
+      type: "line",
+      data: { labels: last7labels, datasets: [{ data: last7rev, borderColor: BRAND.blue, backgroundColor: BRAND.blueSoft, fill: true, tension: .35 }] },
+      options: { plugins:{legend:{display:false}}, elements:{point:{radius:0}}, scales:{x:{display:false}, y:{display:false}} }
+    });
+
+    new Chart(document.getElementById("sparkOrders").getContext("2d"), {
+      type: "line",
+      data: { labels: last7days.map(dayLabel), datasets: [{ data: last7orders, borderColor: "#22c55e", backgroundColor: "rgba(34,197,94,.12)", fill: true, tension: .35 }] },
+      options: { plugins:{legend:{display:false}}, elements:{point:{radius:0}}, scales:{x:{display:false}, y:{display:false}} }
+    });
+
+    // Top products table (by reviews)
+    const catsMap = Object.fromEntries(CATEGORIES.map(c=>[c.id, c.Display_Text]));
+    const top = PRODUCTS.slice().sort((x,y)=>(y.Reviews_Count||0)-(x.Reviews_Count||0)).slice(0,8);
+    document.getElementById("topProducts").innerHTML = top.map(p=>`
+      <tr class="hover:bg-blue-50 transition">
+        <td class="px-4 py-2 font-medium text-slate-900">${p.Name}</td>
+        <td class="px-4 py-2 text-slate-600">${catsMap[p.Categories_Id] || "-"}</td>
+        <td class="px-4 py-2 text-center text-slate-600">${p.Reviews_Count || 0}</td>
+        <td class="px-4 py-2 text-right font-semibold text-blue-600">₹${p.price || 0}</td>
+      </tr>`).join("");
+  }
+
+  // ---- New vs Returning helper
+  function newVsReturning(range) {
+    const list = filterOrdersByRange(range).sort((a,b)=> new Date(a.Creation_Date) - new Date(b.Creation_Date));
+    const firstOrder = {};
+    ORDERS.forEach(o=>{
+      const t = new Date(o.Creation_Date).getTime();
+      firstOrder[o.User_Id] = Math.min(firstOrder[o.User_Id] ?? t, t);
+    });
+    const days = lastNDays(Number(range));
+    const base = Object.fromEntries(days.map(d=>[dayKey(d),{new:0,ret:0}]));
+    list.forEach(o=>{
+      const k = dayKey(new Date(o.Creation_Date));
+      if (!(k in base)) return;
+      const isNew = new Date(o.Creation_Date).getTime() === (firstOrder[o.User_Id]||0);
+      if (isNew) base[k].new++; else base[k].ret++;
+    });
+    return {
+      labels: days.map(dayLabel),
+      newData: days.map(d=> base[dayKey(d)].new),
+      retData: days.map(d=> base[dayKey(d)].ret),
+    };
+  }
+
+  // ---- Chart renders
+  const CH = {};
+
+  function renderStatus(range) {
+    CH.chartStatus?.destroy();
+    const {labels,data} = statusCountsInRange(range);
+    CH.chartStatus = new Chart(document.getElementById("chartStatus").getContext("2d"), {
+      type: "doughnut",
+      data: { labels, datasets:[{ data, backgroundColor: labels.map((_,i)=>colorAt(i)), borderWidth:0 }] },
+      options: { plugins:{ legend:{ position:"bottom" } }, cutout:"60%" }
+    });
+  }
+
+  function renderRevenue(range) {
+    CH.chartRevenue?.destroy();
+    const days = (range==="all") ? lastNDays(30) : lastNDays(Number(range));
+    const list = filterOrdersByRange(range);
+    const rev = revenuePerDay(days, list);
+    CH.chartRevenue = new Chart(document.getElementById("chartRevenue").getContext("2d"), {
+      type: "line",
+      data: { labels: days.map(dayLabel), datasets:[{ label:"Revenue", data:rev, borderColor:BRAND.blue, backgroundColor:BRAND.blueSoft, fill:true, tension:.35 }] },
+      options: { plugins:{legend:{display:false}}, scales:{ y:{ ticks:{ callback:(v)=>rupee(v) } } } }
+    });
+  }
+
+  function renderOrders(range) {
+    CH.chartOrders?.destroy();
+    const days = (range==="all") ? lastNDays(30) : lastNDays(Number(range));
+    const list = filterOrdersByRange(range);
+    const ord = ordersPerDay(days, list);
+    CH.chartOrders = new Chart(document.getElementById("chartOrders").getContext("2d"), {
+      type: "bar",
+      data: { labels: days.map(dayLabel), datasets:[{ label:"Orders", data: ord, backgroundColor:"#2563eb" }] },
+      options: { plugins:{legend:{display:false}}, scales:{ y:{ beginAtZero:true, ticks:{ stepSize:1 } } } }
+    });
+  }
+
+  function renderCategory(mode) {
+    CH.chartCategory?.destroy();
+    const ctx = document.getElementById("chartCategory").getContext("2d");
+
+    if (mode === "products") {
+      const mix = categoryMixProducts(PRODUCTS || []);
+      CH.chartCategory = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: mix.map(x => x.label),
+          datasets: [{ label: "Products", data: mix.map(x => x.count), backgroundColor: BRAND.blue }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+    } else {
+      const range = mode === "rev30" ? 30 : 90;
+      const { labels, data } = revenueByCategory(range);
+      CH.chartCategory = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{ label: `Revenue (${range}d)`, data, backgroundColor: BRAND.blue }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { callback: (v) => rupee(v) } }
+          }
+        }
+      });
+    }
+  }
+
+  function renderNewReturning(range) {
+    CH.chartNewReturning?.destroy();
+    const {labels,newData,retData} = newVsReturning(range);
+    CH.chartNewReturning = new Chart(document.getElementById("chartNewReturning").getContext("2d"), {
+      type:"bar",
+      data:{ labels, datasets:[
+        { label:"New", data:newData, backgroundColor:"#22c55e", stack:"s" },
+        { label:"Returning", data:retData, backgroundColor:"#0ea5e9", stack:"s" }
+      ] },
+      options:{ plugins:{legend:{position:"bottom"}}, scales:{ y:{ beginAtZero:true, ticks:{ stepSize:1 } } } }
+    });
+  }
+
+  // ---- Recent Orders
+  function renderRecent() {
+    const recent = (AdminHelpers.listOrders?.() || ORDERS.slice().reverse()).slice(0,6);
+    const html = recent.map((o)=>{
+      const label = o.statusText || statusIdToLabel(o.Status);
+      const tone = /delivered/i.test(label) ? "text-green-600" : (/cancelled|returned/i.test(label) ? "text-rose-600" : "text-slate-600");
+      return `
+        <li class="p-3 border border-blue-100 rounded-xl bg-slate-50 hover:bg-blue-50 transition flex items-center justify-between">
+          <div>
+            <div class="font-medium text-slate-900">#${o.id} • ${o.user?.First_Name||""} ${o.user?.Last_Name||""}</div>
+            <div class="text-xs text-slate-600">${new Date(o.Creation_Date).toLocaleString()}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-semibold text-blue-600">${rupee(o.Total||0)}</div>
+            <div class="text-xs ${tone}">${label}</div>
+          </div>
+        </li>`;
+    }).join("");
+    document.getElementById("recentOrders").innerHTML = html;
+  }
+
+  // ---- Controls
+  function wireControls() {
+    document.getElementById("ctlStatusRange").addEventListener("change", (e)=> renderStatus(e.target.value));
+    document.getElementById("ctlRevenueRange").addEventListener("change", (e)=> renderRevenue(e.target.value));
+    document.getElementById("ctlOrdersRange").addEventListener("change", (e)=> renderOrders(e.target.value));
+    document.getElementById("ctlCategoryMode").addEventListener("change", (e)=> renderCategory(e.target.value));
+    document.getElementById("ctlNRRange").addEventListener("change", (e)=> renderNewReturning(e.target.value));
+  }
+
+  // ---- Boot
+  window.initDashboard = function () {
+    initKPIs();
+
+    renderStatus(document.getElementById("ctlStatusRange").value);
+    renderRevenue(document.getElementById("ctlRevenueRange").value);
+    renderOrders(document.getElementById("ctlOrdersRange").value);
+    renderCategory(document.getElementById("ctlCategoryMode").value);
+    renderNewReturning(document.getElementById("ctlNRRange").value);
+
+    renderRecent();
+    wireControls();
+
+    if (window.lucide?.createIcons) lucide.createIcons();
+  };
+</script>

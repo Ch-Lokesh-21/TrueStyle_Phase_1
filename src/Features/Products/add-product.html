@@ -1,0 +1,19 @@
+<div class="bg-white rounded-2xl border shadow-sm p-5 max-w-3xl">
+  <h3 class="font-semibold flex items-center gap-2 mb-3"><i data-lucide="plus-circle" class="text-blue-600"></i> Add Product</h3>
+  <form class="grid gap-3">
+    <input class="border rounded-lg px-3 py-2" placeholder="Product name" required>
+    <div class="grid md:grid-cols-2 gap-3">
+      <input class="border rounded-lg px-3 py-2" placeholder="Price (₹)" type="number" required>
+      <input class="border rounded-lg px-3 py-2" placeholder="Category" required>
+    </div>
+    <textarea class="border rounded-lg px-3 py-2" rows="4" placeholder="Description"></textarea>
+    <div class="grid md:grid-cols-2 gap-3">
+      <input class="border rounded-lg px-3 py-2" type="file">
+      <select class="border rounded-lg px-3 py-2"><option>In Stock</option><option>Out of Stock</option></select>
+    </div>
+    <div class="flex gap-3 mt-2">
+      <button type="button" class="h-10 px-4 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Save</button>
+      <a href="#/products" class="h-10 px-4 rounded-lg border hover:bg-slate-50 grid place-items-center">Cancel</a>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,56 @@
+@import url("https://fonts.googleapis.com/css?family=Poppins");
+:root {
+  /* Base Colors */
+  --color-bg: #f8fafc; /* light slate background */
+  --color-bg-dark: #1e293b; /* dark slate background */
+  --color-surface: #ffffff; /* cards / containers */
+  --color-border: #e2e8f0; /* subtle borders */
+
+  /* Text */
+  --color-text: #0f172a; /* primary text (almost black) */
+  --color-text-muted: #64748b; /* secondary text (muted slate) */
+  --color-text-inverse: #ffffff; /* text on dark bg */
+
+  /* Brand / Accent */
+  --color-primary: #2563eb; /* blue */
+  --color-primary-hover: #1d4ed8; /* darker blue on hover */
+  --color-primary-light: #60a5fa; /* lighter blue for accents */
+
+  /* Status / Feedback */
+  --color-success: #16a34a; /* green for success */
+  --color-danger: #dc2626; /* red for errors */
+  --color-warning: #f59e0b;
+}
+* {
+  font-family: "Poppins", Times, serif;
+}
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-up {
+  animation: fadeUp 1s ease-out forwards;
+}
+.fade-up-delay {
+  animation: fadeUp 1s ease-out forwards;
+  animation-delay: 0.6s;
+}
+.fade-up-delay-2 {
+  animation: fadeUp 1s ease-out forwards;
+  animation-delay: 1.2s;
+}
+
+  @media (prefers-reduced-motion: no-preference) {
+    .fade-child{opacity:0; transform:translateY(16px); transition:opacity .55s ease, transform .55s ease; will-change:opacity,transform;}
+    .fade-child.inview{opacity:1; transform:translateY(0)}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .fade-child{opacity:1 !important; transform:none !important;}
+  }
+

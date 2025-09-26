@@ -1,0 +1,414 @@
+<!-- /admin/pages/customers.html (Blue theme + Orders count + Export CSV + Confirm Modal) -->
+<section class="bg-white rounded-2xl p-4 shadow space-y-4 fade-up">
+  <!-- Toolbar -->
+  <div class="flex flex-wrap md:flex-nowrap items-center gap-3 justify-between">
+    <h2 class="font-semibold text-lg text-blue-900">Customers</h2>
+
+    <div class="flex items-center gap-3">
+      <!-- Search -->
+      <div class="flex items-center gap-2">
+        <i data-lucide="search" class="text-blue-600"></i>
+        <input id="q" placeholder="Search name or email…" class="h-10 w-64 border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-blue-300" />
+      </div>
+
+      <!-- Domain filter -->
+      <div class="flex items-center gap-2">
+        <i data-lucide="filter" class="text-blue-600"></i>
+        <select id="domain" class="h-10 border rounded-xl px-3 w-44 focus:outline-none focus:ring-2 focus:ring-blue-300">
+          <option value="">All domains</option>
+        </select>
+      </div>
+
+      <!-- Page size -->
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-slate-600">Rows</span>
+        <select id="pageSize" class="h-10 border rounded-xl px-2 w-20 focus:outline-none focus:ring-2 focus:ring-blue-300">
+          <option>5</option><option selected>10</option><option>20</option><option>50</option>
+        </select>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2">
+        <button id="addBtn" class="px-4 py-2 rounded-xl border text-blue-700 hover:bg-blue-50 cursor-pointer">Add Customer</button>
+        <button id="btnExport" class="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 cursor-pointer">Export</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-hidden rounded-xl">
+    <div class="max-h-[60vh] overflow-auto">
+      <table class="w-full text-sm">
+        <thead class="text-left text-blue-800 bg-blue-50 sticky top-0">
+          <tr>
+            <th class="p-3 cursor-pointer sort select-none" data-key="id">#
+              <i class="align-middle inline-block ml-1" data-lucide="arrow-up-down"></i>
+            </th>
+            <th class="p-3 cursor-pointer sort select-none" data-key="First_Name">Name
+              <i class="align-middle inline-block ml-1" data-lucide="arrow-up-down"></i>
+            </th>
+            <th class="p-3 cursor-pointer sort select-none" data-key="email">Email
+              <i class="align-middle inline-block ml-1" data-lucide="arrow-up-down"></i>
+            </th>
+            <th class="p-3 cursor-pointer sort select-none" data-key="Creation_Date">Joined
+              <i class="align-middle inline-block ml-1" data-lucide="arrow-up-down"></i>
+            </th>
+            <th class="p-3 cursor-pointer sort select-none" data-key="Orders_Count">Orders
+              <i class="align-middle inline-block ml-1" data-lucide="arrow-up-down"></i>
+            </th>
+            <th class="p-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer / Pagination -->
+  <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div id="meta" class="text-xs text-blue-800"></div>
+    <div id="pager" class="flex flex-wrap items-center gap-2"></div>
+  </div>
+</section>
+
+<!-- Add/Edit Modal -->
+<div id="modal" class="fixed inset-0 hidden items-center justify-center bg-black/40 p-4 z-40">
+  <div class="bg-white rounded-2xl shadow max-w-md w-full overflow-hidden">
+    <div class="flex items-center justify-between p-4 border-b bg-blue-50 text-blue-900">
+      <div class="font-semibold" id="mTitle">Add Customer</div>
+      <button id="mClose" class="h-9 px-3 rounded-lg border hover:bg-blue-100">Close</button>
+    </div>
+    <form id="mForm" class="p-4 grid gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-slate-600">First Name</label>
+          <input name="First_Name" required class="mt-1 h-10 w-full border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-blue-300">
+        </div>
+        <div>
+          <label class="text-xs text-slate-600">Last Name</label>
+          <input name="Last_Name" required class="mt-1 h-10 w-full border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-blue-300">
+        </div>
+      </div>
+      <div>
+        <label class="text-xs text-slate-600">Email</label>
+        <input name="email" type="email" required class="mt-1 h-10 w-full border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-blue-300">
+      </div>
+      <div>
+        <label class="text-xs text-slate-600">Password</label>
+        <input name="password" type="text" value="password" required class="mt-1 h-10 w-full border rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-blue-300">
+      </div>
+      <button class="mt-1 h-10 rounded-xl bg-blue-600 text-white hover:bg-blue-700">Save</button>
+    </form>
+  </div>
+</div>
+
+<!-- Confirm (Block/Delete) Modal -->
+<div id="confirmModal" class="fixed inset-0 hidden items-center justify-center bg-black/40 p-4 z-50">
+  <div class="bg-white rounded-2xl shadow max-w-sm w-full overflow-hidden">
+    <div class="p-4 border-b bg-red-50 text-red-900 font-semibold">
+      Confirm Action
+    </div>
+    <div class="p-4 text-slate-700">
+      Are you sure you want to block <span id="cWho" class="font-medium text-slate-900"></span>?
+    </div>
+    <div class="flex justify-end gap-3 p-4 border-t">
+      <button id="cCancel" class="h-9 px-4 rounded-lg border hover:bg-slate-100">Cancel</button>
+      <button id="cOk" class="h-9 px-4 rounded-lg bg-red-600 text-white hover:bg-red-700">Yes, Block</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---- State for table behavior ----
+  const S = {
+    data: [],           // users enriched with Orders_Count
+    filtered: [],
+    page: 1,
+    pageSize: 10,
+    sortKey: 'Creation_Date',
+    sortDir: 'desc',
+    q: '',
+    domain: ''
+  };
+
+  const el = (id) => document.getElementById(id);
+  const $rows = el('rows'), $pager = el('pager'), $meta = el('meta');
+  const $q = el('q'), $domain = el('domain'), $pageSize = el('pageSize');
+  const $modal = el('modal'), $mClose = el('mClose'), $mForm = el('mForm'), $add = el('addBtn');
+  const $btnExport = el('btnExport');
+
+  // Confirm modal elements
+  const $confirm = el('confirmModal'), $cOk = el('cOk'), $cCancel = el('cCancel'), $cWho = el('cWho');
+  let pendingDeleteId = null;
+
+  function fmtDate(d){
+    try { return new Date(d).toLocaleDateString(); } catch { return d || ''; }
+  }
+  function domainOf(email){
+    const at = String(email||'').split('@');
+    return at.length>1 ? at[1].toLowerCase() : '';
+  }
+
+  // Build { userId -> orderCount } from orders
+  function buildOrderCounts(){
+    const orders = (AdminHelpers?.listOrders?.() || []);
+    const counts = new Map();
+    for (const o of orders){
+      const uid = o.user?.id ?? o.user_id ?? null;
+      if (uid == null) continue;
+      counts.set(uid, (counts.get(uid) || 0) + 1);
+    }
+    return counts;
+  }
+
+  // Build domain filter options
+  function refreshDomainFilter(data){
+    const set = new Set(data.map(u => domainOf(u.email)).filter(Boolean));
+    const cur = S.domain;
+    $domain.innerHTML = `<option value="">All domains</option>` +
+      [...set].sort().map(d => `<option ${d===cur?'selected':''}>${d}</option>`).join('');
+  }
+
+  // Search + filter + sort pipeline
+  function pipeline(){
+    const q = S.q.trim().toLowerCase();
+    let arr = [...S.data];
+
+    if (q){
+      arr = arr.filter(u =>
+        (`${u.First_Name} ${u.Last_Name}`.toLowerCase().includes(q)) ||
+        (String(u.email).toLowerCase().includes(q))
+      );
+    }
+    if (S.domain){
+      arr = arr.filter(u => domainOf(u.email) === S.domain);
+    }
+
+    const k = S.sortKey;
+    const dir = S.sortDir === 'asc' ? 1 : -1;
+    arr.sort((a,b) => {
+      let va = a[k], vb = b[k];
+      if (k === 'id' || k === 'Orders_Count') { va = Number(va||0); vb = Number(vb||0); }
+      if (k === 'Creation_Date') { va = new Date(va).getTime(); vb = new Date(vb).getTime(); }
+      if (typeof va === 'string') va = va.toLowerCase();
+      if (typeof vb === 'string') vb = vb.toLowerCase();
+      return (va < vb ? -1 : va > vb ? 1 : 0) * dir;
+    });
+
+    S.filtered = arr;
+  }
+
+  // Pagination helpers
+  function pageCount(){ return Math.max(1, Math.ceil(S.filtered.length / S.pageSize)); }
+  function clampPage(){ const pc = pageCount(); S.page = Math.min(Math.max(1, S.page), pc); }
+
+  function renderTable(){
+    clampPage();
+    const start = (S.page - 1) * S.pageSize;
+    const rows = S.filtered.slice(start, start + S.pageSize);
+
+    $rows.innerHTML = rows.map(u => `
+      <tr class="hover:bg-blue-50/40">
+        <td class="p-3 font-medium text-blue-900">${u.id}</td>
+        <td class="p-3">
+          <div class="font-medium">${u.First_Name} ${u.Last_Name}</div>
+          <div class="text-xs text-slate-500">User</div>
+        </td>
+        <td class="p-3">${u.email}</td>
+        <td class="p-3 whitespace-nowrap">${fmtDate(u.Creation_Date)}</td>
+        <td class="p-3">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border border-blue-200 bg-blue-50 text-blue-800">
+            ${u.Orders_Count||0}
+          </span>
+        </td>
+        <td class="p-3 flex items-center gap-4">
+          <button data-del="${u.id}" data-name="${u.First_Name} ${u.Last_Name}" data-email="${u.email}" class="px-4 py-2 cursor-pointer rounded bg-red-600 text-white hover:bg-red-700 text-md">Block</button>
+        </td>
+      </tr>
+    `).join('');
+
+    // meta
+    const from = S.filtered.length ? start + 1 : 0;
+    const to = start + rows.length;
+    $meta.textContent = `Showing ${from}-${to} of ${S.filtered.length} customers`;
+
+    // pager
+    const pc = pageCount();
+    const btn = (p, lbl = p, cls = '') => `<button data-page="${p}" class="h-9 min-w-9 px-3 rounded-lg border ${cls}">${lbl}</button>`;
+    let pages = '';
+    const prevDis = S.page === 1 ? 'opacity-50 pointer-events-none' : '';
+    const nextDis = S.page === pc ? 'opacity-50 pointer-events-none' : '';
+    pages += btn(S.page-1, 'Prev', prevDis);
+
+    // compact pagination (max ~7 buttons with ellipses)
+    const nums = [];
+    for (let i=1; i<=pc; i++){
+      if (i===1 || i===pc || Math.abs(i-S.page)<=1) nums.push(i);
+    }
+    const seq = []; let last = 0;
+    nums.forEach(n => { if (n - last > 1) seq.push('…'); seq.push(n); last = n; });
+    seq.forEach(x => {
+      if (x==='…') pages += `<span class="px-1">…</span>`;
+      else pages += btn(x, x, x===S.page ? 'bg-blue-600 text-white border-blue-700' : '');
+    });
+
+    pages += btn(S.page+1, 'Next', nextDis);
+    $pager.innerHTML = pages;
+  }
+
+  function refresh(){
+    pipeline();
+    renderTable();
+    if (window.lucide?.createIcons) window.lucide.createIcons();
+  }
+
+  // Export filtered rows to CSV
+  function exportCSV(){
+    const headers = ['ID','First Name','Last Name','Email','Joined','Orders'];
+    const lines = [headers.join(',')];
+    for (const u of S.filtered){
+      const rec = [
+        u.id,
+        u.First_Name || '',
+        u.Last_Name || '',
+        u.email || '',
+        (u.Creation_Date ? new Date(u.Creation_Date).toISOString() : ''),
+        Number(u.Orders_Count || 0)
+      ].map(v => `"${String(v).replace(/"/g,'""')}"`);
+      lines.push(rec.join(','));
+    }
+    const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const ts = new Date().toISOString().replace(/[:.]/g,'-');
+    a.href = url; a.download = `customers_export_${ts}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    // Optional toast (requires /lib/toast.js)
+    try { window.Toast?.show?.("Downloading CSV", { type: "success" }); } catch {}
+  }
+
+  // Load + enrich users with Orders_Count
+  function loadData(){
+    const users = (AdminHelpers?.listUsers?.() || []);
+    const counts = buildOrderCounts();
+    for (const u of users){
+      const id = u.id ?? u.User_ID ?? null;
+      let c = 0;
+      if (id != null && counts.has(id)) c = counts.get(id);
+      else {
+        // fallback: match by email
+        const email = String(u.email||'').toLowerCase();
+        if (email && AdminHelpers?.listOrders){
+          c = (AdminHelpers.listOrders()||[]).filter(o => String(o.user?.email||'').toLowerCase() === email).length;
+        }
+      }
+      u.Orders_Count = c;
+    }
+    S.data = users;
+    refreshDomainFilter(S.data);
+    refresh();
+  }
+
+  // ---- Confirm modal helpers ----
+  function openConfirm(id, whoLabel){
+    pendingDeleteId = id;
+    $cWho.textContent = whoLabel || 'this user';
+    $confirm.classList.remove('hidden');
+    $confirm.classList.add('flex');
+  }
+  function closeConfirm(){
+    $confirm.classList.add('hidden');
+    $confirm.classList.remove('flex');
+    pendingDeleteId = null;
+  }
+
+  function debounce(fn, ms=250){ let t; return (...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a),ms);} }
+  const debQ = debounce(()=>{ S.q = $q.value; S.page = 1; refresh(); }, 200);
+
+  // ---- Lifecycle hook from your router ----
+  window.postPageMount = function(){
+    loadData();
+
+    // search
+    $q.addEventListener('input', debQ);
+
+    // domain filter
+    $domain.addEventListener('change', ()=>{ S.domain = $domain.value; S.page = 1; refresh(); });
+
+    // page size
+    $pageSize.addEventListener('change', ()=>{ S.pageSize = Number($pageSize.value || 10) || 10; S.page = 1; refresh(); });
+
+    // sort by header
+    document.querySelectorAll('.sort').forEach(th=>{
+      th.addEventListener('click', ()=>{
+        const key = th.dataset.key;
+        if (S.sortKey === key){ S.sortDir = (S.sortDir === 'asc') ? 'desc' : 'asc'; }
+        else { S.sortKey = key; S.sortDir = (key==='id' || key==='Creation_Date' || key==='Orders_Count') ? 'desc' : 'asc'; }
+        refresh();
+      });
+    });
+
+    // row actions (open confirm instead of confirm())
+    $rows.addEventListener('click', (e)=>{
+      const del = e.target.closest('[data-del]');
+      if (del){
+        const id = Number(del.dataset.del);
+        const label = (del.dataset.name || '').trim() || (del.dataset.email || '').trim() || `User #${id}`;
+        openConfirm(id, label);
+      }
+    });
+
+    // pager click
+    $pager.addEventListener('click', (e)=>{
+      const b = e.target.closest('[data-page]'); if(!b) return;
+      S.page = Number(b.dataset.page);
+      refresh();
+    });
+
+    // Add customer modal
+    $add?.addEventListener('click', ()=> openModal());
+    $mClose.addEventListener('click', closeModal);
+    $modal.addEventListener('click', (e)=>{ if (e.target === $modal) closeModal(); });
+    $mForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const fd = new FormData($mForm);
+      const row = {
+        First_Name: fd.get('First_Name')?.trim() || 'Guest',
+        Last_Name:  fd.get('Last_Name')?.trim()  || 'User',
+        email:      String(fd.get('email')||'').toLowerCase(),
+        password:   fd.get('password') || 'password',
+        Creation_Date: null, Modified_Date: null
+      };
+      AppDB?.insert?.('User', row);
+      closeModal();
+      loadData();
+      try { window.Toast?.show?.("Customer added", { type: "success" }); } catch {}
+    });
+
+    // Export CSV
+    $btnExport.addEventListener('click', exportCSV);
+
+    // Confirm modal events
+    $cCancel.addEventListener('click', closeConfirm);
+    $confirm.addEventListener('click', (e)=>{ if (e.target === $confirm) closeConfirm(); });
+    $cOk.addEventListener('click', ()=>{
+      if (pendingDeleteId != null){
+        AdminHelpers?.deleteUser?.(pendingDeleteId);
+        loadData();
+        try { window.Toast?.show?.("User blocked", { type: "success" }); } catch {}
+      }
+      closeConfirm();
+    });
+  };
+
+  // Add modal helpers
+  function openModal(){
+    $mForm.reset();
+    document.getElementById('mTitle').textContent = 'Add Customer';
+    $modal.classList.remove('hidden'); $modal.classList.add('flex');
+  }
+  function closeModal(){
+    $modal.classList.add('hidden'); $modal.classList.remove('flex');
+  }
+</script>

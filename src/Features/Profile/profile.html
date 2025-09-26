@@ -1,0 +1,284 @@
+<!-- /admin/pages/profile.html -->
+<section class="grid gap-6 fade-up">
+  <!-- Header -->
+  <div class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6">
+    <h2 class="font-semibold tracking-tight text-lg">Admin Profile</h2>
+    <p class="text-sm text-slate-600">Manage your account info and update your password.</p>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    <!-- Left: Avatar & basic info -->
+    <aside class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6">
+      <div class="flex items-start gap-4">
+        <div id="avatar"
+             class="h-20 w-20 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center text-2xl font-semibold shadow-md">
+          A
+        </div>
+        <div>
+          <div id="name" class="text-lg font-semibold">Admin</div>
+          <div id="email" class="text-sm text-slate-600">admin@example.com</div>
+          <span class="inline-flex mt-2 text-xs px-2 py-1 rounded-lg bg-slate-100 text-slate-700 shadow-sm">Admin</span>
+        </div>
+      </div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button class="py-2 px-4 rounded-lg text-md bg-slate-100 hover:bg-slate-200 shadow-sm">Edit Profile</button>
+        <button class="py-2 px-4 rounded-lg text-md bg-slate-100 hover:bg-slate-200 shadow-sm">Upload Photo</button>
+      </div>
+    </aside>
+
+    <!-- Right: Details + Change Password -->
+    <main class="md:col-span-2 grid gap-6">
+      <!-- Profile details -->
+      <div class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6">
+        <h3 class="font-semibold mb-4">Profile Details</h3>
+        <dl class="grid sm:grid-cols-2 gap-x-8 gap-y-3">
+          <div>
+            <dt class="text-xs text-slate-500">Admin ID</dt>
+            <dd id="adminId" class="font-medium">—</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">Email</dt>
+            <dd id="email2" class="font-medium">—</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">First Name</dt>
+            <dd id="firstName" class="font-medium">—</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">Last Name</dt>
+            <dd id="lastName" class="font-medium">—</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">Created</dt>
+            <dd id="created" class="font-medium">—</dd>
+          </div>
+          <div>
+            <dt class="text-xs text-slate-500">Last Modified</dt>
+            <dd id="modified" class="font-medium">—</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Change password (front-end only) -->
+      <div class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6">
+        <h3 class="font-semibold mb-4 flex justify-between">Change Password <div class="flex items-center gap-2"><span class="text-red-600">*</span> <span class="text-gray-600 text-sm">Required Fields</span></div></h3>
+        <form id="pwForm" class="grid gap-3" novalidate>
+          <!-- Current password -->
+          <label class="grid gap-1">
+            <span class="text-xs text-slate-600">Current Password <span class="text-rose-600">*</span></span>
+            <div class="relative">
+              <input id="pwCurrent" type="password" required
+                     class="h-10 w-full px-3 pr-10 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 ring-blue-200 shadow-inner"
+                     placeholder="Enter current password" />
+              <button type="button" data-toggle="pwCurrent"
+                      class="absolute inset-y-0 right-2 my-auto text-slate-500 text-xs">Show</button>
+            </div>
+            <p id="errCurrent" class="text-xs text-rose-600 hidden">Current password is required.</p>
+          </label>
+
+          <!-- New password -->
+          <label class="grid gap-1">
+            <span class="text-xs text-slate-600">New Password <span class="text-rose-600">*</span></span>
+            <div class="relative">
+              <input id="pwNew" type="password" required
+                     class="h-10 w-full px-3 pr-10 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 ring-blue-200 shadow-inner"
+                     placeholder="At least 8 chars, letters & numbers" />
+              <button type="button" data-toggle="pwNew"
+                      class="absolute inset-y-0 right-2 my-auto text-slate-500 text-xs">Show</button>
+            </div>
+            <div class="text-[11px] text-slate-600">
+              Must be <strong>8+ characters</strong>, include <strong>letters</strong> and <strong>numbers</strong>, and must not equal the current password.
+            </div>
+            <p id="errNew" class="text-xs text-rose-600 hidden"></p>
+          </label>
+
+          <!-- Confirm new password -->
+          <label class="grid gap-1">
+            <span class="text-xs text-slate-600">Confirm New Password <span class="text-rose-600">*</span></span>
+            <div class="relative">
+              <input id="pwConfirm" type="password" required
+                     class="h-10 w-full px-3 pr-10 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 ring-blue-200 shadow-inner"
+                     placeholder="Re-enter new password" />
+              <button type="button" data-toggle="pwConfirm"
+                      class="absolute inset-y-0 right-2 my-auto text-slate-500 text-xs">Show</button>
+            </div>
+            <p id="errConfirm" class="text-xs text-rose-600 hidden">Passwords do not match.</p>
+          </label>
+
+          <div class="mt-2 flex justify-end gap-2">
+            <button type="reset" class="py-2 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 shadow-sm">Clear</button>
+            <button id="pwSubmit" type="submit"
+                    class="py-2 px-4 rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled>
+              Update Password
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="profToast"
+       class="fixed bottom-4 left-1/2 -translate-x-1/2 hidden bg-slate-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg">
+    Saved
+  </div>
+</section>
+
+<script>
+(function(){
+  // ---------- Profile mount (unchanged) ----------
+  const fmtDateTime = (d)=>{ if(!d) return '—'; const t=new Date(d); return isNaN(t)? d : t.toLocaleString(); };
+  const initials = (f,l)=>{ const a=(String(f||'').trim()[0]||'').toUpperCase(); const b=(String(l||'').trim()[0]||'').toUpperCase(); return (a+b)||'A'; };
+  function mountProfile(){
+    const admin = (window.AppDB?.select ? AppDB.select('Admin') : [])[0] || {};
+    const fullName = [admin.First_Name, admin.Last_Name].filter(Boolean).join(' ') || 'Admin';
+    document.getElementById('name').textContent = fullName;
+    document.getElementById('email').textContent = admin.email || '';
+    document.getElementById('avatar').textContent = initials(admin.First_Name, admin.Last_Name);
+    document.getElementById('adminId').textContent  = (admin.id != null) ? admin.id : '—';
+    document.getElementById('email2').textContent   = admin.email || '—';
+    document.getElementById('firstName').textContent= admin.First_Name || '—';
+    document.getElementById('lastName').textContent = admin.Last_Name || '—';
+    document.getElementById('created').textContent  = fmtDateTime(admin.Creation_Date);
+    document.getElementById('modified').textContent = fmtDateTime(admin.Modified_Date);
+  }
+
+  // ---------- Password validation with "touched" logic ----------
+  const form      = document.getElementById('pwForm');
+  const btnSubmit = document.getElementById('pwSubmit');
+  const toast     = document.getElementById('profToast');
+
+  const el = {
+    current : document.getElementById('pwCurrent'),
+    next    : document.getElementById('pwNew'),
+    confirm : document.getElementById('pwConfirm'),
+    errCur  : document.getElementById('errCurrent'),
+    errNew  : document.getElementById('errNew'),
+    errConf : document.getElementById('errConfirm')
+  };
+
+  // flags
+  const touched = { current:false, next:false, confirm:false };
+  let submitAttempted = false;
+
+  // validators (return {ok, msg})
+  function validateCurrent(){
+    const ok = !!el.current.value.trim();
+    return { ok, msg: ok ? '' : 'Current password is required.' };
+  }
+  function validateNew(){
+    const pwd = el.next.value.trim();
+    const cur = el.current.value.trim();
+    const hasLen = pwd.length >= 8;
+    const hasLetter = /[A-Za-z]/.test(pwd);
+    const hasNumber = /[0-9]/.test(pwd);
+    const noSpaces  = !/\s/.test(pwd);
+    const notSameAsCurrent = cur ? pwd !== cur : true;
+
+    let msg = '';
+    if (!pwd) msg = 'New password is required.';
+    else if (!hasLen) msg = 'Must be at least 8 characters.';
+    else if (!hasLetter || !hasNumber) msg = 'Include both letters and numbers.';
+    else if (!noSpaces) msg = 'Password cannot contain spaces.';
+    else if (!notSameAsCurrent) msg = 'New password must differ from current.';
+
+    return { ok: msg === '', msg };
+  }
+  function validateConfirm(){
+    const ok = !!el.confirm.value && el.confirm.value === el.next.value;
+    return { ok, msg: ok ? '' : 'Passwords do not match.' };
+  }
+
+  // show/hide helpers gated by touched / submitAttempted
+  function applyFieldState(input, errEl, result, shouldShow){
+    // visual ring only when showing error
+    input.classList.toggle('ring-rose-300', shouldShow && !result.ok);
+    input.classList.toggle('focus:ring-rose-300', shouldShow && !result.ok);
+    if (shouldShow){
+      errEl.textContent = result.msg || '';
+      errEl.classList.toggle('hidden', result.ok);
+    }else{
+      errEl.classList.add('hidden');
+    }
+  }
+
+  function updateUI(){
+    const cur = validateCurrent();
+    const nw  = validateNew();
+    const cnf = validateConfirm();
+
+    // show errors only if user interacted or after a submit attempt
+    applyFieldState(el.current, el.errCur,  cur,  touched.current || submitAttempted);
+    applyFieldState(el.next,    el.errNew,  nw,   touched.next    || submitAttempted);
+    applyFieldState(el.confirm, el.errConf, cnf,  touched.confirm || submitAttempted);
+
+    // Submit enabled only when all valid
+    btnSubmit.disabled = !(cur.ok && nw.ok && cnf.ok);
+  }
+
+  // mark touched on first interaction
+  ['input','blur'].forEach(evt=>{
+    el.current.addEventListener(evt, ()=>{ touched.current = true; updateUI(); });
+    el.next.addEventListener(evt,    ()=>{ touched.next    = true; updateUI(); });
+    el.confirm.addEventListener(evt, ()=>{ touched.confirm = true; updateUI(); });
+  });
+
+  // show/hide toggles
+  document.querySelectorAll('[data-toggle]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-toggle');
+      const input = document.getElementById(id);
+      const isPw = input.type === 'password';
+      input.type = isPw ? 'text' : 'password';
+      btn.textContent = isPw ? 'Hide' : 'Show';
+      // consider this interaction as "touched"
+      touched[id === 'pwCurrent' ? 'current' : id === 'pwNew' ? 'next' : 'confirm'] = true;
+      updateUI();
+    });
+  });
+
+  // submit
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    submitAttempted = true;     // now errors can show even if not touched
+    updateUI();
+    if (btnSubmit.disabled) return;
+
+    // demo toast
+    toast.textContent = 'Password updated (demo)';
+    toast.classList.remove('hidden');
+    setTimeout(()=> toast.classList.add('hidden'), 1400);
+
+    form.reset();
+    // reset state after clearing
+    setTimeout(()=>{
+      touched.current = touched.next = touched.confirm = false;
+      submitAttempted = false;
+      [el.errCur, el.errNew, el.errConf].forEach(x=>x.classList.add('hidden'));
+      [el.current, el.next, el.confirm].forEach(i=>{
+        i.classList.remove('ring-rose-300','focus:ring-rose-300');
+      });
+      updateUI();
+    }, 0);
+  });
+
+  // reset button
+  form.addEventListener('reset', ()=>{
+    setTimeout(()=>{
+      touched.current = touched.next = touched.confirm = false;
+      submitAttempted = false;
+      [el.errCur, el.errNew, el.errConf].forEach(x=>x.classList.add('hidden'));
+      [el.current, el.next, el.confirm].forEach(i=>{
+        i.classList.remove('ring-rose-300','focus:ring-rose-300');
+      });
+      updateUI();
+    }, 0);
+  });
+
+  // mount now & on fragment mount (NO initial validation display)
+  const prev = window.postPageMount;
+  window.postPageMount = function(){ prev?.(); mountProfile(); updateUI(); };
+  if (!prev) { mountProfile(); updateUI(); }
+})();
+</script>

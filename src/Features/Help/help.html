@@ -1,0 +1,188 @@
+<!-- /admin/pages/help.html -->
+<section class="grid gap-6 fade-up">
+  <!-- Header -->
+  <div class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6 hover:scale-105 duration-300">
+    <h2 class="font-semibold tracking-tight text-lg">Admin Help & Guide</h2>
+    <p class="text-sm text-slate-600 mt-1">
+      Quick pointers to manage products, orders, customers, content, reports, coupons, and FAQs.
+    </p>
+  </div>
+
+
+  <!-- Quick start -->
+  <section id="quickstart" class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6 hover:scale-105 duration-300">
+    <h3 class="font-semibold mb-3 flex gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play-icon lucide-play"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg> Quick Start</h3>
+    <ol class="list-decimal ml-5 text-sm space-y-1 text-slate-700">
+      <li>Open the sidebar and choose a section (Products, Orders, Customers, etc.).</li>
+      <li>Use the search bar and filters at the top of each page to narrow results.</li>
+      <li>Click action buttons like <span class="px-2 py-0.5 rounded-full bg-slate-100 text-xs">Add</span>,
+          <span class="px-2 py-0.5 rounded-full bg-slate-100 text-xs">Edit</span>,
+          <span class="px-2 py-0.5 rounded-full bg-slate-100 text-xs">Delete</span> to manage records.</li>
+    </ol>
+  </section>
+
+  <!-- Products -->
+  <section id="products" class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6 hover:scale-105 duration-300">
+    <h3 class="font-semibold mb-3 flex gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart-icon lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Products Catalog</h3>
+    <div class="grid md:grid-cols-2 gap-4">
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">Add a Product</div>
+        <ol class="list-decimal ml-5 text-sm space-y-1 text-slate-700">
+          <li>Go to <span class="font-medium">Products</span> → click <span class="px-2 py-0.5 rounded-full bg-blue-600 text-white text-xs">Add</span>.</li>
+          <li>Fill Name, Brand, Price, Category, Thumbnail, and Stock status.</li>
+          <li>Save to create the product. It appears in the list instantly.</li>
+        </ol>
+      </article>
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">Edit / Delete</div>
+        <ol class="list-decimal ml-5 text-sm space-y-1 text-slate-700">
+          <li>Find the product via search or filters.</li>
+          <li>Click <span class="px-2 py-0.5 rounded-full bg-slate-100 text-xs">Edit</span> or <span class="px-2 py-0.5 rounded-full bg-rose-600 text-white text-xs">Delete</span>.</li>
+          <li>Confirm changes in the modal.</li>
+        </ol>
+      </article>
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">Bulk Upload</div>
+        <p class="text-sm text-slate-700">
+          Use the <span class="px-2 py-0.5 rounded-full bg-slate-100 text-xs">Bulk Upload</span> button to import many products at once (UI provided).
+        </p>
+      </article>
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">View Product Details</div>
+        <p class="text-sm text-slate-700">
+          Click <span class="px-2 py-0.5 rounded-full bg-slate-100 text-xs">View</span> to open the dedicated product page with images and all fields.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Orders -->
+  <section id="orders" class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6 hover:scale-105 duration-300">
+    <h3 class="font-semibold mb-3 flex gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bring-to-front-icon lucide-bring-to-front"><rect x="8" y="8" width="8" height="8" rx="2"/><path d="M4 10a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2"/><path d="M14 20a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2"/></svg> Orders</h3>
+    <div class="grid md:grid-cols-2 gap-4">
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">Find Orders</div>
+        <ul class="list-disc ml-5 text-sm text-slate-700 space-y-1">
+          <li>Use search by order #, customer name, or email.</li>
+          <li>Filter by status and date range.</li>
+        </ul>
+      </article>
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">Update Status</div>
+        <ol class="list-decimal ml-5 text-sm text-slate-700 space-y-1">
+          <li>Open the order row to view details and items.</li>
+          <li>Choose new status (pending / fulfilled / cancelled) and save.</li>
+        </ol>
+      </article>
+    </div>
+  </section>
+
+  <!-- Customers -->
+  <section id="customers" class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6 hover:scale-105 duration-300">
+    <h3 class="font-semibold mb-3 flex gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-user-icon lucide-circle-user"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg> Customers</h3>
+    <div class="grid md:grid-cols-2 gap-4">
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">Search & Filter</div>
+        <p class="text-sm text-slate-700">
+          Search by name or email, filter by country or order activity (has orders / no orders).
+        </p>
+      </article>
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">View Lifetime Value</div>
+        <p class="text-sm text-slate-700">
+          See total orders, total spent, and last order date in the table.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Content Management -->
+  <section id="content" class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6 hover:scale-105 duration-300">
+    <h3 class="font-semibold mb-3">🖼️ Content Management</h3>
+    <div class="grid md:grid-cols-2 gap-4">
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">Hero & Cards</div>
+        <p class="text-sm text-slate-700">
+          Preview images/cards sourced from AppDB. UI includes Add/Edit/Delete for future use.
+        </p>
+      </article>
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">About & Policies</div>
+        <p class="text-sm text-slate-700">
+          Edit or add sections (title + body). Changes reflect immediately in the list.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Reports -->
+  <section id="reports" class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6 hover:scale-105 duration-300">
+    <h3 class="font-semibold mb-3">📈 Reports</h3>
+    <div class="grid md:grid-cols-3 gap-4">
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">Products</div>
+        <p class="text-sm text-slate-700">Search, filter by brand/category/stock, and view prices & reviews.</p>
+      </article>
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">Orders</div>
+        <p class="text-sm text-slate-700">Filter by status/date; see totals and item counts.</p>
+      </article>
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">Customers</div>
+        <p class="text-sm text-slate-700">See orders, lifetime spend, and last order time.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Coupons & FAQ -->
+  <section id="couponsfaq" class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6 hover:scale-105 duration-300">
+    <h3 class="font-semibold mb-3">🎟️ Coupons & ❓ FAQ</h3>
+    <div class="grid md:grid-cols-2 gap-4">
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">Coupons</div>
+        <p class="text-sm text-slate-700">Read-only list (code, type, value, status).</p>
+      </article>
+      <article class="rounded-2xl p-4 bg-white/80 shadow-sm">
+        <div class="font-medium mb-2">FAQ</div>
+        <p class="text-sm text-slate-700">Add, edit, or delete FAQs. Search to quickly find entries.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Troubleshooting -->
+  <section id="troubleshoot" class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6 hover:scale-105 duration-300">
+    <h3 class="font-semibold mb-3">🛠️ Troubleshooting</h3>
+    <details class="rounded-xl bg-white/80 shadow-sm p-4 mb-2">
+      <summary class="font-medium cursor-pointer">Data isn’t saving / looks reset</summary>
+      <div class="text-sm text-slate-700 mt-2">
+        The app stores data in your browser via <span class="font-medium">AppDB</span> (localStorage).
+        Clearing site data or using a new browser/profile resets it.
+      </div>
+    </details>
+    <details class="rounded-xl bg-white/80 shadow-sm p-4 mb-2">
+      <summary class="font-medium cursor-pointer">Reset demo data</summary>
+      <div class="text-sm text-slate-700 mt-2">
+        Open DevTools → Application → Local Storage → remove
+        <code class="px-1 py-0.5 rounded bg-slate-100">ts_appdb_state_v1</code><br>
+        or run:
+        <pre class="mt-2 p-3 rounded-xl bg-slate-50 shadow-inner text-xs overflow-auto">localStorage.removeItem('ts_appdb_state_v1')</pre>
+        Refresh afterwards.
+      </div>
+    </details>
+    <details class="rounded-xl bg-white/80 shadow-sm p-4">
+      <summary class="font-medium cursor-pointer">Blank page after navigation</summary>
+      <div class="text-sm text-slate-700 mt-2">
+        Hard refresh the page. Ensure the base scripts (AppDB and page loader) load before page fragments.
+      </div>
+    </details>
+  </section>
+
+  <!-- Contact -->
+  <section class="rounded-2xl shadow-md bg-white/80 backdrop-blur p-6 hover:scale-105 duration-300">
+    <h3 class="font-semibold mb-3">Need more help?</h3>
+    <p class="text-sm text-slate-700">
+      Check the Help page first. For issues, email
+      <a href="mailto:support@example.com" class="text-blue-600 hover:underline">support@example.com</a>.
+    </p>
+  </section>
+</section>

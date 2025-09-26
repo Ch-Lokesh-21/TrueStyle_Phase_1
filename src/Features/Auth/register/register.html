@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>True Style - Register</title>
+    <link rel="stylesheet" href="/style/index.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="shortcut icon" href="/assets/icon.png" type="image/x-icon" />
+    <style>
+      dialog::backdrop { background: rgba(0,0,0,.45); }
+    </style>
+  </head>
+  <body class="min-h-screen w-full bg-gray-100">
+    <!-- Background -->
+    <div
+      class="relative min-h-screen bg-cover bg-center flex items-center justify-center bg-[url('../assets/bg/bg-5.jpg')] bg-contain"
+    >
+      <!-- Back to home link -->
+      <a
+        href="/index.html"
+        class="absolute top-4 left-4 text-sm font-medium px-4 py-2 transition-pulse bg-blue-600 rounded-lg text-white hover:bg-blue-700 animate-bounce"
+      >
+        Back to Home
+      </a>
+
+      <!-- Form Card -->
+      <div class="w-full max-w-4xl bg-white rounded-xl shadow-2xl p-6 sm:p-10 fade-up">
+        <header class="text-center mb-2 flex flex-col gap-2">
+          <h1 class="text-2xl font-semibold text-[var(--color-primary)] animate-bounce">
+            Welcome to True Style
+          </h1>
+          <h1 class="text-2xl font-semibold text-[var(--color-primary)]">
+            Create Your Account
+          </h1>
+        </header>
+
+        <div class="flex justify-center items-center gap-1 mb-4">
+          <span class="text-red-600">*</span>
+          <p class="text-sm opacity-60">Indicates mandatory fields</p>
+        </div>
+
+        <form id="registerForm" class="space-y-6" novalidate>
+          <!-- Grid for 2 columns -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- First Name -->
+            <div>
+              <label for="firstName" class="block text-sm font-medium">
+                FIRST NAME <span class="text-red-600">*</span>
+              </label>
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                placeholder="enter your First Name"
+                required
+                minlength="2"
+                pattern="^[A-Za-z][A-Za-z\s'.-]*$"
+                class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p id="firstNameError" class="mt-1 text-xs text-red-600 hidden"></p>
+            </div>
+
+            <!-- Last Name -->
+            <div>
+              <label for="lastName" class="block text-sm font-medium">
+                LAST NAME <span class="text-red-600">*</span>
+              </label>
+              <input
+                id="lastName"
+                name="lastName"
+                type="text"
+                placeholder="enter your Last Name"
+                required
+                minlength="2"
+                pattern="^[A-Za-z][A-Za-z\s'.-]*$"
+                class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p id="lastNameError" class="mt-1 text-xs text-red-600 hidden"></p>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label for="email" class="block text-sm font-medium">
+                EMAIL <span class="text-red-600">*</span>
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="enter your email"
+                required
+                class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p id="emailError" class="mt-1 text-xs text-red-600 hidden">
+                Please enter a valid email.
+              </p>
+            </div>
+
+            <!-- Phone -->
+            <div>
+              <label for="phone" class="block text-sm font-medium">
+                PHONE NUMBER <span class="text-red-600">*</span>
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                placeholder="enter your phone number"
+                required
+                pattern="^[0-9+\-\s()]{7,}$"
+                class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p id="phoneError" class="mt-1 text-xs text-red-600 hidden">
+                Enter a valid phone number.
+              </p>
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label for="password" class="block text-sm font-medium">
+                PASSWORD <span class="text-red-600">*</span>
+              </label>
+              <div class="relative mt-1">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  minlength="6"
+                  placeholder="enter your password"
+                  required
+                  class="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  id="togglePassword"
+                  class="absolute inset-y-0 right-2 flex items-center text-gray-600"
+                  aria-label="Toggle password visibility"
+                >
+                  <svg
+                    class="h-5 w-5 eye-open"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M2.036 12.322a1.012 1.012 0 010-.644C3.423 7.51 7.36 5 12 5s8.577 2.51 9.964 6.678c.07.208.07.436 0 .644C20.577 16.49 16.64 19 12 19s-8.577-2.51-9.964-6.678z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <svg
+                    class="h-5 w-5 eye-closed hidden"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3l18 18"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M10.584 10.587A3 3 0 0012 15a3 3 0 002.121-.879M9.88 4.6A9.99 9.99 0 0112 4c4.64 0 8.577 2.51 9.964 6.678.07.208.07.436 0 .644a10.032 10.032 0 01-2.28 3.54M6.41 6.413A9.995 9.995 0 002.036 11.678c-.07.208-.07.436 0 .644A10.03 10.03 0 006.4 16.95"/>
+                  </svg>
+                </button>
+              </div>
+              <p id="passwordError" class="mt-1 text-xs text-red-600 hidden">
+                Password must be at least 6 characters.
+              </p>
+
+              <!-- Password guideline: hidden by default, shown on password focus/click -->
+              <div id="passwordTip" class="mt-2 hidden">
+                <p class="text-xs text-slate-600 bg-slate-50 border rounded-md p-2">
+                  Password should be strong. Use a mix of upper/lowercase letters, numbers, and special characters.
+                </p>
+              </div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+              <label for="confirmPassword" class="block text-sm font-medium">
+                CONFIRM PASSWORD <span class="text-red-600">*</span>
+              </label>
+              <div class="relative mt-1">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  minlength="6"
+                  placeholder="confirm your password"
+                  required
+                  class="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  id="toggleConfirm"
+                  class="absolute inset-y-0 right-2 flex items-center text-gray-600"
+                  aria-label="Toggle confirm password visibility"
+                >
+                  <svg class="h-5 w-5 eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M2.036 12.322a1.012 1.012 0 010-.644C3.423 7.51 7.36 5 12 5s8.577 2.51 9.964 6.678c.07.208.07.436 0 .644C20.577 16.49 16.64 19 12 19s-8.577-2.51-9.964-6.678z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <svg class="h-5 w-5 eye-closed hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3l18 18"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                      d="M10.584 10.587A3 3 0 0012 15a3 3 0 002.121-.879M9.88 4.6A9.99 9.99 0 0112 4c4.64 0 8.577 2.51 9.964 6.678.07.208.07.436 0 .644a10.032 10.032 0 01-2.28 3.54M6.41 6.413A9.995 9.995 0 002.036 11.678c-.07.208-.07.436 0 .644A10.03 10.03 0 006.4 16.95"/>
+                  </svg>
+                </button>
+              </div>
+              <p id="confirmError" class="mt-1 text-xs text-red-600 hidden">
+                Passwords do not match.
+              </p>
+            </div>
+          </div>
+
+          <!-- Terms & Policies (checkbox + link that opens modal) -->
+          <div class="flex items-start gap-2">
+            <input id="termsCheck" type="checkbox" required class="mt-1 h-4 w-4">
+            <label for="termsCheck" class="text-sm">
+              I agree to the
+              <button type="button" id="openPolicies" class="text-blue-700 hover:underline">
+                Terms & Policies
+              </button>
+            </label>
+          </div>
+          <p id="termsError" class="text-xs text-red-600 hidden">You must agree to the Terms & Policies.</p>
+
+          <!-- Already have account -->
+          <div class="text-center text-sm">
+            Already have an account?
+            <a href="/src/Features/Auth/login/login.html" class="text-blue-700 hover:underline">Login</a>
+          </div>
+
+          <!-- Submit -->
+          <div class="flex justify-center">
+            <button
+              type="submit"
+              class="rounded-md bg-[var(--color-primary)] text-white text-sm font-medium hover:bg-[var(--color-primary-hover)] focus:ring-2 focus:ring-black/50 px-4 py-2"
+            >
+              Register
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Policies Modal -->
+    <dialog id="policyModal" class="rounded-2xl p-0 w-[min(720px,95vw)]">
+      <div class="p-4 border-b bg-blue-50 text-blue-900 flex items-center justify-between">
+        <h3 class="font-semibold">Terms & Policies</h3>
+        <button class="h-8 w-8 grid place-items-center rounded-lg hover:bg-blue-100" id="closePolicyX" aria-label="Close">
+          ✕
+        </button>
+      </div>
+      <div class="p-4 space-y-4 max-h-[65vh] overflow-y-auto">
+        <section>
+          <h4 class="font-semibold mb-1">Terms of Service</h4>
+          <p class="text-sm text-slate-700">
+            By creating an account, you agree to use True Style in accordance with applicable laws and our community standards.
+          </p>
+        </section>
+        <section>
+          <h4 class="font-semibold mb-1">Privacy Policy</h4>
+          <p class="text-sm text-slate-700">
+            We collect minimal data necessary to provide services. We do not sell your information. See our full privacy statement on the website.
+          </p>
+        </section>
+        <section>
+          <h4 class="font-semibold mb-1">Returns & Refunds</h4>
+          <p class="text-sm text-slate-700">
+            7-day easy returns. Items should be unused and in original packaging with tags intact.
+          </p>
+        </section>
+      </div>
+      <div class="p-4 border-t flex items-center justify-end gap-2">
+        <button class="h-10 px-4 rounded-xl border" id="closePolicy">Close</button>
+        <button class="h-10 px-4 rounded-xl bg-blue-600 text-white" id="agreePolicy">I Agree</button>
+      </div>
+    </dialog>
+
+    <!-- Behavior script (validators, modal, toggles) -->
+    <script>
+  // --- eye toggles (unchanged) ---
+  function setupSvgToggle(inputId, buttonId) {
+    const input = document.getElementById(inputId);
+    const btn = document.getElementById(buttonId);
+    const openIcon = btn.querySelector(".eye-open");
+    const closedIcon = btn.querySelector(".eye-closed");
+    btn.addEventListener("click", () => {
+      const toText = input.type === "password";
+      input.type = toText ? "text" : "password";
+      openIcon.classList.toggle("hidden", toText);
+      closedIcon.classList.toggle("hidden", !toText);
+    });
+  }
+  setupSvgToggle("password", "togglePassword");
+  setupSvgToggle("confirmPassword", "toggleConfirm");
+
+  // show/hide password guideline on focus only
+  const pwd = document.getElementById("password");
+  const pwdTip = document.getElementById("passwordTip");
+  pwd.addEventListener("focus", () => pwdTip.classList.remove("hidden"));
+  pwd.addEventListener("blur",  () => pwdTip.classList.add("hidden"));
+
+  // --- elements ---
+  const form = document.getElementById("registerForm");
+  const firstName = document.getElementById("firstName");
+  const lastName  = document.getElementById("lastName");
+  const email     = document.getElementById("email");
+  const phone     = document.getElementById("phone");
+  const password  = document.getElementById("password");
+  const confirmPassword = document.getElementById("confirmPassword");
+  const termsCheck = document.getElementById("termsCheck");
+
+  const firstNameError = document.getElementById("firstNameError");
+  const lastNameError  = document.getElementById("lastNameError");
+  const emailError     = document.getElementById("emailError");
+  const phoneError     = document.getElementById("phoneError");
+  const passwordError  = document.getElementById("passwordError");
+  const confirmError   = document.getElementById("confirmError");
+  const termsError     = document.getElementById("termsError");
+
+  // helpers
+  function show(el, ok) { el.classList.toggle("hidden", ok); }
+  function mark(input, ok) {
+    input.classList.toggle("border-red-500", !ok);
+    input.classList.toggle("focus:ring-red-500", !ok);
+  }
+
+  // --- validators with explicit "required" messages ---
+  function validateNameField(inputEl, errorEl, label){
+    const v = (inputEl.value || "").trim();
+    let ok = true, msg = "";
+    if (!v) {
+      ok = false; msg = `${label} is required.`;
+    } else if (v.length < 2) {
+      ok = false; msg = `${label} must be at least 2 characters.`;
+    } else if (!/^[A-Za-z][A-Za-z\s'.-]*$/.test(v)) {
+      ok = false; msg = `Use letters, spaces, ' . - only.`;
+    }
+    errorEl.textContent = msg;
+    show(errorEl, ok);
+    mark(inputEl, ok);
+    return ok;
+  }
+  function validateFirstName(){ return validateNameField(firstName, firstNameError, "First name"); }
+  function validateLastName(){  return validateNameField(lastName,  lastNameError,  "Last name");  }
+
+  function validateEmail(){
+    const v = email.value.trim();
+    let ok = true, msg = "";
+    if (!v) { ok = false; msg = "Email is required."; }
+    else if (!email.checkValidity()) { ok = false; msg = "Please enter a valid email."; }
+    emailError.textContent = msg;
+    show(emailError, ok); mark(email, ok);
+    return ok;
+  }
+
+  function validatePhone(){
+    const v = phone.value.trim();
+    let ok = true, msg = "";
+    if (!v) { ok = false; msg = "Phone number is required."; }
+    else if (!phone.checkValidity()) { ok = false; msg = "Enter a valid phone number."; }
+    phoneError.textContent = msg;
+    show(phoneError, ok); mark(phone, ok);
+    return ok;
+  }
+
+  function validatePassword(){
+    const v = password.value;
+    let ok = true, msg = "";
+    if (!v) { ok = false; msg = "Password is required."; }
+    else if (v.length < 6) { ok = false; msg = "Password must be at least 6 characters."; }
+    passwordError.textContent = msg;
+    show(passwordError, ok); mark(password, ok);
+    return ok;
+  }
+
+  function validateConfirm(){
+    const p = password.value;
+    const c = confirmPassword.value;
+    let ok = true, msg = "";
+    if (!c) { ok = false; msg = "Confirm password is required."; }
+    else if (c.length < 6) { ok = false; msg = "Confirm password must be at least 6 characters."; }
+    else if (c !== p) { ok = false; msg = "Passwords do not match."; }
+    confirmError.textContent = msg;
+    show(confirmError, ok); mark(confirmPassword, ok);
+    return ok;
+  }
+
+  function validateTerms(){
+    const ok = termsCheck.checked;
+    show(termsError, ok);
+    return ok;
+  }
+
+  // live validation
+  ["input","blur"].forEach(evt=>{
+    firstName.addEventListener(evt, validateFirstName);
+    lastName.addEventListener(evt,  validateLastName);
+    email.addEventListener(evt,     validateEmail);
+    phone.addEventListener(evt,     validatePhone);
+    password.addEventListener(evt,  ()=>{ validatePassword(); validateConfirm(); });
+    confirmPassword.addEventListener(evt, validateConfirm);
+    termsCheck.addEventListener("change", validateTerms);
+  });
+
+  // policies modal (unchanged)
+  const policyModal = document.getElementById("policyModal");
+  document.getElementById("openPolicies").addEventListener("click", () => policyModal.showModal());
+  document.getElementById("closePolicy").addEventListener("click", () => policyModal.close());
+  document.getElementById("closePolicyX").addEventListener("click", () => policyModal.close());
+  document.getElementById("agreePolicy").addEventListener("click", () => {
+    termsCheck.checked = true;
+    policyModal.close();
+    validateTerms();
+  });
+
+  // --- final submit: block if ANY required field is empty/invalid ---
+  document.getElementById("registerForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const ok = [
+      validateFirstName(),
+      validateLastName(),
+      validateEmail(),
+      validatePhone(),
+      validatePassword(),
+      validateConfirm(),
+      validateTerms()
+    ].every(Boolean);
+
+    if (!ok) {
+      // focus first invalid input for good UX
+      const firstInvalid =
+        document.querySelector(".border-red-500") ||
+        (!termsCheck.checked && termsCheck);
+      if (firstInvalid && typeof firstInvalid.focus === "function") firstInvalid.focus();
+      return;
+    }
+
+    // if all good, register
+    const fd = new FormData(document.getElementById("registerForm"));
+    const payload = {
+      firstName: (fd.get("firstName") || "").trim(),
+      lastName:  (fd.get("lastName")  || "").trim(),
+      email:     (fd.get("email")     || "").trim().toLowerCase(),
+      password:   fd.get("password")  || ""
+    };
+    try {
+      TSAuth.register(payload);
+      location.replace("/user/index.html");
+    } catch (err) {
+      alert(err.message || "Registration failed");
+    }
+  });
+</script>
+
+    <!-- App scripts -->
+    <script src="/Model/appdb.js"></script>
+    <script src="/Auth_Controller/auth.js"></script>
+    <script>
+      // if logged in, bounce
+      (function () {
+        if (TSAuth.isLoggedIn()) {
+          TSAuth.role() === "admin"
+            ? location.replace("/admin/index.html")
+            : location.replace("/user/index.html");
+        }
+      })();
+
+      // Final submit: validate then register
+      document.getElementById("registerForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        // Run all validations (shows inline errors if any)
+        const ok = [
+          validateFirstName(),
+          validateLastName(),
+          (document.getElementById('email').checkValidity() && (function(){ const r = document.getElementById('email'); r.dispatchEvent(new Event('blur')); return true; })()),
+          (document.getElementById('phone').checkValidity() && (function(){ const r = document.getElementById('phone'); r.dispatchEvent(new Event('blur')); return true; })()),
+          (document.getElementById('password').value.length >= 6 && (function(){ document.getElementById('password').dispatchEvent(new Event('blur')); return true; })()),
+          (function(){ const p=document.getElementById('password').value,c=document.getElementById('confirmPassword').value; const good=(c===p && c.length>=6); document.getElementById('confirmPassword').dispatchEvent(new Event('blur')); return good; })(),
+          document.getElementById('termsCheck').checked
+        ].every(Boolean);
+
+        if (!ok) { return; }
+
+        const fd = new FormData(document.getElementById("registerForm"));
+        const firstName = (fd.get("firstName") || "").trim();
+        const lastName  = (fd.get("lastName") || "").trim();
+        const email     = (fd.get("email") || "").trim().toLowerCase();
+        const password  = fd.get("password") || "";
+        try {
+          TSAuth.register({ firstName, lastName, email, password });
+          location.replace("/user/index.html");
+        } catch (err) {
+          alert(err.message || "Registration failed");
+        }
+      });
+    </script>
+  </body>
+</html>

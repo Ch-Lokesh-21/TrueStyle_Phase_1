@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TrueStyle - Shop</title>
+    <link rel="icon" href="/assets/icon.png" />
+    <link rel="stylesheet" href="/style/index.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="bg-white text-slate-900">
+    <!-- Injected Navbar -->
+    <div data-include="/src/Components/navbar.html"></div>
+
+    <!-- HERO -->
+    <section class="w-full px-0 relative">
+      <div class="relative overflow-hidden">
+        <div id="heroStrip" class="flex transition-transform duration-500 ease-in-out">
+          <!-- slides injected -->
+        </div>
+
+        <!-- arrows -->
+        <button id="heroPrev" class="hidden sm:grid absolute left-2 top-1/2 -translate-y-1/2 place-items-center h-9 w-9 rounded-full bg-white/95 shadow ring-1 ring-slate-200 z-10" aria-label="Previous slide">
+          <svg viewBox="0 0 24 24" class="h-5 w-5"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+        <button id="heroNext" class="hidden sm:grid absolute right-2 top-1/2 -translate-y-1/2 place-items-center h-9 w-9 rounded-full bg-white/95 shadow ring-1 ring-slate-200 z-10" aria-label="Next slide">
+          <svg viewBox="0 0 24 24" class="h-5 w-5"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+
+        <!-- dots -->
+        <div id="heroDots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2"></div>
+      </div>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section id="productsSection" class="max-w-7xl mx-auto px-4 mt-8">
+      <!-- Controls row -->
+      <div class="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+        <!-- Search -->
+        <form id="homeSearchForm" class="flex-1 flex items-center gap-2">
+          <div class="relative flex-1">
+            <input id="homeSearch"
+              class="w-full h-11 pl-10 pr-3 rounded-2xl bg-slate-50 shadow-inner placeholder:text-slate-400 outline-none focus:bg-white"
+              placeholder="Search for tees, denim, dresses…" />
+            <svg viewBox="0 0 24 24" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400">
+              <path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15a7.5 7.5 0 0 1 0 15z" fill="none" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <button class="h-11 px-5 rounded-2xl shadow bg-slate-900 text-white text-sm hover:opacity-95">Search</button>
+        </form>
+
+        <!-- Filters -->
+        <div class="flex gap-2">
+          <div class="relative">
+            <select id="homeCat" class="peer h-11 pl-4 pr-10 rounded-2xl bg-slate-50 shadow-inner outline-none appearance-none">
+              <option value="">All Categories</option>
+            </select>
+            <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="relative">
+            <select id="homeSort" class="peer h-11 pl-4 pr-10 rounded-2xl bg-slate-50 shadow-inner outline-none appearance-none">
+              <option value="pop">Most Popular</option>
+              <option value="price_asc">Price: Low → High</option>
+              <option value="price_desc">Price: High → Low</option>
+            </select>
+            <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid -->
+      <div id="prodGrid" class="mt-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t mt-6">
+  <div class="w-full p-6 md:p-10">
+    <div class="grid gap-8 md:grid-cols-3">
+      <div>
+        <h3 class="font-semibold text-xl mb-4">Download the App</h3>
+        <div class="flex items-center gap-3">
+          <a href="#" class="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 hover:bg-slate-50">
+            <!-- Play -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/>
+            </svg>
+            <span class="text-sm font-medium">Google Play</span>
+          </a>
+          <a href="#" class="inline-flex items-center gap-2 rounded-2xl border px-4 py-2 hover:bg-slate-50">
+            <!-- App Store -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16.365 1.43a5.6 5.6 0 01-1.382 3.91 4.9 4.9 0 01-3.515 1.64 5.45 5.45 0 011.372-3.97A5.15 5.15 0 0116.365 1.43zM20.5 17.48c-.435 1.01-.658 1.48-1.23 2.39-.8 1.27-1.93 2.85-3.34 2.86-1.25.01-1.58-.84-3.29-.84-1.72 0-2.1.82-3.34.85-1.39.03-2.46-1.37-3.26-2.64-1.78-2.8-3.14-7.92-1.31-11.41.9-1.7 2.5-2.77 4.33-2.8 1.31-.03 2.55.9 3.29.9.73 0 2.26-1.12 3.81-.95.65.03 2.48.26 3.66 1.97-3.22 1.76-2.7 6.41.65 7.67z"/>
+            </svg>
+            <span class="text-sm font-medium">App Store</span>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-xl mb-4">Shop</h3>
+        <ul class="space-y-2 text-sm text-slate-600">
+          <li><a href="#" class="hover:text-[var(--color-primary)] text-md">Women’s</a></li>
+          <li><a href="#" class="hover:text-[var(--color-primary)] text-md">Men’s</a></li>
+          <li><a href="#" class="hover:text-[var(--color-primary)] text-md">Kids</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="font-semibold text-xl mb-4">About</h3>
+        <ul class="space-y-2 text-sm text-slate-600">
+          <li><a href="/index.html#about" class="hover:text-[var(--color-primary)] text-md">About Us</a></li>
+          <li><a href="/index.html#contact" class="hover:text-[var(--color-primary)] text-md">Give Feedback</a></li>
+          <li><a href="/index.html" class="hover:text-[var(--color-primary)] text-md">Store Locator</a></li>
+          <li>
+            <a href="mailto:truestyle@example.com" class="hover:text-[var(--color-primary)] text-md">
+              Support: truestyle@example.com | +91 1234567890
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-8 grid gap-4 md:grid-cols-4 text-xs text-slate-500">
+      <a href="/index.html#policies" class="hover:text-[var(--color-primary)] text-md">Terms &amp; Conditions</a>
+      <a href="/index.html#policies" class="hover:text-[var(--color-primary)] text-md">Return Policy</a>
+      <a href="/index.html#policies" class="hover:text-[var(--color-primary)] text-md">Exchange Policy</a>
+      <a href="/index.html#policies" class="hover:text-[var(--color-primary)] text-md">Privacy Policy</a>
+    </div>
+
+    <p class="mt-6 text-sm text-slate-500 text-center">
+      &#169; <span data-year></span> TrueStyle. All Rights Reserved.
+    </p>
+  </div>
+</footer>
+    <!-- Shared helpers -->
+    <script src="/Model/appdb.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+    <script>
+      // ---------- Shared helpers ----------
+      const $ = (q, root=document)=>root.querySelector(q);
+      const $$ = (q, root=document)=>Array.from(root.querySelectorAll(q));
+      const fmtINR = (n)=>"₹"+(n||0).toLocaleString("en-IN");
+
+      function currentUserId(){
+        try{
+          if (window.TSAuth?.user?.id) return TSAuth.user.id;
+          const u=(AppDB.select("User")||[])[0]; return u?.id||2001;
+        }catch{ return 2001; }
+      }
+
+      async function injectPartials(){
+        await Promise.all($$("[data-include]").map(async n=>{
+          const url=n.getAttribute("data-include");
+          const html=await fetch(url).then(r=>r.text());
+          n.outerHTML=html;
+        }));
+      }
+
+      function refreshCartBadge(){
+        const uid=currentUserId();
+        const items=AppDBHelpers.getCart(uid)||[];
+        const total=items.reduce((a,i)=>a+(i.Quantity||1),0);
+        const b=$("#cartBadge"); if(!b) return;
+        if(total>0){ b.textContent=total; b.classList.remove("hidden"); }
+        else b.classList.add("hidden");
+      }
+
+      function initNavInteractions(){
+        lucide.createIcons();
+        const btn=$("#profileBtn"), menu=$("#profileMenu");
+        btn?.addEventListener("click", ()=>menu?.classList.toggle("hidden"));
+        document.addEventListener("click",(e)=>{
+          if(!menu?.contains(e.target) && !btn?.contains(e.target)) menu?.classList.add("hidden");
+        });
+
+        $("#logOut")?.addEventListener("click", ()=>{
+          localStorage.removeItem("ts_is_logged_in");
+          localStorage.removeItem("ts_role");
+          localStorage.removeItem("ts_user_id");
+          location.replace("/index.html");
+        });
+
+        // Compact category menus
+        function closeAllCatMenus(except){
+          $$('[data-dd-panel]').forEach(p=>{
+            if(p.getAttribute('data-dd-panel')!==except) p.classList.add('hidden');
+          });
+        }
+        $$('[data-dd-btn]').forEach(b=>{
+          const key=b.getAttribute('data-dd-btn');
+          const panel=document.querySelector(`[data-dd-panel="${key}"]`);
+          b.addEventListener('click',(e)=>{
+            e.preventDefault();
+            const willOpen=panel.classList.contains('hidden');
+            closeAllCatMenus(key);
+            panel.classList.toggle('hidden',!willOpen);
+          });
+        });
+        document.addEventListener('click',(e)=>{
+          if(!e.target.closest('[data-dd-btn]') && !e.target.closest('[data-dd-panel]')) closeAllCatMenus();
+        });
+
+        // Navbar search hands off to home search
+        $("#navSearchForm")?.addEventListener("submit",(e)=>{
+          e.preventDefault();
+          const v=$("#navSearch").value.trim();
+          if(!v) return;
+          const anchor=$("#productsSection");
+          if(anchor){
+            $("#homeSearch").value=v;
+            anchor.scrollIntoView({behavior:"smooth"});
+            window.applyHomeFilters?.();
+          }else{
+            location.href=`/user/index.html?q=${encodeURIComponent(v)}`;
+          }
+        });
+
+        // Quick filters (legacy)
+        $$("[data-cat]").forEach(a=>{
+          a.addEventListener("click",(e)=>{
+            e.preventDefault();
+            const name=a.getAttribute("data-cat");
+            localStorage.setItem("ts_user_cat",name);
+            const anchor=$("#productsSection");
+            if(anchor) anchor.scrollIntoView({behavior:"smooth"});
+            window.applyHomeFilters?.();
+          });
+        });
+
+        refreshCartBadge();
+      }
+    </script>
+
+    <script>
+      // ---------- HOME PAGE ----------
+      document.addEventListener("DOMContentLoaded", async ()=>{
+        await injectPartials();
+        initNavInteractions();
+
+        // HERO
+        const strip=$("#heroStrip");
+        const dots=$("#heroDots");
+        const heroes=AppDB._state?.Hero_Image||[];
+
+        strip.innerHTML = heroes.map((h,i)=>`
+          <img src="${h.image_url}" alt="hero ${i+1}"
+               class="w-full object-fit"
+               data-idx="${i}">
+        `).join("");
+
+        const count=heroes.length; let idx=0;
+        function updateDots(){
+          dots.querySelectorAll("button").forEach((b,i)=>{
+            b.className = "h-2.5 w-2.5 rounded-full transition " + (i===idx? "bg-slate-900":"bg-slate-300");
+          });
+        }
+        function go(i){
+          if(!count) return;
+          idx=(i+count)%count;
+          strip.style.transform=`translateX(-${idx*100}%)`;
+          updateDots();
+        }
+        dots.innerHTML = heroes.map((_,i)=>`<button class="h-2.5 w-2.5 rounded-full bg-slate-300" data-dot="${i}" aria-label="Go to slide ${i+1}"></button>`).join("");
+        dots.querySelectorAll("button").forEach(b=>{
+          b.addEventListener("click",()=>{ clearInterval(t); go(Number(b.getAttribute("data-dot"))); });
+        });
+        let t=setInterval(()=>go(idx+1),4000);
+        $("#heroPrev").onclick=()=>{ clearInterval(t); go(idx-1); };
+        $("#heroNext").onclick=()=>{ clearInterval(t); go(idx+1); };
+        go(0);
+
+        // CATEGORIES
+        const topCats=AppDB.select("Category").filter(c=>!c.Parent_Category_Id);
+        const catSel=$("#homeCat");
+        catSel.innerHTML = `<option value="">All Categories</option>` + topCats.map(c=>`<option value="${c.id}">${c.Display_Text}</option>`).join("");
+
+        // URL / quick-cat
+        const url=new URL(location.href);
+        const urlQ=url.searchParams.get("q")||"";
+        const quick=localStorage.getItem("ts_user_cat")||"";
+        if(urlQ) $("#homeSearch").value=urlQ;
+        if(quick){
+          const found=topCats.find(c=>c.Display_Text.toLowerCase().includes(quick.toLowerCase()));
+          if(found) catSel.value=String(found.id);
+          localStorage.removeItem("ts_user_cat");
+        }
+
+        // Render grid
+        window.applyHomeFilters=function(){
+          const q=$("#homeSearch").value.trim().toLowerCase();
+          const cat=Number($("#homeCat").value||0);
+          const sort=$("#homeSort").value;
+          const all=AppDB.select("Product").filter(p=>!p.Out_of_Stock);
+
+          let items=all;
+          if(q) items=items.filter(p=>[p.Name,p.Description,p.Brand,p.color].join(" ").toLowerCase().includes(q));
+          if(cat){
+            items=items.filter(p=>{
+              const c=AppDB.get("Category", p.Categories_Id);
+              return c?.id===cat || c?.Parent_Category_Id===cat;
+            });
+          }
+          if(sort==="price_asc") items.sort((a,b)=>a.price-b.price);
+          else if(sort==="price_desc") items.sort((a,b)=>b.price-a.price);
+          else items.sort((a,b)=>(b.Reviews_Count||0)-(a.Reviews_Count||0));
+
+          const grid=$("#prodGrid");
+          grid.innerHTML = items.map(ProductCard).join("");
+          bindCardActions();
+        };
+
+        applyHomeFilters();
+        $("#homeSearchForm").addEventListener("submit",(e)=>{ e.preventDefault(); applyHomeFilters(); });
+        $("#homeCat").addEventListener("change", applyHomeFilters);
+        $("#homeSort").addEventListener("change", applyHomeFilters);
+      });
+
+      // ---------- Card template ----------
+      function ProductCard(p){
+        const rating = Number(p.Rating||0);
+        const rc = Math.round(rating*10)/10;
+        return `
+        <article class="group relative rounded-3xl bg-white shadow-sm hover:shadow-lg transition overflow-hidden focus-within:ring-2 ring-slate-900/10">
+          <a href="/src/Features/Products/view-product.html?id=${p.id}" class="block">
+            <div class="relative">
+              <img src="${p.Thumbnail}" alt="${p.Name}"
+                   class="w-full aspect-[4/5] object-fit transition duration-300 group-hover:scale-[1.02]">
+              ${p.Badge ? `<span class="absolute left-3 top-3 text-[11px] px-2 py-1 rounded-full bg-black/80 text-white">${p.Badge}</span>` : ``}
+            </div>
+            <div class="p-3">
+              <div class="text-xs text-slate-500">${p.Brand || "TrueStyle"}</div>
+              <h3 class="mt-0.5 text-sm font-medium line-clamp-1">${p.Name}</h3>
+              <div class="mt-1 flex items-center justify-between">
+                <div class="text-base font-semibold">${fmtINR(p.price)}</div>
+                ${rating ? `<div class="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full">${rc} ★</div>` : ``}
+              </div>
+            </div>
+          </a>
+          <div class="px-3 pb-3">
+            <button data-add="${p.id}" class="h-9 w-full rounded-lg bg-slate-900 text-white text-xs hover:opacity-95">Add to Bag</button>
+          </div>
+        </article>`;
+      }
+
+      function bindCardActions(){
+        // Add to cart without following the card link
+        $$("#prodGrid [data-add]").forEach(btn=>{
+          btn.addEventListener("click",(e)=>{
+            e.stopPropagation();
+            e.preventDefault();
+            const id=Number(btn.getAttribute("data-add"));
+            AppDBHelpers.addToCart(currentUserId(), id, 1);
+            refreshCartBadge();
+            btn.textContent="Added ✓";
+            btn.disabled=true;
+            setTimeout(()=>{ btn.textContent="Add to Bag"; btn.disabled=false; }, 1200);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

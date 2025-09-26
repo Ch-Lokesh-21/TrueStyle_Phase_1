@@ -1,0 +1,492 @@
+<!-- /admin/pages/products.html (toasts wired for add/edit/delete/import) -->
+<section class="bg-white rounded-2xl p-5 shadow fade-up">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+    <h2 class="font-semibold text-lg">Product Management</h2>
+    <div class="flex flex-wrap gap-2">
+      <button id="btnAddProduct"
+        class="inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 cursor-pointer">
+        <i class="ri-add-line"></i>Add Product
+      </button>
+      <button id="btnBulkUpload"
+        class="inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700 cursor-pointer">
+        <i class="ri-upload-2-line"></i>Bulk Upload
+      </button>
+    </div>
+  </div>
+
+  <!-- Search & Filters (spread layout) -->
+  <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+      <!-- Search -->
+      <div class="md:col-span-5">
+        <label class="block text-xs text-slate-600 mb-1">Search</label>
+        <div class="relative">
+          <input id="searchBox" type="text" placeholder="Search products…"
+                 class="h-10 w-full pl-3 pr-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200" />
+        </div>
+      </div>
+
+      <!-- Brand -->
+      <div class="md:col-span-3">
+        <label class="block text-xs text-slate-600 mb-1">Brand</label>
+        <select id="filterBrand"
+                class="h-10 w-full border rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-blue-200">
+          <option value="">All Brands</option>
+          <option value="TrueStyle">TrueStyle</option>
+        </select>
+      </div>
+
+      <!-- Stock -->
+      <div class="md:col-span-2">
+        <label class="block text-xs text-slate-600 mb-1">Stock</label>
+        <select id="filterStock" class="h-10 w-full border rounded-lg px-3">
+          <option value="">All Stock</option>
+          <option value="in">In Stock</option>
+          <option value="out">Out of Stock</option>
+        </select>
+      </div>
+
+      <!-- Color -->
+      <div class="md:col-span-2">
+        <label class="block text-xs text-slate-600 mb-1">Color</label>
+        <select id="filterColor" class="h-10 w-full border rounded-lg px-3">
+          <option value="">All Colors</option>
+        </select>
+      </div>
+
+      <!-- Price Min -->
+      <div class="md:col-span-2">
+        <label class="block text-xs text-slate-600 mb-1">Min Price (₹)</label>
+        <input id="minPrice" type="number" class="h-10 w-full border rounded-lg px-2" placeholder="0">
+      </div>
+
+      <!-- Price Max -->
+      <div class="md:col-span-2">
+        <label class="block text-xs text-slate-600 mb-1">Max Price (₹)</label>
+        <input id="maxPrice" type="number" class="h-10 w-full border rounded-lg px-2" placeholder="5000">
+      </div>
+
+      <!-- Reset -->
+      <div class="md:col-span-2">
+        <label class="block text-xs opacity-0 mb-1">Reset</label>
+        <button id="resetFilters" class="h-10 w-full px-3 border rounded-lg hover:bg-white">
+          Reset
+        </button>
+      </div>
+
+      <!-- Top pagination (hidden by default; enable if you want top pager visible) -->
+      <div class="md:col-span-12 flex flex-col sm:flex-row items-center justify-end gap-2 mt-1 hidden">
+        <div id="pageInfoTop" class="min-w-28 text-center text-slate-600 text-sm"></div>
+        <div class="flex items-center gap-2">
+          <button id="prevPageTop" class="h-9 px-3 border rounded-lg hover:bg-white">Prev</button>
+          <button id="nextPageTop" class="h-9 px-3 border rounded-lg hover:bg-white">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto rounded-xl border border-slate-200 mt-5">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 text-slate-700">
+          <th class="p-3 text-left">Thumbnail</th>
+          <th class="p-3 text-left cursor-pointer select-none" data-sort="Name">Name</th>
+          <th class="p-3 text-left cursor-pointer select-none">Color</th>
+          <th class="p-3 text-left">Brand</th>
+          <th class="p-3 text-left cursor-pointer select-none" data-sort="price">Price</th>
+          <th class="p-3 text-left cursor-pointer select-none" data-sort="Creation_Date">Created</th>
+          <th class="p-3 text-left">Stock</th>
+          <th class="p-3 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="productTable" class="divide-y divide-slate-100"></tbody>
+    </table>
+  </div>
+
+  <!-- Pagination (bottom) -->
+  <div class="flex justify-between items-center mt-4">
+    <div class="text-xs text-slate-500">Showing <span id="showingRange"></span></div>
+    <div class="flex items-center gap-2">
+      <button id="prevPage" class="h-9 px-3 border rounded-lg hover:bg-slate-50">Prev</button>
+      <div id="pageInfo" class="min-w-28 text-center text-slate-600 text-sm"></div>
+      <button id="nextPage" class="h-9 px-3 border rounded-lg hover:bg-slate-50">Next</button>
+    </div>
+  </div>
+</section>
+
+<!-- Delete Confirm Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+    <h3 class="text-lg font-semibold mb-2">Delete Product</h3>
+    <p id="deleteText" class="text-sm text-slate-600"></p>
+    <div class="mt-5 flex justify-end gap-2">
+      <button id="cancelDelete" class="h-9 px-3 border rounded-lg">Cancel</button>
+      <button id="confirmDelete" class="h-9 px-3 rounded-lg bg-red-600 text-white">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal (unified) -->
+<div id="editModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl">
+    <h3 id="editTitle" class="text-lg font-semibold mb-4">Add Product</h3>
+    <form id="editForm" class="grid gap-3">
+      <input type="hidden" name="id" />
+      <div class="grid md:grid-cols-2 gap-3">
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Name</span>
+          <input name="Name" required class="h-10 border rounded-lg px-3" />
+        </label>
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Brand</span>
+          <input name="Brand" class="h-10 border rounded-lg px-3" />
+        </label>
+      </div>
+      <div class="grid md:grid-cols-2 gap-3">
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Price (₹)</span>
+          <input name="price" type="number" step="0.01" required class="h-10 border rounded-lg px-3" />
+        </label>
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Created</span>
+          <input name="Creation_Date" type="date" class="h-10 border rounded-lg px-3" />
+        </label>
+      </div>
+      <div class="grid md:grid-cols-2 gap-3">
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Thumbnail URL</span>
+          <input name="Thumbnail" class="h-10 border rounded-lg px-3" placeholder="https://..." />
+        </label>
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Color</span>
+          <input name="color" class="h-10 border rounded-lg px-3" placeholder="e.g., Blue" />
+        </label>
+      </div>
+      <label class="flex items-center gap-2">
+        <input name="Out_of_Stock" type="checkbox" class="h-4 w-4">
+        <span class="text-sm">Out of Stock</span>
+      </label>
+      <div class="mt-4 flex justify-end gap-2">
+        <button type="button" id="cancelEdit" class="h-9 px-3 border rounded-lg">Cancel</button>
+        <button type="submit" class="h-9 px-3 rounded-lg bg-blue-600 text-white">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Bulk Upload Modal -->
+<div id="bulkModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-3xl shadow-xl">
+    <h3 class="text-lg font-semibold mb-2">Bulk Upload</h3>
+    <p class="text-sm text-slate-600 mb-4">
+      Paste CSV with headers:
+      <code class="px-1 py-0.5 rounded bg-slate-100">Name,Brand,price,Creation_Date,Out_of_Stock,Thumbnail,color</code>
+    </p>
+    <textarea id="bulkText" rows="10"
+      class="w-full border rounded-lg p-3 font-mono text-xs"
+      placeholder="Classic Tee,TrueStyle,999,2025-09-10,false,https://...,Black"></textarea>
+    <div class="mt-4 flex justify-between items-center">
+      <div class="text-xs text-slate-500">Tip: Out_of_Stock accepts <code>true/false</code>.</div>
+      <div class="flex gap-2">
+        <button id="cancelBulk" class="h-9 px-3 border rounded-lg">Cancel</button>
+        <button id="confirmBulk" class="h-9 px-3 rounded-lg bg-slate-900 text-white">Import</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- tiny toast helper (safe if Toast.js missing) ---
+  function toast(msg, type='info'){ try{ window.Toast?.show?.(msg, {type}); }catch{} }
+
+  // ---- Load Data ----
+  const products = (window.AppDB?.select)
+    ? AppDB.select('Product')
+    : (window.Product || []);
+  const productImages = (window.AppDB?.select)
+    ? (AppDB.select('Product_Images') || [])
+    : (window.Product_Images || []);
+
+  let currentPage = 1, rowsPerPage = 6, currentSort = null, currentOrder = 'asc';
+  let editingId = null; // track edit vs add
+
+  // Elements
+  const table = document.getElementById('productTable');
+  const searchBox = document.getElementById('searchBox');
+  const filterBrand = document.getElementById('filterBrand');
+  const filterStock = document.getElementById('filterStock');
+  const filterColor = document.getElementById('filterColor');
+  const minPrice = document.getElementById('minPrice');
+  const maxPrice = document.getElementById('maxPrice');
+  const pageInfo = document.getElementById('pageInfo');
+  const pageInfoTop = document.getElementById('pageInfoTop');
+  const showingRange = document.getElementById('showingRange');
+
+  // Populate dynamic colors & brands
+  (function seedFilters(){
+    const colors = Array.from(new Set(products.map(p => p.color).filter(Boolean))).sort();
+    const brands = Array.from(new Set(products.map(p => p.Brand).filter(Boolean))).sort();
+    brands.forEach(b=>{
+      if (![...filterBrand.options].some(o=>o.value===b)) {
+        const opt=document.createElement('option'); opt.value=b; opt.textContent=b; filterBrand.appendChild(opt);
+      }
+    });
+    colors.forEach(c=>{
+      const opt=document.createElement('option'); opt.value=c; opt.textContent=c; filterColor.appendChild(opt);
+    });
+  })();
+
+  // Utils
+  function formatDate(d){ if(!d) return '—'; const dt=new Date(d); return isNaN(dt)?d:dt.toLocaleDateString(); }
+  function withinPrice(p){
+    const min = Number(minPrice.value || 0);
+    const max = Number(maxPrice.value || Number.POSITIVE_INFINITY);
+    const price = Number(p.price || 0);
+    return price >= min && price <= max;
+  }
+
+  function getFilteredSorted(){
+    let data = products.filter(p => {
+      const matchesSearch = (p.Name ?? '').toLowerCase().includes((searchBox.value ?? '').toLowerCase());
+      const matchesBrand = !filterBrand.value || p.Brand === filterBrand.value;
+      const matchesStock = !filterStock.value ||
+          (filterStock.value==='in' && !p.Out_of_Stock) ||
+          (filterStock.value==='out' && p.Out_of_Stock);
+      const matchesColor = !filterColor.value || (p.color === filterColor.value);
+      const matchesPrice = withinPrice(p);
+      return matchesSearch && matchesBrand && matchesStock && matchesColor && matchesPrice;
+    });
+
+    if (currentSort){
+      data.sort((a,b)=>{
+        let va=a[currentSort], vb=b[currentSort];
+        if (currentSort==='Creation_Date'){ va=new Date(va).getTime()||0; vb=new Date(vb).getTime()||0; }
+        if (typeof va==='string'){ va=va.toLowerCase(); vb=String(vb??'').toLowerCase(); }
+        if (va<vb) return currentOrder==='asc'?-1:1;
+        if (va>vb) return currentOrder==='asc'?1:-1;
+        return 0;
+      });
+    }
+    return data;
+  }
+
+  function renderTable(){
+    const data = getFilteredSorted();
+    const total = data.length;
+    const totalPages = Math.max(1, Math.ceil(total / rowsPerPage));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    const start=(currentPage-1)*rowsPerPage, end=Math.min(start+rowsPerPage, total);
+    const pageItems = data.slice(start,end);
+
+    table.innerHTML = pageItems.map(p=>`
+      <tr class="hover:bg-slate-50">
+        <td class="p-3"><img src="${p.Thumbnail||''}" alt="${p.Name||''}" class="h-25 w-20 rounded-lg object-fit border border-slate-200"></td>
+        <td class="p-3">
+          <div class="font-medium">${p.Name ?? '—'}</div>
+          ${p.Description ? `<div class="text-xs text-slate-500 line-clamp-1">${p.Description}</div>` : ''}
+        </td>
+        <td class="p-3"> ${p.color||'—'}</td>
+        <td class="p-3">${p.Brand ?? '—'}</td>
+        <td class="p-3 font-semibold">₹${Number(p.price ?? 0).toLocaleString('en-IN')}</td>
+        <td class="p-3">${formatDate(p.Creation_Date)}</td>
+        <td class="p-3">
+          <span class="inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 ${p.Out_of_Stock?'bg-red-50 text-red-700':'bg-green-50 text-green-700'}">
+            <span class="h-1.5 w-1.5 rounded-full ${p.Out_of_Stock?'bg-red-600':'bg-green-600'}"></span>
+            ${p.Out_of_Stock?'Out of Stock':'In Stock'}
+          </span>
+        </td>
+        <td class="p-3">
+          <div class="flex flex-wrap gap-4">
+            <a class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg cursor-pointer" href="/src/Features/Products/view-product.html?id=${p.id}">View</a>
+            <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg cursor-pointer" onclick="openEdit(${p.id})">Edit</button>
+            <button class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg cursor-pointer" onclick="openDelete(${p.id})">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    const info = `Page ${currentPage} of ${totalPages}`;
+    pageInfo.textContent = info; pageInfoTop.textContent = info;
+    showingRange.textContent = total ? `${start + 1}-${end} of ${total}` : `0-0 of 0`;
+
+    const disablePrev = currentPage<=1, disableNext = currentPage>=totalPages;
+    ['prevPage','prevPageTop'].forEach(id=>{ const el=document.getElementById(id); el.disabled=disablePrev; el.classList.toggle('opacity-50', disablePrev); });
+    ['nextPage','nextPageTop'].forEach(id=>{ const el=document.getElementById(id); el.disabled=disableNext; el.classList.toggle('opacity-50', disableNext); });
+  }
+
+  // Sorting
+  document.querySelectorAll('th[data-sort]').forEach(th=>{
+    th.addEventListener('click',()=>{
+      const field = th.getAttribute('data-sort');
+      if(currentSort === field){ currentOrder = currentOrder==='asc'?'desc':'asc'; }
+      else { currentSort = field; currentOrder = 'asc'; }
+      renderTable();
+    });
+  });
+
+  // Filters & search
+  [searchBox, filterBrand, filterStock, filterColor, minPrice, maxPrice].forEach(el=>{
+    el.addEventListener('input', ()=>{ currentPage=1; renderTable(); });
+    el.addEventListener('change', ()=>{ currentPage=1; renderTable(); });
+  });
+  document.getElementById('resetFilters').onclick = ()=>{
+    searchBox.value=''; filterBrand.value=''; filterStock.value=''; filterColor.value='';
+    minPrice.value=''; maxPrice.value=''; currentPage=1; renderTable();
+    toast('Filters reset', 'info');
+  };
+
+  // Pagination
+  function goPrev(){ if(currentPage>1){ currentPage--; renderTable(); } }
+  function goNext(){
+    const totalPages = Math.max(1, Math.ceil(getFilteredSorted().length / rowsPerPage));
+    if(currentPage < totalPages){ currentPage++; renderTable(); }
+  }
+  document.getElementById('prevPage').onclick = goPrev;
+  document.getElementById('nextPage').onclick = goNext;
+  document.getElementById('prevPageTop').onclick = goPrev;
+  document.getElementById('nextPageTop').onclick = goNext;
+
+  // ---- Add/Edit Modal ----
+  const editModal = document.getElementById('editModal');
+  const editForm = document.getElementById('editForm');
+  const editTitle = document.getElementById('editTitle');
+
+  document.getElementById('btnAddProduct').onclick = ()=>{
+    editingId = null;
+    editTitle.textContent = 'Add Product';
+    editForm.reset();
+    editModal.classList.remove('hidden');
+  };
+  document.getElementById('cancelEdit').onclick = ()=>{
+    editModal.classList.add('hidden');
+    toast('Edit cancelled', 'info');
+  };
+
+  function openEdit(id){
+    editingId = id;
+    const p = products.find(x=>x.id===id);
+    if(!p){ toast('Product not found', 'error'); return; }
+    editTitle.textContent = 'Edit Product';
+    editForm.elements['id'].value = p.id;
+    editForm.elements['Name'].value = p.Name ?? '';
+    editForm.elements['Brand'].value = p.Brand ?? '';
+    editForm.elements['price'].value = Number(p.price ?? 0);
+    const d = new Date(p.Creation_Date);
+    editForm.elements['Creation_Date'].value = isNaN(d) ? '' : d.toISOString().slice(0,10);
+    editForm.elements['Thumbnail'].value = p.Thumbnail ?? '';
+    editForm.elements['color'].value = p.color ?? '';
+    editForm.elements['Out_of_Stock'].checked = !!p.Out_of_Stock;
+    editModal.classList.remove('hidden');
+  }
+  window.openEdit = openEdit;
+
+  editForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const fd = new FormData(editForm);
+    const payload = Object.fromEntries(fd.entries());
+    payload.price = Number(payload.price || 0);
+    payload.Out_of_Stock = fd.get('Out_of_Stock') === 'on';
+    payload.Creation_Date = payload.Creation_Date || new Date().toISOString().slice(0,10);
+    payload.id = editingId ?? ((Math.max(0, ...products.map(p => +p.id || 0)) || 0) + 1);
+
+    if (editingId == null){
+      // ADD
+      if (AppDB?.insert) AppDB.insert('Product', payload);
+      products.push(payload);
+      toast(`Product “${payload.Name||'Untitled'}” added`, 'success');
+    } else {
+      // UPDATE
+      const idx = products.findIndex(p=>p.id===editingId);
+      if (idx>-1){ products[idx] = { ...products[idx], ...payload, id: editingId }; }
+      if (AppDB?.update) AppDB.update('Product', editingId, payload);
+      toast(`Product “${payload.Name||('ID '+editingId)}” updated`, 'success');
+    }
+    editModal.classList.add('hidden');
+    renderTable();
+  });
+
+  // ---- Delete Modal ----
+  const deleteModal = document.getElementById('deleteModal');
+  const deleteText = document.getElementById('deleteText');
+  let deleteId = null;
+
+  function openDelete(id){
+    deleteId = id;
+    const p = products.find(x=>x.id===id);
+    deleteText.textContent = `Are you sure you want to delete “${p?.Name ?? 'this product'}” (ID ${id})?`;
+    deleteModal.classList.remove('hidden');
+  }
+  window.openDelete = openDelete;
+
+  document.getElementById('cancelDelete').onclick = ()=>{
+    deleteModal.classList.add('hidden');
+    toast('Delete cancelled', 'info');
+  };
+  document.getElementById('confirmDelete').onclick = ()=>{
+    if (deleteId != null){
+      const p = products.find(x=>x.id===deleteId);
+      const name = p?.Name || ('ID '+deleteId);
+      if (AppDB?.remove) AppDB.remove('Product', deleteId);
+      const idx = products.findIndex(p=>p.id===deleteId);
+      if (idx>-1) products.splice(idx,1);
+      toast(`Product “${name}” deleted`, 'success');
+    } else {
+      toast('No product selected', 'error');
+    }
+    deleteId = null;
+    deleteModal.classList.add('hidden');
+    renderTable();
+  };
+
+  // ---- Bulk Upload ----
+  const bulkModal = document.getElementById('bulkModal');
+  const bulkText = document.getElementById('bulkText');
+  document.getElementById('btnBulkUpload').onclick = ()=> bulkModal.classList.remove('hidden');
+  document.getElementById('cancelBulk').onclick = ()=>{
+    bulkModal.classList.add('hidden');
+    toast('Import cancelled', 'info');
+  };
+  document.getElementById('confirmBulk').onclick = ()=>{
+    const raw = (bulkText.value || '').trim();
+    if(!raw){ bulkModal.classList.add('hidden'); return; }
+    const lines = raw.split(/\r?\n/).filter(Boolean);
+    if (!lines.length){ toast('No rows to import', 'error'); return; }
+
+    const header = lines.shift();
+    const cols = header.split(',').map(s=>s.trim());
+    const required = ['Name','Brand','price','Creation_Date','Out_of_Stock','Thumbnail','color'];
+    const ok = required.every(k=>cols.includes(k));
+    if(!ok){
+      toast('CSV must include: ' + required.join(', '), 'error');
+      return;
+    }
+
+    let added = 0;
+    const baseId = (Math.max(0, ...products.map(p => +p.id || 0)) || 0) + 1;
+    const newItems = lines.map((line, i)=>{
+      const cells = line.split(',').map(s=>s.trim());
+      const obj = {}; cols.forEach((c,idx)=> obj[c]=cells[idx]);
+      const item = {
+        id: baseId + i,
+        Name: obj.Name, Brand: obj.Brand, price: Number(obj.price||0),
+        Creation_Date: obj.Creation_Date || new Date().toISOString().slice(0,10),
+        Out_of_Stock: String(obj.Out_of_Stock).toLowerCase()==='true',
+        Thumbnail: obj.Thumbnail, color: obj.color
+      };
+      added++; return item;
+    });
+
+    if (AppDB?.insert) newItems.forEach(it=>AppDB.insert('Product', it));
+    products.push(...newItems);
+    bulkText.value = '';
+    bulkModal.classList.add('hidden');
+    currentPage = 1;
+    renderTable();
+    toast(`Imported ${added} product${added===1?'':'s'}`, 'success');
+  };
+
+  // Initial render
+  renderTable();
+</script>

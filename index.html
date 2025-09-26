@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style/index.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>True Style</title>
+    <link rel="shortcut icon" href="/assets/icon.png" type="image/x-icon" />
+    <style>
+      .shadow-soft {
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      }
+      .fade-up {
+        animation: fadeUp 0.6s ease both;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="flex flex-col gap-5">
+      <!-- NAV -->
+      <nav
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 px-4 py-2 bg-gray-100"
+      >
+        <div class="flex items-center justify-center md:justify-start">
+          <a href="/index.html" class="inline-block">
+            <img
+              src="./assets/logo.png"
+              alt="logo"
+              class="h-12 w-auto cursor-pointer"
+            />
+          </a>
+        </div>
+
+        <!-- Center links -->
+        <div
+          class="flex flex-col gap-10 items-center justify-center lg:flex-row"
+        >
+          <a
+            href="#about"
+            class="text-center hover:text-[var(--color-primary)] hover:underline duration-100 text-lg"
+            >About</a
+          >
+          <a
+            href="#contact"
+            class="text-center hover:text-[var(--color-primary)] hover:underline duration-100 text-lg"
+            >Contact</a
+          >
+          <a
+            href="#policies"
+            class="text-center hover:text-[var(--color-primary)] hover:underline duration-100 text-lg"
+            >Policies</a
+          >
+          <a
+            href="/src/Features/Subscription/subscription.html"
+            class="text-center hover:text-[var(--color-primary)] hover:underline duration-100 text-lg"
+            >Subscription</a
+          >
+        </div>
+
+        <!-- Right auth buttons -->
+        <div class="flex items-center gap-3 justify-center md:justify-end">
+          <a href="/src/Features/Auth/login/login.html">
+            <button
+              class="px-4 py-2 bg-[var(--color-primary)] rounded-lg hover:bg-[var(--color-primary-hover)] text-white cursor-pointer"
+            >
+              Login
+            </button>
+          </a>
+          <a href="/src/Features/Auth/register/register.html">
+            <button
+              class="px-4 py-2 bg-[var(--color-primary)] rounded-lg hover:bg-[var(--color-primary-hover)] text-white cursor-pointer"
+            >
+              Register
+            </button>
+          </a>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <section class="grid grid-cols-1 md:grid-cols-2 p-5 gap-5">
+        <div class="flex items-center">
+          <section
+            class="h-full flex items-center justify-center px-6 text-center overflow-hidden w-full"
+          >
+            <div class="relative z-10 max-w-4xl hover:scale-105 duration-300">
+              <h1
+                class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight text-[var(--color-text)] fade-up"
+              >
+                Discover fashion<br />that fits<br />
+                your
+                <span class="text-[var(--color-primary)] animate-pulse"
+                  >Style</span
+                >, Size,<br />
+                and
+                <span class="text-[var(--color-primary)] animate-pulse"
+                  >Confidence</span
+                >.
+              </h1>
+              <p class="mt-6 text-lg text-gray-600 fade-up">
+                Elevate your wardrobe with outfits made just for you.
+              </p>
+              <div class="mt-8">
+                <a
+                  href="/src/Features/Auth/login/login.html"
+                  class="px-10 py-4 bg-[var(--color-primary)] text-white rounded-2xl shadow-lg text-lg font-semibold hover:bg-[var(--color-primary-hover)] transition transform hover:scale-105 inline-block animate-bounce"
+                  >Shop Now</a
+                >
+              </div>
+            </div>
+          </section>
+        </div>
+        <div class="flex items-center justify-center">
+          <img
+            src="/assets/icon.png"
+            alt="hero"
+            class="rounded-full shadow-lg h-120 w-120 fade-up hover:scale-105 duration-300"
+          />
+        </div>
+      </section>
+
+      <main class="w-full p-6 flex flex-col gap-15">
+        <!-- Why Shop -->
+        <section
+          id="shop"
+          class="bg-gray-100 rounded-2xl p-6 md:p-10 shadow-soft"
+        >
+          <h2
+            class="text-2xl md:text-3xl font-semibold text-center mb-8 text-[var(--color-text)] animate-bounce"
+          >
+            Why Shop With True Style?
+          </h2>
+          <div class="grid gap-6 md:grid-cols-3">
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center hover:scale-105 duration-300 shadow-lg"
+            >
+              <span
+                class="grid h-40 w-40 place-items-center rounded-2xl overflow-hidden"
+              >
+                <img
+                  src="./assets/home/fit_bg_removed.png"
+                  alt="Perfect Fit"
+                  class="w-full h-full object-contain"
+                />
+              </span>
+              <h3
+                class="font-semibold text-center text-xl mt-3 text-[var(--color-text)]"
+              >
+                Perfect Fit Guarantee
+              </h3>
+            </article>
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center hover:scale-105 duration-300 shadow-lg"
+            >
+              <span
+                class="grid h-40 w-40 place-items-center rounded-2xl overflow-hidden"
+              >
+                <img
+                  src="./assets/home/fast_delivery_bg_removed.png"
+                  alt="Fast Delivery"
+                  class="w-full h-full object-contain"
+                />
+              </span>
+              <h3
+                class="font-semibold text-center text-xl mt-3 text-[var(--color-text)]"
+              >
+                Fast Delivery
+              </h3>
+            </article>
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center hover:scale-105 duration-300 shadow-lg"
+            >
+              <span
+                class="grid h-40 w-40 place-items-center rounded-2xl overflow-hidden"
+              >
+                <img
+                  src="./assets/home/secure_checkout_bg_removed.png"
+                  alt="Secure Checkout"
+                  class="w-full h-full object-contain"
+                />
+              </span>
+              <h3
+                class="font-semibold text-center text-xl mt-3 text-[var(--color-text)]"
+              >
+                Secure Checkout
+              </h3>
+            </article>
+          </div>
+        </section>
+
+        <!-- Why Choose -->
+        <section class="bg-gray-100 rounded-2xl p-6 md:p-10 shadow-soft">
+          <h2
+            class="text-2xl md:text-3xl font-semibold text-center mb-8 text-[var(--color-text)] animate-bounce"
+          >
+            Why Choose True Style?
+          </h2>
+          <div class="grid gap-6 md:grid-cols-3">
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center hover:scale-105 duration-300 shadow-lg"
+            >
+              <span
+                class="grid h-40 w-40 place-items-center rounded-2xl overflow-hidden"
+              >
+                <img
+                  src="./assets/home/wide_bg_removed.png"
+                  alt="Wide Variety"
+                  class="w-full h-full object-contain"
+                />
+              </span>
+              <h3
+                class="font-semibold text-center text-xl mt-3 text-[var(--color-text)]"
+              >
+                Wide Variety
+              </h3>
+            </article>
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center hover:scale-105 duration-300 shadow-lg"
+            >
+              <span
+                class="grid h-40 w-40 place-items-center rounded-2xl overflow-hidden"
+              >
+                <img
+                  src="./assets/home/smart_search_bg_removed.png"
+                  alt="Smart Search"
+                  class="w-full h-full object-contain"
+                />
+              </span>
+              <h3
+                class="font-semibold text-center text-xl mt-3 text-[var(--color-text)]"
+              >
+                Smart Search & Filters
+              </h3>
+            </article>
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center hover:scale-105 duration-300 shadow-lg"
+            >
+              <span
+                class="grid h-40 w-40 place-items-center rounded-2xl overflow-hidden"
+              >
+                <img
+                  src="./assets/home/easy_returns_bg_removed.png"
+                  alt="Easy Returns"
+                  class="w-full h-full object-contain"
+                />
+              </span>
+              <h3
+                class="font-semibold text-center text-xl mt-3 text-[var(--color-text)]"
+              >
+                Easy Returns & Exchanges
+              </h3>
+            </article>
+          </div>
+          <div class="grid gap-6 md:grid-cols-3 mt-6">
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center hover:scale-105 duration-300 shadow-lg"
+            >
+              <span
+                class="grid h-40 w-40 place-items-center rounded-2xl overflow-hidden"
+              >
+                <img
+                  src="./assets/home/customer-centric_bg_removed.png"
+                  alt="Customer Centric"
+                  class="w-full h-full object-contain"
+                />
+              </span>
+              <h3
+                class="font-semibold text-center text-xl mt-3 text-[var(--color-text)]"
+              >
+                Customer Centric Service
+              </h3>
+            </article>
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center hover:scale-105 duration-300 shadow-lg"
+            >
+              <span
+                class="grid h-40 w-40 place-items-center rounded-2xl overflow-hidden"
+              >
+                <img
+                  src="./assets/home/affordable_bg_removed.png"
+                  alt="Affordable"
+                  class="w-full h-full object-contain"
+                />
+              </span>
+              <h3
+                class="font-semibold text-center text-xl mt-3 text-[var(--color-text)]"
+              >
+                Affordable Fashion
+              </h3>
+            </article>
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center hover:scale-105 duration-300 shadow-lg"
+            >
+              <span
+                class="grid h-40 w-40 place-items-center rounded-2xl overflow-hidden"
+              >
+                <img
+                  src="./assets/home/community_bg_removed.png"
+                  alt="Community"
+                  class="w-full h-full object-contain"
+                />
+              </span>
+              <h3
+                class="font-semibold text-center text-xl mt-3 text-[var(--color-text)]"
+              >
+                Community of Shoppers
+              </h3>
+            </article>
+          </div>
+        </section>
+
+        <!-- How it works -->
+        <section
+          class="text-center bg-gray-100 rounded-2xl p-6 md:p-10 shadow-soft"
+        >
+          <h2
+            class="text-2xl md:text-3xl font-semibold mb-8 text-[var(--color-text)] animate-bounce"
+          >
+            How it Works?
+          </h2>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8">
+            <div
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center gap-2 shadow-lg hover:scale-105 duration-300"
+            >
+              <img
+                src="./assets/home/search.png"
+                alt="browse"
+                class="w-24 h-24 rounded-lg"
+              />
+              <p class="font-medium text-[var(--color-text)] text-xl">Browse</p>
+            </div>
+            <div
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center gap-2 shadow-lg hover:scale-105 duration-300"
+            >
+              <img
+                src="./assets/home/Bag.png"
+                alt="cart"
+                class="w-24 h-24 rounded-lg"
+              />
+              <p class="font-medium text-[var(--color-text)] text-xl">
+                Add to Cart
+              </p>
+            </div>
+            <div
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center gap-2 shadow-lg hover:scale-105 duration-300"
+            >
+              <img
+                src="./assets/home/credit-card.png"
+                alt="check"
+                class="w-24 h-24 rounded-lg"
+              />
+              <p class="font-medium text-[var(--color-text)] text-xl">
+                Check Out
+              </p>
+            </div>
+            <div
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center gap-2 shadow-lg hover:scale-105 duration-300"
+            >
+              <img
+                src="./assets/home/truck.png"
+                alt="receive"
+                class="w-24 h-24 rounded-lg"
+              />
+              <p class="font-medium text-[var(--color-text)] text-xl">
+                Receive
+              </p>
+            </div>
+            <div
+              class="bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center gap-2 shadow-lg hover:scale-105 duration-300"
+            >
+              <img
+                src="./assets/home/sync.png"
+                alt="exchange"
+                class="w-24 h-24 rounded-lg"
+              />
+              <p class="font-medium text-[var(--color-text)] text-xl">
+                Easy Exchange
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="bg-gray-100 rounded-2xl p-6 md:p-10 shadow-soft">
+          <h2
+            class="text-2xl md:text-3xl font-semibold text-center mb-8 text-[var(--color-text)] animate-bounce"
+          >
+            What our Customers Say
+          </h2>
+          <div class="grid gap-6 md:grid-cols-2 sm:grid-cols-1">
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex gap-4 items-center shadow-lg hover:scale-105 duration-300"
+            >
+              <img
+                src="./assets/home/pic1.jpg"
+                alt="pic1"
+                class="rounded-full w-20 h-20 object-cover"
+              />
+              <p class="text-[var(--color-text)]">
+                Amazing offers and stylish collections. I always find something
+                new and trendy here.
+              </p>
+            </article>
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex gap-4 items-center shadow-lg hover:scale-105 duration-300"
+            >
+              <img
+                src="./assets/home/pic2.jpg"
+                alt="pic2"
+                class="rounded-full w-20 h-20 object-cover"
+              />
+              <p class="text-[var(--color-text)]">
+                TrueStyle makes shopping so easy! The clothes fit perfectly and
+                the size exchange was quick and hassle-free.
+              </p>
+            </article>
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex gap-4 items-center shadow-lg hover:scale-105 duration-300"
+            >
+              <img
+                src="./assets/home/pic3.jpg"
+                alt="pic3"
+                class="rounded-full w-20 h-20 object-cover"
+              />
+              <p class="text-[var(--color-text)]">
+                Finally found a store where sizes actually match what’s shown.
+                Love the quality and the fast delivery.
+              </p>
+            </article>
+            <article
+              class="bg-white rounded-2xl shadow-soft p-6 flex gap-4 items-center shadow-lg hover:scale-105 duration-300"
+            >
+              <img
+                src="./assets/home/pic4.jpg"
+                alt="pic4"
+                class="rounded-full w-20 h-20 object-cover"
+              />
+              <p class="text-[var(--color-text)]">
+                Customer support is very responsive. I had to exchange a shirt,
+                and the process was smooth and quick.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <!-- ABOUT -->
+        <section
+          id="about"
+          class="bg-gray-100 rounded-2xl p-6 md:p-10 shadow-soft"
+        >
+          <h2
+            class="text-2xl md:text-3xl text-center font-semibold mb-3 text-[var(--color-text)] animate-bounce"
+          >
+            About True Style
+          </h2>
+          <p class="text-slate-600 leading-7">
+            True Style is your destination for modern, well-fitting fashion. We
+            obsess over fit, fabric, and finishing — so you get confident, easy
+            outfits for every day. With smart discovery, fast delivery, and
+            friendly service, we make great style effortless.
+          </p>
+          <ul class="mt-4 grid gap-2 md:grid-cols-2 text-slate-700">
+            <li>• Curated collections for Men, Women, and Kids</li>
+            <li>• Precise sizing and easy exchanges</li>
+            <li>• Secure checkout and reliable support</li>
+            <li>• True Style Plus: free & fast 2-day deliveries</li>
+          </ul>
+        </section>
+
+        <!-- CONTACT -->
+        <section
+          id="contact"
+          class="bg-gray-100 rounded-2xl p-6 md:p-10 shadow-soft"
+        >
+          <h2
+            class="text-2xl md:text-3xl font-semibold mb-6 text-[var(--color-text)] text-center animate-bounce"
+          >
+            Contact Us
+          </h2>
+          <form id="contactForm" class="grid gap-4 md:grid-cols-2">
+            <div class="md:col-span-1">
+              <label class="block text-sm text-slate-600 mb-1">Name</label>
+              <input
+                required
+                name="name"
+                class="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white"
+                placeholder="Your name"
+              />
+            </div>
+            <div class="md:col-span-1">
+              <label class="block text-sm text-slate-600 mb-1">Email</label>
+              <input
+                required
+                type="email"
+                name="email"
+                class="w-full h-11 px-3 rounded-xl border border-slate-200 bg-white"
+                placeholder="you@example.com"
+              />
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-sm text-slate-600 mb-1">Message</label>
+              <textarea
+                required
+                name="message"
+                rows="4"
+                class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white"
+                placeholder="How can we help?"
+              ></textarea>
+            </div>
+            <div class="md:col-span-2 flex items-center gap-3 justify-center">
+              <button
+                class="px-5 h-11 rounded-xl bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] cursor-pointer"
+              >
+                Send
+              </button>
+              <span id="contactStatus" class="text-sm text-slate-600"></span>
+            </div>
+          </form>
+        </section>
+
+        <!-- POLICIES -->
+        <section
+          id="policies"
+          class="bg-gray-100 rounded-2xl p-6 md:p-10 shadow-soft"
+        >
+          <h2
+            class="text-2xl md:text-3xl font-semibold mb-6 text-[var(--color-text)] animate-bounce"
+          >
+            Policies
+          </h2>
+
+          <details class="border rounded-xl p-4 mb-3">
+            <summary
+              class="cursor-pointer font-semibold text-[var(--color-text)]"
+            >
+              Return Policy
+            </summary>
+            <p class="mt-2 text-slate-600">
+              Returns accepted within 30 days of delivery. Items must be unused,
+              with tags attached. Refunds initiated to the original payment
+              method.
+            </p>
+          </details>
+
+          <details class="border rounded-xl p-4 mb-3">
+            <summary
+              class="cursor-pointer font-semibold text-[var(--color-text)]"
+            >
+              Exchange Policy
+            </summary>
+            <p class="mt-2 text-slate-600">
+              Easy size/style exchanges within 30 days. Exchanges ship out as
+              soon as we receive your original item.
+            </p>
+          </details>
+
+          <details class="border rounded-xl p-4 mb-3">
+            <summary
+              class="cursor-pointer font-semibold text-[var(--color-text)]"
+            >
+              Privacy Policy
+            </summary>
+            <p class="mt-2 text-slate-600">
+              We only collect information necessary to provide services. We
+              never sell your data. See full policy for details on cookies and
+              analytics.
+            </p>
+          </details>
+
+          <details class="border rounded-xl p-4">
+            <summary
+              class="cursor-pointer font-semibold text-[var(--color-text)]"
+            >
+              Shipping Policy
+            </summary>
+            <p class="mt-2 text-slate-600">
+              Standard deliveries in 3–6 days.
+              <strong>True Style Plus</strong> members get free & fast 2-day
+              deliveries on eligible products.
+            </p>
+          </details>
+        </section>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="bg-white border-t">
+        <div class="w-full p-6 md:p-10">
+          <div class="grid gap-8 md:grid-cols-3">
+            <div>
+              <h3 class="font-semibold text-xl mb-4">Download the App</h3>
+              <div class="flex items-center gap-3">
+                <a
+                  href="#"
+                  class="inline-flex items-center gap-2 rounded-xl2 border px-4 py-2 hover:bg-slate-50"
+                >
+                  <!-- Play -->
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play-icon lucide-play"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/></svg>
+                  <span class="text-sm font-medium">Google Play</span>
+                </a>
+                <a
+                  href="#"
+                  class="inline-flex items-center gap-2 rounded-xl2 border px-4 py-2 hover:bg-slate-50"
+                >
+                  <!-- App Store -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M16.365 1.43a5.6 5.6 0 01-1.382 3.91 4.9 4.9 0 01-3.515 1.64 5.45 5.45 0 011.372-3.97A5.15 5.15 0 0116.365 1.43zM20.5 17.48c-.435 1.01-.658 1.48-1.23 2.39-.8 1.27-1.93 2.85-3.34 2.86-1.25.01-1.58-.84-3.29-.84-1.72 0-2.1.82-3.34.85-1.39.03-2.46-1.37-3.26-2.64-1.78-2.8-3.14-7.92-1.31-11.41.9-1.7 2.5-2.77 4.33-2.8 1.31-.03 2.55.9 3.29.9.73 0 2.26-1.12 3.81-.95.65.03 2.48.26 3.66 1.97-3.22 1.76-2.7 6.41.65 7.67z"
+                    />
+                  </svg>
+                  <span class="text-sm font-medium">App Store</span>
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-xl mb-4">Shop</h3>
+              <ul class="space-y-2 text-sm text-slate-600">
+                <li>
+                  <a href="#" class="hover:text-[var(--color-primary)] text-md"
+                    >Women’s</a
+                  >
+                </li>
+                <li>
+                  <a href="#" class="hover:text-[var(--color-primary)] text-md"
+                    >Men’s</a
+                  >
+                </li>
+                <li>
+                  <a href="#" class="hover:text-[var(--color-primary)] text-md"
+                    >Kids</a
+                  >
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-xl mb-4">About</h3>
+              <ul class="space-y-2 text-sm text-slate-600">
+                <li>
+                  <a
+                    href="#about"
+                    class="hover:text-[var(--color-primary)] text-md"
+                    >About Us</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#contact"
+                    class="hover:text-[var(--color-primary)] text-md"
+                    >Give Feedback</a
+                  >
+                </li>
+                <li>
+                  <a href="#" class="hover:text-[var(--color-primary)] text-md"
+                    >Store Locator</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="mailto:truestyle@example.com"
+                    class="hover:text-[var(--color-primary)] text-md"
+                    >Support: truestyle@example.com | +91 1234567890</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-8 grid gap-4 md:grid-cols-4 text-xs text-slate-500">
+            <a
+              href="#policies"
+              class="hover:text-[var(--color-primary)] text-md"
+              >Terms &amp; Conditions</a
+            >
+            <a
+              href="#policies"
+              class="hover:text-[var(--color-primary)] text-md"
+              >Return Policy</a
+            >
+            <a
+              href="#policies"
+              class="hover:text-[var(--color-primary)] text-md"
+              >Exchange Policy</a
+            >
+            <a
+              href="#policies"
+              class="hover:text-[var(--color-primary)] text-md"
+              >Privacy Policy</a
+            >
+          </div>
+
+          <p class="mt-6 text-sm text-slate-500 text-center">
+            &#169; 2025 TrueStyle. All Rights Reserved.
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Smooth-scroll & contact handler -->
+    <script>
+      // Smooth scroll for same-page anchors
+      document.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener("click", (e) => {
+          const id = a.getAttribute("href");
+          const el = document.querySelector(id);
+          if (el) {
+            e.preventDefault();
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
+
+      // Lightweight contact form demo: store in localStorage and show a toast-y message
+      const form = document.getElementById("contactForm");
+      const status = document.getElementById("contactStatus");
+      form?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+        const arr = JSON.parse(localStorage.getItem("ts_contact_msgs") || "[]");
+        arr.push({ ...data, ts: new Date().toISOString() });
+        localStorage.setItem("ts_contact_msgs", JSON.stringify(arr));
+        form.reset();
+        status.textContent = "Thanks! We received your message.";
+        status.className = "text-sm text-green-600";
+        setTimeout(() => {
+          status.textContent = "";
+          status.className = "text-sm text-slate-600";
+        }, 3000);
+      });
+    </script>
+
+    <script>
+      /* ==== Data (yours) ==== */
+      let ABOUT = [
+        {
+          id: "about",
+          title: "About TrueStyle",
+          body: "TrueStyle crafts timeless fashion with modern comfort.",
+        },
+        {
+          id: "mission",
+          title: "Mission",
+          body: "Deliver quality apparel at fair prices with sustainable practices.",
+        },
+        {
+          id: "vision",
+          title: "Vision",
+          body: "Be India’s most-loved everyday fashion brand.",
+        },
+        {
+          id: "story",
+          title: "Our Story",
+          body: "Started in 2025 by college makers, grown by our community.",
+        },
+      ];
+      let POLICIES = [ 
+        {
+          id: "shipping",
+          title: "Shipping Policy",
+          body: "Get your order in 3-4 business days. PAN-India delivery with tracking.",
+        },
+        {
+          id: "returns",
+          title: "Returns & Refunds",
+          body: "7-day easy returns after delivery. Item should be unused and in original packaging.",
+        },
+        {
+          id: "privacy",
+          title: "Privacy Policy",
+          body: "We collect minimal data and never sell your information.",
+        },
+        {
+          id: "terms",
+          title: "Terms of Service",
+          body: "Using this site means you agree to our standard terms.",
+        },
+      ];
+
+      /* ==== Rendering helpers ==== */
+      const PH = {
+        // replace these with your real assets later
+        about: (id) => `/assets/about/about-${id}.png`,
+        policy: (id) => `/assets/policies/policy-${id}.png`,
+        fallback: "/assets/placeholders/placeholder.png",
+      };
+
+      function imgTag(src, alt) {
+        // graceful fallback if your placeholder path doesn’t exist yet
+        return `
+    <img src="${src}" alt="${alt}"
+         onerror="this.onerror=null;this.src='${PH.fallback}';"
+         class="h-8 w-8 object-cover rounded-xl" />
+  `;
+      }
+
+      /* ==== About: cards from ABOUT[] ==== */
+      function renderAboutFromData() {
+        const sec = document.getElementById("about");
+        if (!sec) return;
+
+        sec.innerHTML = `
+    <h2 class="text-2xl md:text-3xl font-semibold mb-3 text-[var(--color-text)] text-center animate-bounce">About True Style</h2>
+    <div class="grid gap-4 md:grid-cols-2">
+      ${ABOUT.map(
+        (a) => `
+        <article class="flex gap-4 items-center bg-white rounded-2xl p-4 shadow-soft border border-slate-100 hover:scale-105 duration-300">
+          ${imgTag(PH.about(a.id), a.title)}
+          <div>
+            <h3 class="text-lg font-semibold text-[var(--color-text)]">${
+              a.title
+            }</h3>
+            <p class="text-slate-600 leading-6 mt-1">${a.body}</p>
+          </div>
+        </article>
+      `
+      ).join("")}
+    </div>
+  `;
+      }
+
+      /* ==== Policies: accordion from POLICIES[] ==== */
+      function renderPoliciesFromData() {
+        const sec = document.getElementById("policies");
+        if (!sec) return;
+
+        sec.innerHTML = `
+    <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-[var(--color-text)] text-center animate-bounce">Policies</h2>
+    <div class="space-y-3">
+      ${POLICIES.map(
+        (p) => `
+        <details class="rounded-xl p-4 bg-white shadow-lg hover:scale-105 duration-300">
+          <summary class="cursor-pointer font-semibold text-[var(--color-text)] flex items-center gap-3">
+            ${imgTag(PH.policy(p.id), p.title)}
+            <span>${p.title}</span>
+            <svg class="ml-auto h-5 w-5 text-slate-500 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.187l3.71-3.956a.75.75 0 111.08 1.04l-4.24 4.52a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+            </svg>
+          </summary>
+          <p class="mt-3 text-gray-700 leading-6">${p.body}</p>
+        </details>
+      `
+      ).join("")}
+    </div>
+  `;
+      }
+
+      /* ==== Mount ==== */
+      renderAboutFromData();
+      renderPoliciesFromData();
+    </script>
+  </body>
+</html>

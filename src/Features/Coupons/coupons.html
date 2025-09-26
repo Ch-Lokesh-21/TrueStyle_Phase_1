@@ -1,0 +1,721 @@
+<section class="bg-white rounded-2xl p-5 shadow fade-up">
+  <div
+    class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4"
+  >
+    <h2 class="font-semibold text-lg">Coupons</h2>
+    <div class="flex flex-wrap gap-2">
+      <button
+        id="btnAddCoupon"
+        class="inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-blue-600 text-white text-md cursor-pointer hover:bg-blue-700"
+      >
+        Add Coupon
+      </button>
+      <button
+        id="btnBulkUpload"
+        class="inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-green-600 text-white text-md cursor-pointer hover:bg-green-700"
+      >
+        Bulk Upload
+      </button>
+    </div>
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="grid gap-3 mb-4">
+    <div
+      class="flex flex-col md:flex-row gap-3 md:items-center md:justify-between"
+    >
+      <div class="flex gap-2 w-full md:w-auto">
+        <div class="relative w-full md:w-80">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 mr-1">
+            <i data-lucide="search"></i>
+          </span>
+          <input
+            id="searchBox"
+            type="text"
+            placeholder="Search by code…"
+            class="pl-9 pr-3 h-10 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+          />
+        </div>
+        <select
+          id="filterType"
+          class="h-10 border rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-blue-200"
+        >
+          <option value="">All Types</option>
+          <option value="percent">percent</option>
+          <option value="flat">flat</option>
+        </select>
+        <select
+          id="filterStatus"
+          class="h-10 border rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-blue-200"
+        >
+          <option value="">All Status</option>
+          <!-- status options will be populated dynamically -->
+        </select>
+      </div>
+
+      <!-- Pagination (top) -->
+      <div class="flex items-center gap-2 text-sm hidden">
+        <button
+          id="prevPageTop"
+          class="h-9 px-3 border rounded-lg hover:bg-slate-50"
+        >
+          Prev
+        </button>
+        <div id="pageInfoTop" class="min-w-28 text-center text-slate-600"></div>
+        <button
+          id="nextPageTop"
+          class="h-9 px-3 border rounded-lg hover:bg-slate-50"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+
+    <!-- Numeric filters -->
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="flex items-center gap-2">
+        <input
+          id="minValue"
+          type="number"
+          class="h-9 w-28 border rounded-lg px-2"
+          placeholder="Min Value"
+        />
+        <span class="text-slate-500">—</span>
+        <input
+          id="maxValue"
+          type="number"
+          class="h-9 w-28 border rounded-lg px-2"
+          placeholder="Max Value"
+        />
+      </div>
+      <div class="flex items-center gap-2">
+        <input
+          id="minUsage"
+          type="number"
+          class="h-9 w-28 border rounded-lg px-2"
+          placeholder="Min Usage"
+        />
+        <span class="text-slate-500">—</span>
+        <input
+          id="maxUsage"
+          type="number"
+          class="h-9 w-28 border rounded-lg px-2"
+          placeholder="Max Usage"
+        />
+      </div>
+      <button
+        id="resetFilters"
+        class="h-9 px-3 border rounded-lg hover:bg-slate-50"
+      >
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto rounded-xl border border-slate-200">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-slate-50 text-slate-700">
+          <th class="p-3 text-left cursor-pointer select-none" data-sort="Code">
+            Code
+          </th>
+          <th class="p-3 text-left cursor-pointer select-none" data-sort="Type">
+            Type
+          </th>
+          <th
+            class="p-3 text-left cursor-pointer select-none"
+            data-sort="Value"
+          >
+            Value
+          </th>
+          <th
+            class="p-3 text-left cursor-pointer select-none"
+            data-sort="Status"
+          >
+            Status
+          </th>
+          <th
+            class="p-3 text-left cursor-pointer select-none"
+            data-sort="Usage"
+          >
+            Usage
+          </th>
+          <th
+            class="p-3 text-left cursor-pointer select-none"
+            data-sort="Creation_Date"
+          >
+            Created
+          </th>
+          <th class="p-3 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="couponTable" class="divide-y divide-slate-100"></tbody>
+    </table>
+  </div>
+
+  <!-- Pagination (bottom) -->
+  <div class="flex justify-between items-center mt-4">
+    <div class="text-xs text-slate-500">
+      Showing <span id="showingRange"></span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button
+        id="prevPage"
+        class="h-9 px-3 border rounded-lg hover:bg-slate-50"
+      >
+        Prev
+      </button>
+      <div
+        id="pageInfo"
+        class="min-w-28 text-center text-slate-600 text-sm"
+      ></div>
+      <button
+        id="nextPage"
+        class="h-9 px-3 border rounded-lg hover:bg-slate-50"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Add/Edit Modal -->
+<div
+  id="editModal"
+  class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50"
+>
+  <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl">
+    <h3 id="editTitle" class="text-lg font-semibold mb-4">Add Coupon</h3>
+    <form id="editForm" class="grid gap-3">
+      <input type="hidden" name="id" />
+      <label class="grid gap-1">
+        <span class="text-xs text-slate-600">Code</span>
+        <input
+          name="Code"
+          required
+          class="h-10 border rounded-lg px-3"
+          placeholder="WELCOME10"
+        />
+      </label>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Type</span>
+          <select name="Type" class="h-10 border rounded-lg px-3">
+            <option value="percent">percent</option>
+            <option value="flat">flat</option>
+          </select>
+        </label>
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Value</span>
+          <input
+            name="Value"
+            type="number"
+            step="1"
+            class="h-10 border rounded-lg px-3"
+            placeholder="e.g. 10 or 200"
+          />
+        </label>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Status</span>
+          <input
+            name="Status"
+            class="h-10 border rounded-lg px-3"
+            placeholder="active"
+          />
+        </label>
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Usage</span>
+          <input
+            name="Usage"
+            type="number"
+            step="1"
+            class="h-10 border rounded-lg px-3"
+            placeholder="0"
+          />
+        </label>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Created</span>
+          <input
+            name="Creation_Date"
+            type="date"
+            class="h-10 border rounded-lg px-3"
+          />
+        </label>
+        <label class="grid gap-1">
+          <span class="text-xs text-slate-600">Modified</span>
+          <input
+            name="Modified_Date"
+            type="date"
+            class="h-10 border rounded-lg px-3"
+          />
+        </label>
+      </div>
+      <div class="mt-4 flex justify-end gap-2">
+        <button
+          type="button"
+          id="cancelEdit"
+          class="h-9 px-3 border rounded-lg"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="h-9 px-3 rounded-lg bg-blue-600 text-white"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div
+  id="deleteModal"
+  class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50"
+>
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+    <h3 class="text-lg font-semibold mb-2">Delete Coupon</h3>
+    <p id="deleteText" class="text-sm text-slate-600"></p>
+    <div class="mt-5 flex justify-end gap-2">
+      <button id="cancelDelete" class="h-9 px-3 border rounded-lg">
+        Cancel
+      </button>
+      <button
+        id="confirmDelete"
+        class="h-9 px-3 rounded-lg bg-red-600 text-white"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Upload Modal -->
+<div
+  id="bulkModal"
+  class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50"
+>
+  <div class="bg-white rounded-xl p-6 w-full max-w-3xl shadow-xl">
+    <h3 class="text-lg font-semibold mb-2">Bulk Upload</h3>
+    <p class="text-sm text-slate-600 mb-4">
+      Paste CSV with headers:
+      <code class="px-1 py-0.5 rounded bg-slate-100"
+        >Code,Type,Value,Status,Usage,Creation_Date,Modified_Date</code
+      >
+    </p>
+    <textarea
+      id="bulkText"
+      rows="10"
+      class="w-full border rounded-lg p-3 font-mono text-xs"
+      placeholder="WELCOME10,percent,10,active,0,2025-09-20,2025-09-20"
+    ></textarea>
+    <div class="mt-4 flex justify-between items-center">
+      <div class="text-xs text-slate-500">
+        Type = <code>percent</code> or <code>flat</code>. Dates optional.
+      </div>
+      <div class="flex gap-2">
+        <button id="cancelBulk" class="h-9 px-3 border rounded-lg">
+          Cancel
+        </button>
+        <button
+          id="confirmBulk"
+          class="h-9 px-3 rounded-lg bg-slate-900 text-white"
+        >
+          Import
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    // Prevent double-mount if your fragment loader calls postPageMount multiple times
+    if (window.couponsViewMounted) return;
+    window.couponsViewMounted = true;
+
+    // ---- Elements
+    const tbody = document.getElementById("couponTable");
+    const searchBox = document.getElementById("searchBox");
+    const filterType = document.getElementById("filterType");
+    const filterStatus = document.getElementById("filterStatus");
+    const minValue = document.getElementById("minValue");
+    const maxValue = document.getElementById("maxValue");
+    const minUsage = document.getElementById("minUsage");
+    const maxUsage = document.getElementById("maxUsage");
+    const pageInfo = document.getElementById("pageInfo");
+    const pageInfoTop = document.getElementById("pageInfoTop");
+    const showingRange = document.getElementById("showingRange");
+
+    let currentPage = 1,
+      rowsPerPage = 8,
+      currentSort = "Creation_Date",
+      currentOrder = "desc";
+    let editingId = null,
+      deleteId = null;
+
+    // ---- Helpers
+    const INR = (n) => "₹" + Number(n || 0).toLocaleString("en-IN");
+    const fmtValue = (c) =>
+      String(c.Type).toLowerCase() === "percent"
+        ? `${Number(c.Value || 0)}%`
+        : INR(c.Value);
+    const fmtDate = (d) => {
+      if (!d) return "—";
+      const t = new Date(d);
+      return isNaN(t) ? d : t.toLocaleDateString();
+    };
+
+    function allCoupons() {
+      return AppDB.select("Coupon");
+    }
+
+    // populate Status options dynamically from data
+    (function seedStatus() {
+      const unique = Array.from(
+        new Set(
+          allCoupons()
+            .map((c) => c.Status)
+            .filter(Boolean)
+        )
+      ).sort();
+      unique.forEach((s) => {
+        const opt = document.createElement("option");
+        opt.value = s;
+        opt.textContent = s;
+        filterStatus.appendChild(opt);
+      });
+    })();
+
+    function passesNumberRange(val, minEl, maxEl) {
+      const v = Number(val || 0);
+      const min = minEl.value === "" ? -Infinity : Number(minEl.value);
+      const max = maxEl.value === "" ? Infinity : Number(maxEl.value);
+      return v >= min && v <= max;
+    }
+
+    function getFilteredSorted() {
+      let rows = allCoupons().filter((c) => {
+        const s = (c.Code || "").toLowerCase();
+        const q = (searchBox.value || "").toLowerCase();
+        const matchesSearch = !q || s.includes(q);
+        const matchesType =
+          !filterType.value ||
+          String(c.Type).toLowerCase() === filterType.value;
+        const matchesStatus =
+          !filterStatus.value || String(c.Status) === filterStatus.value;
+        const matchesValue = passesNumberRange(c.Value, minValue, maxValue);
+        const matchesUsage = passesNumberRange(c.Usage, minUsage, maxUsage);
+        return (
+          matchesSearch &&
+          matchesType &&
+          matchesStatus &&
+          matchesValue &&
+          matchesUsage
+        );
+      });
+
+      if (currentSort) {
+        rows.sort((a, b) => {
+          let va = a[currentSort],
+            vb = b[currentSort];
+          if (
+            currentSort === "Creation_Date" ||
+            currentSort === "Modified_Date"
+          ) {
+            va = new Date(va).getTime() || 0;
+            vb = new Date(vb).getTime() || 0;
+          }
+          if (typeof va === "string") {
+            va = va.toLowerCase();
+            vb = String(vb ?? "").toLowerCase();
+          }
+          if (va < vb) return currentOrder === "asc" ? -1 : 1;
+          if (va > vb) return currentOrder === "asc" ? 1 : -1;
+          return 0;
+        });
+      }
+      return rows;
+    }
+
+    function render() {
+      const data = getFilteredSorted();
+      const total = data.length;
+      const totalPages = Math.max(1, Math.ceil(total / rowsPerPage));
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = Math.min(start + rowsPerPage, total);
+      const pageItems = data.slice(start, end);
+
+      tbody.innerHTML = pageItems
+        .map(
+          (c) => `
+      <tr class="hover:bg-slate-50">
+        <td class="p-3 font-medium">${c.Code}</td>
+        <td class="p-3 capitalize">${c.Type}</td>
+        <td class="p-3">${fmtValue(c)}</td>
+        <td class="p-3">
+          <span class="inline-flex items-center gap-1 text-xs rounded-full px-2 py-1
+            ${
+              String(c.Status).toLowerCase() === "active"
+                ? "bg-green-50 text-green-700"
+                : "bg-slate-100 text-slate-700"
+            }">
+            ${c.Status || "—"}
+          </span>
+        </td>
+        <td class="p-3">${Number(c.Usage || 0)}</td>
+        <td class="p-3">${fmtDate(c.Creation_Date)}</td>
+        <td class="p-3">
+          <div class="flex flex-wrap gap-2">
+            <button class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg cursor-pointer" onclick="openCouponEdit('${
+              c.id
+            }')">Edit</button>
+            <button class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg cursor-pointer" onclick="openCouponDelete('${
+              c.id
+            }','${c.Code}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `
+        )
+        .join("");
+
+      const info = `Page ${currentPage} of ${totalPages}`;
+      pageInfo.textContent = info;
+      pageInfoTop.textContent = info;
+      showingRange.textContent = total
+        ? `${start + 1}-${end} of ${total}`
+        : `0-0 of 0`;
+
+      const disablePrev = currentPage <= 1,
+        disableNext = currentPage >= totalPages;
+      ["prevPage", "prevPageTop"].forEach((id) => {
+        const el = document.getElementById(id);
+        el.disabled = disablePrev;
+        el.classList.toggle("opacity-50", disablePrev);
+      });
+      ["nextPage", "nextPageTop"].forEach((id) => {
+        const el = document.getElementById(id);
+        el.disabled = disableNext;
+        el.classList.toggle("opacity-50", disableNext);
+      });
+    }
+
+    // Sorting
+    document.querySelectorAll("th[data-sort]").forEach((th) => {
+      th.addEventListener("click", () => {
+        const field = th.getAttribute("data-sort");
+        if (currentSort === field) {
+          currentOrder = currentOrder === "asc" ? "desc" : "asc";
+        } else {
+          currentSort = field;
+          currentOrder = "asc";
+        }
+        render();
+      });
+    });
+
+    // Search & Filters
+    [
+      searchBox,
+      filterType,
+      filterStatus,
+      minValue,
+      maxValue,
+      minUsage,
+      maxUsage,
+    ].forEach((el) => {
+      el.addEventListener("input", () => {
+        currentPage = 1;
+        render();
+      });
+      el.addEventListener("change", () => {
+        currentPage = 1;
+        render();
+      });
+    });
+    document.getElementById("resetFilters").onclick = () => {
+      searchBox.value = "";
+      filterType.value = "";
+      filterStatus.value = "";
+      minValue.value = "";
+      maxValue.value = "";
+      minUsage.value = "";
+      maxUsage.value = "";
+      currentPage = 1;
+      render();
+    };
+
+    // Pagination
+    function prev() {
+      if (currentPage > 1) {
+        currentPage--;
+        render();
+      }
+    }
+    function next() {
+      const totalPages = Math.max(
+        1,
+        Math.ceil(getFilteredSorted().length / rowsPerPage)
+      );
+      if (currentPage < totalPages) {
+        currentPage++;
+        render();
+      }
+    }
+    document.getElementById("prevPage").onclick = prev;
+    document.getElementById("nextPage").onclick = next;
+    document.getElementById("prevPageTop").onclick = prev;
+    document.getElementById("nextPageTop").onclick = next;
+
+    // ---- Add/Edit
+    const editModal = document.getElementById("editModal");
+    const editForm = document.getElementById("editForm");
+    const editTitle = document.getElementById("editTitle");
+
+    document.getElementById("btnAddCoupon").onclick = () => {
+      editingId = null;
+      editTitle.textContent = "Add Coupon";
+      editForm.reset();
+      editModal.classList.remove("hidden");
+    };
+    document.getElementById("cancelEdit").onclick = () =>
+      editModal.classList.add("hidden");
+
+    window.openCouponEdit = function (id) {
+      editingId = id;
+      const c = AppDB.get("Coupon", id);
+      if (!c) return;
+      editTitle.textContent = "Edit Coupon";
+      editForm.elements["id"].value = c.id;
+      editForm.elements["Code"].value = c.Code || "";
+      editForm.elements["Type"].value = c.Type || "percent";
+      editForm.elements["Value"].value = Number(c.Value || 0);
+      editForm.elements["Status"].value = c.Status || "";
+      editForm.elements["Usage"].value = Number(c.Usage || 0);
+      const cd = new Date(c.Creation_Date),
+        md = new Date(c.Modified_Date);
+      editForm.elements["Creation_Date"].value = isNaN(cd)
+        ? ""
+        : cd.toISOString().slice(0, 10);
+      editForm.elements["Modified_Date"].value = isNaN(md)
+        ? ""
+        : md.toISOString().slice(0, 10);
+      editModal.classList.remove("hidden");
+    };
+
+    editForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fd = new FormData(editForm);
+      const payload = Object.fromEntries(fd.entries());
+      // normalize
+      payload.Value = Number(payload.Value || 0);
+      payload.Usage = Number(payload.Usage || 0);
+      payload.Type = (payload.Type || "percent").toLowerCase();
+      payload.Status = payload.Status || "active";
+      payload.Creation_Date =
+        payload.Creation_Date || new Date().toISOString().slice(0, 10);
+      payload.Modified_Date =
+        payload.Modified_Date || new Date().toISOString().slice(0, 10);
+
+      if (editingId == null) {
+        AppDB.insert("Coupon", payload);
+      } else {
+        AppDB.update("Coupon", editingId, payload);
+      }
+      editModal.classList.add("hidden");
+      render();
+    });
+
+    // ---- Delete
+    const deleteModal = document.getElementById("deleteModal");
+    const deleteText = document.getElementById("deleteText");
+
+    window.openCouponDelete = function (id, code) {
+      deleteId = id;
+      deleteText.textContent = `Delete coupon “${code}” (ID ${id})?`;
+      deleteModal.classList.remove("hidden");
+    };
+    document.getElementById("cancelDelete").onclick = () =>
+      deleteModal.classList.add("hidden");
+    document.getElementById("confirmDelete").onclick = () => {
+      if (deleteId != null) AppDB.remove("Coupon", deleteId);
+      deleteId = null;
+      deleteModal.classList.add("hidden");
+      render();
+    };
+
+    // ---- Bulk Upload
+    const bulkModal = document.getElementById("bulkModal");
+    const bulkText = document.getElementById("bulkText");
+    document.getElementById("btnBulkUpload").onclick = () =>
+      bulkModal.classList.remove("hidden");
+    document.getElementById("cancelBulk").onclick = () =>
+      bulkModal.classList.add("hidden");
+    document.getElementById("confirmBulk").onclick = () => {
+      const raw = (bulkText.value || "").trim();
+      if (!raw) {
+        bulkModal.classList.add("hidden");
+        return;
+      }
+
+      const lines = raw.split(/\r?\n/).filter(Boolean);
+      const header = lines.shift();
+      const cols = header.split(",").map((s) => s.trim());
+      const required = [
+        "Code",
+        "Type",
+        "Value",
+        "Status",
+        "Usage",
+        "Creation_Date",
+        "Modified_Date",
+      ];
+      const ok = required.every((k) => cols.includes(k));
+      if (!ok) {
+        alert("CSV must include: " + required.join(", "));
+        return;
+      }
+
+      const newItems = lines.map((line) => {
+        const cells = line.split(",").map((s) => s.trim());
+        const obj = {};
+        cols.forEach((c, i) => (obj[c] = cells[i]));
+        return {
+          Code: obj.Code,
+          Type: String(obj.Type || "percent").toLowerCase(),
+          Value: Number(obj.Value || 0),
+          Status: obj.Status || "active",
+          Usage: Number(obj.Usage || 0),
+          Creation_Date:
+            obj.Creation_Date || new Date().toISOString().slice(0, 10),
+          Modified_Date:
+            obj.Modified_Date || new Date().toISOString().slice(0, 10),
+        };
+      });
+
+      newItems.forEach((it) => AppDB.insert("Coupon", it));
+      bulkText.value = "";
+      bulkModal.classList.add("hidden");
+      currentPage = 1;
+      render();
+    };
+
+    // Expose init for your fragment loader, and render once now
+    window.postPageMount = window.postPageMount || function () {};
+    const oldMount = window.postPageMount;
+    window.postPageMount = function () {
+      oldMount?.();
+      render();
+    };
+    render();
+  })();
+</script>

@@ -1,0 +1,268 @@
+<!-- /admin/pages/backup.html -->
+<section class="bg-white rounded-2xl p-6 shadow fade-up">
+  <header class="flex items-center justify-between gap-4">
+    <div>
+      <h2 class="font-semibold">Backup & Restore</h2>
+    </div>
+  </header>
+
+  <!-- Quick Actions -->
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <button id="btnInstantBackup" class="h-11 px-4 rounded-xl bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center gap-2 cursor-pointer">
+      <i class="ri-upload-cloud-2-line text-lg"></i> Instant Backup
+    </button>
+    <button id="btnRestore" class="h-11 px-4 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 flex items-center justify-center gap-2 cursor-pointer">
+      <i class="ri-history-line text-lg"></i> Restore
+    </button>
+    <button id="btnSchedule" class="h-11 px-4 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 flex items-center justify-center gap-2 cursor-pointer">
+      <i class="ri-calendar-schedule-line text-lg"></i> Schedule Backup
+    </button>
+  </div>
+
+  <!-- Import JSON Card -->
+  <div class="mt-6 grid gap-6 lg:grid-cols-1">
+
+    <!-- Schedule Summary -->
+    <section class="rounded-2xl p-4 shadow-lg">
+      <h3 class="font-medium mb-2">Active Schedules</h3>
+      <ul id="scheduleList" class="space-y-2 text-sm">
+        <li class="p-3 rounded-xl bg-slate-100 flex items-center justify-between">
+          <div>
+            <div class="font-medium shadow-xl">Daily at 02:00</div>
+            <div class="text-xs text-slate-600">Retention: 14 days • Scope: Full DB</div>
+          </div>
+          <span class="text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg text-xs">Enabled</span>
+        </li>
+        <li class="p-3 rounded-xl bg-slate-100 flex items-center justify-between">
+          <div>
+            <div class="font-medium">Weekly on Sun 03:30</div>
+            <div class="text-xs text-slate-600">Retention: 8 weeks • Scope: Orders, Users</div>
+          </div>
+          <span class="text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg text-xs">Enabled</span>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- Logs -->
+  <section class="mt-6 ">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-medium">Backup & Restore Logs</h3>
+      <div class="flex items-center gap-2">
+        <button id="btnClearLogs" class="h-9 px-3 rounded-lg bg-slate-100 text-md hover:bg-slate-200 cursor-pointer">Clear</button>
+        <button id="btnExportLogs" class="h-9 px-3 rounded-lg bg-green-600 text-white text-md hover:bg-green-700 cursor-pointer">Export</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto shadow-lg rounded-lg">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-100 text-slate-700">
+          <tr>
+            <th class="text-left p-3">Time</th>
+            <th class="text-left p-3">Action</th>
+            <th class="text-left p-3">Details</th>
+            <th class="text-left p-3">Size</th>
+            <th class="text-left p-3">Status</th>
+          </tr>
+        </thead>
+        <tbody id="logBody">
+          <!-- Seed rows -->
+          <tr class="hover:bg-slate-100">
+            <td class="p-3">2025-09-23 22:15</td>
+            <td class="p-3">Backup</td>
+            <td class="p-3">Full DB • job: daily-0200</td>
+            <td class="p-3">38.4 MB</td>
+            <td class="p-3"><span class="px-2 py-1 rounded-lg text-xs bg-emerald-50 text-emerald-700">Success</span></td>
+          </tr>
+          <tr class="hover:bg-slate-100">
+            <td class="p-3">2025-09-22 03:31</td>
+            <td class="p-3">Backup</td>
+            <td class="p-3">Weekly • Orders, Users</td>
+            <td class="p-3">12.7 MB</td>
+            <td class="p-3"><span class="px-2 py-1 rounded-lg text-xs bg-emerald-50 text-emerald-700">Success</span></td>
+          </tr>
+          <tr class="hover:bg-slate-100">
+            <td class="p-3">2025-09-21 12:02</td>
+            <td class="p-3">Restore</td>
+            <td class="p-3">from backup_2025-09-20.json</td>
+            <td class="p-3">—</td>
+            <td class="p-3"><span class="px-2 py-1 rounded-lg text-xs bg-amber-50 text-amber-700">Warning</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>
+
+<!-- Schedule Modal -->
+<dialog id="dlgSchedule" class="rounded-2xl p-0 w-[min(720px,95vw)]">
+  <div class="p-4 border-b bg-blue-50 text-blue-900 flex items-center justify-between">
+    <h3 class="font-semibold">Schedule a Backup</h3>
+    <button class="h-8 px-3 rounded-lg border text-sm hover:bg-blue-100" data-close>Close</button>
+  </div>
+
+  <form class="p-4 grid gap-4 text-sm">
+    <div class="grid md:grid-cols-2 gap-4">
+      <label class="grid gap-1">
+        <span class="text-slate-700">Frequency</span>
+        <select id="schFrequency" class="h-9 px-3 rounded-lg border">
+          <option value="Daily">Daily</option>
+          <option value="Weekly">Weekly</option>
+          <option value="Monthly">Monthly</option>
+          <option value="Custom">Custom (cron)</option>
+        </select>
+      </label>
+      <label class="grid gap-1">
+        <span class="text-slate-700">Time</span>
+        <input id="schTime" type="time" value="02:00" class="h-9 px-3 rounded-lg border">
+      </label>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <label class="grid gap-1">
+        <span class="text-slate-700">Retention</span>
+        <select id="schRetention" class="h-9 px-3 rounded-lg border">
+          <option>7 days</option>
+          <option selected>14 days</option>
+          <option>30 days</option>
+          <option>8 weeks</option>
+          <option>12 weeks</option>
+        </select>
+      </label>
+      <label class="grid gap-1">
+        <span class="text-slate-700">Scope</span>
+        <select id="schScope" class="h-9 px-3 rounded-lg border">
+          <option>Full DB</option>
+          <option>Orders, Users</option>
+          <option>Products, Inventory</option>
+          <option>Content (Hero, Cards)</option>
+          <option>Custom selection…</option>
+        </select>
+      </label>
+    </div>
+
+    <fieldset class="grid gap-2 border rounded-xl p-3">
+      <legend class="text-slate-700 px-1">Advanced</legend>
+      <label class="inline-flex items-center gap-2">
+        <input id="schCompress" type="checkbox" class="h-4 w-4"> Enable compression
+      </label>
+      <label class="inline-flex items-center gap-2">
+        <input id="schEncrypt" type="checkbox" class="h-4 w-4"> Encrypt backup
+      </label>
+      <label class="grid gap-1">
+        <span class="text-slate-700">Destination</span>
+        <select id="schDestination" class="h-9 px-3 rounded-lg border">
+          <option>Local (Downloads)</option>
+          <option>Cloud (Mock)</option>
+        </select>
+      </label>
+    </fieldset>
+  </form>
+
+  <div class="p-4 border-t flex items-center justify-end gap-2">
+    <button class="h-9 px-3 rounded-lg bg-slate-100 text-sm hover:bg-slate-200" data-close>Cancel</button>
+    <button id="btnSaveSchedule" class="h-9 px-3 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700">Save schedule</button>
+  </div>
+</dialog>
+
+<script>
+  // ------ Helpers (UI only) ------
+  const fmtNow = () => {
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) +
+           ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  };
+
+  const addLog = ({action, details, size='—', status='Success'}) => {
+    const tr = document.createElement('tr');
+    const badge = status === 'Success'
+      ? '<span class="px-2 py-1 rounded-lg text-xs bg-emerald-50 text-emerald-700">Success</span>'
+      : status === 'Warning'
+      ? '<span class="px-2 py-1 rounded-lg text-xs bg-amber-50 text-amber-700">Warning</span>'
+      : '<span class="px-2 py-1 rounded-lg text-xs bg-rose-50 text-rose-700">Failed</span>';
+    tr.innerHTML = `
+      <td class="p-3">${fmtNow()}</td>
+      <td class="p-3">${action}</td>
+      <td class="p-3">${details}</td>
+      <td class="p-3">${size}</td>
+      <td class="p-3">${badge}</td>`;
+    document.getElementById('logBody').prepend(tr);
+  };
+
+  // ------ Quick actions (mock) ------
+  document.getElementById('btnInstantBackup')?.addEventListener('click', () => {
+    addLog({ action: 'Backup', details: 'Instant • Full DB', size: (35 + Math.random()*10).toFixed(1)+' MB', status: 'Success' });
+  });
+
+  document.getElementById('btnRestore')?.addEventListener('click', () => {
+    addLog({ action: 'Restore', details: 'from backup_latest.json', size: '—', status: 'Warning' });
+  });
+
+  document.getElementById('btnExportJSON')?.addEventListener('click', () => {
+    addLog({ action: 'Export', details: 'JSON export (mock)', size: (30 + Math.random()*8).toFixed(1)+' MB', status: 'Success' });
+  });
+
+  document.getElementById('btnExportLogs')?.addEventListener('click', () => {
+    addLog({ action: 'Export', details: 'Logs exported as CSV (mock)', size: '—', status: 'Success' });
+  });
+
+  document.getElementById('btnClearLogs')?.addEventListener('click', () => {
+    const body = document.getElementById('logBody');
+    body.innerHTML = '';
+    addLog({ action: 'System', details: 'Logs cleared', status: 'Warning' });
+  });
+
+  // ------ Import (mock) ------
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const importFileName = document.getElementById('importFileName');
+
+  dropzone?.addEventListener('click', () => fileInput.click());
+  dropzone?.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('bg-slate-50'); });
+  dropzone?.addEventListener('dragleave', () => dropzone.classList.remove('bg-slate-50'));
+  dropzone?.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('bg-slate-50');
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      importFileName.textContent = e.dataTransfer.files[0].name;
+    }
+  });
+  fileInput?.addEventListener('change', () => {
+    importFileName.textContent = fileInput.files?.[0]?.name || 'No file selected';
+  });
+  document.getElementById('btnImport')?.addEventListener('click', () => {
+    const name = fileInput.files?.[0]?.name || 'backup.json';
+    addLog({ action: 'Import', details: `Imported ${name} (mock)`, size: (28 + Math.random()*6).toFixed(1)+' MB', status: 'Success' });
+  });
+
+  // ------ Schedule modal ------
+  const dlg = document.getElementById('dlgSchedule');
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => dlg.close()));
+
+  document.getElementById('btnSchedule')?.addEventListener('click', () => {
+    if (typeof dlg.showModal === 'function') dlg.showModal();
+    else dlg.setAttribute('open','');
+  });
+
+  document.getElementById('btnSaveSchedule')?.addEventListener('click', () => {
+    const fq = document.getElementById('schFrequency').value;
+    const tm = document.getElementById('schTime').value || '00:00';
+    const rt = document.getElementById('schRetention').value;
+    const sc = document.getElementById('schScope').value;
+    const list = document.getElementById('scheduleList');
+
+    const li = document.createElement('li');
+    li.className = 'p-3 rounded-xl bg-slate-100 flex items-center justify-between';
+    li.innerHTML = `
+      <div>
+        <div class="font-medium">${fq} at ${tm}</div>
+        <div class="text-xs text-slate-600">Retention: ${rt} • Scope: ${sc}</div>
+      </div>
+      <span class="text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg text-xs">Enabled</span>`;
+    list.prepend(li);
+
+    addLog({ action: 'Schedule', details: `${fq} @ ${tm} • ${rt} • ${sc}`, size: '—', status: 'Success' });
+    dlg.close();
+  });
+</script>

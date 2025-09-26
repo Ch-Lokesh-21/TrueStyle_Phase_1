@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>TrueStyle - Product</title>
+    <link rel="icon" href="/assets/icon.png"/>
+    <link rel="stylesheet" href="/style/index.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="bg-white text-slate-900">
+    <!-- Navbar -->
+    <div data-include="/src/Components/navbar.html"></div>
+
+    <main class="max-w-7xl mx-auto px-4 py-6" id="viewRoot">
+      <!-- content injected -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-8">
+      <div class="w-full p-6 md:p-10">
+        <div class="grid gap-8 md:grid-cols-3">
+          <div>
+            <h3 class="font-semibold text-xl mb-4">Download the App</h3>
+            <div class="flex items-center gap-3">
+              <a href="#" class="inline-flex items-center gap-2 rounded-2xl ring-1 ring-slate-200 px-4 py-2 shadow-sm hover:bg-slate-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 5a2 2 0 0 1 3-2l12 7a2 2 0 0 1 0 3l-12 7a2 2 0 0 1-3-2z"/></svg>
+                <span class="text-sm font-medium">Google Play</span>
+              </a>
+              <a href="#" class="inline-flex items-center gap-2 rounded-2xl ring-1 ring-slate-200 px-4 py-2 shadow-sm hover:bg-slate-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16.365 1.43a5.6 5.6 0 0 1-1.382 3.91 4.9 4.9 0 0 1-3.515 1.64 5.45 5.45 0 0 1 1.372-3.97A5.15 5.15 0 0 1 16.365 1.43zM20.5 17.48c-.435 1.01-.658 1.48-1.23 2.39-.8 1.27-1.93 2.85-3.34 2.86-1.25.01-1.58-.84-3.29-.84-1.72 0-2.1.82-3.34.85-1.39.03-2.46-1.37-3.26-2.64-1.78-2.8-3.14-7.92-1.31-11.41.9-1.7 2.5-2.77 4.33-2.8 1.31-.03 2.55.9 3.29.9.73 0 2.26-1.12 3.81-.95.65.03 2.48.26 3.66 1.97-3.22 1.76-2.7 6.41.65 7.67z"/></svg>
+                <span class="text-sm font-medium">App Store</span>
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-xl mb-4">Shop</h3>
+            <ul class="space-y-2 text-sm text-slate-600">
+              <li><a href="#" class="hover:text-[var(--color-primary)] text-md">Women’s</a></li>
+              <li><a href="#" class="hover:text-[var(--color-primary)] text-md">Men’s</a></li>
+              <li><a href="#" class="hover:text-[var(--color-primary)] text-md">Kids</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-xl mb-4">About</h3>
+            <ul class="space-y-2 text-sm text-slate-600">
+              <li><a href="#" class="hover:text-[var(--color-primary)] text-md">About Us</a></li>
+              <li><a href="#" class="hover:text-[var(--color-primary)] text-md">Give Feedback</a></li>
+              <li><a href="#" class="hover:text-[var(--color-primary)] text-md">Store Locator</a></li>
+              <li><a href="mailto:truestyle@example.com" class="hover:text-[var(--color-primary)] text-md">Support: truestyle@example.com | +91 1234567890</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-8 grid gap-4 md:grid-cols-4 text-xs text-slate-500">
+          <a href="#policies" class="hover:text-[var(--color-primary)] text-md">Terms &amp; Conditions</a>
+          <a href="#policies" class="hover:text-[var(--color-primary)] text-md">Return Policy</a>
+          <a href="#policies" class="hover:text-[var(--color-primary)] text-md">Exchange Policy</a>
+          <a href="#policies" class="hover:text-[var(--color-primary)] text-md">Privacy Policy</a>
+        </div>
+
+        <p class="mt-6 text-sm text-slate-500 text-center">&#169; 2025 TrueStyle. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Shared helpers -->
+    <script src="/Model/appdb.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+    <script>
+      // ---------- Shared helpers ----------
+      const $  = (q, root=document)=>root.querySelector(q);
+      const $$ = (q, root=document)=>Array.from(root.querySelectorAll(q));
+      const fmtINR = (n)=>'₹' + (n||0).toLocaleString('en-IN');
+
+      function currentUserId(){
+        try{
+          if (window.TSAuth?.user?.id) return TSAuth.user.id;
+          const u = (AppDB.select('User')||[])[0];
+          return u?.id || 2001;
+        }catch{ return 2001; }
+      }
+
+      async function injectPartials(){
+        const nodes = $$('[data-include]');
+        await Promise.all(nodes.map(async n=>{
+          const url = n.getAttribute('data-include');
+          const html = await fetch(url).then(r=>r.text());
+          n.outerHTML = html;
+        }));
+      }
+
+      function refreshCartBadge(){
+        const uid = currentUserId();
+        const items = AppDBHelpers.getCart(uid) || [];
+        const totalQty = items.reduce((a,i)=>a+(i.Quantity||1),0);
+        const b = $('#cartBadge'); if(!b) return;
+        if (totalQty>0){ b.textContent = totalQty; b.classList.remove('hidden'); }
+        else b.classList.add('hidden');
+      }
+
+      function initNavInteractions(){
+        lucide.createIcons();
+        const btn=$("#profileBtn"), menu=$("#profileMenu");
+        btn?.addEventListener("click", ()=>menu?.classList.toggle("hidden"));
+        document.addEventListener("click",(e)=>{
+          if(!menu?.contains(e.target) && !btn?.contains(e.target)) menu?.classList.add("hidden");
+        });
+
+        $("#logOut")?.addEventListener("click", ()=>{
+          localStorage.removeItem("ts_is_logged_in");
+          localStorage.removeItem("ts_role");
+          localStorage.removeItem("ts_user_id");
+          location.replace("/index.html");
+        });
+
+        // Compact category menus
+        function closeAllCatMenus(except){
+          $$('[data-dd-panel]').forEach(p=>{
+            if(p.getAttribute('data-dd-panel')!==except) p.classList.add('hidden');
+          });
+        }
+        $$('[data-dd-btn]').forEach(b=>{
+          const key=b.getAttribute('data-dd-btn');
+          const panel=document.querySelector(`[data-dd-panel="${key}"]`);
+          b.addEventListener('click',(e)=>{
+            e.preventDefault();
+            const willOpen=panel.classList.contains('hidden');
+            closeAllCatMenus(key);
+            panel.classList.toggle('hidden',!willOpen);
+          });
+        });
+        document.addEventListener('click',(e)=>{
+          if(!e.target.closest('[data-dd-btn]') && !e.target.closest('[data-dd-panel]')) closeAllCatMenus();
+        });
+
+        // Navbar search hands off to home search
+        $("#navSearchForm")?.addEventListener("submit",(e)=>{
+          e.preventDefault();
+          const v=$("#navSearch").value.trim();
+          if(!v) return;
+          const anchor=$("#productsSection");
+          if(anchor){
+            $("#homeSearch").value=v;
+            anchor.scrollIntoView({behavior:"smooth"});
+            window.applyHomeFilters?.();
+          }else{
+            location.href=`/user/index.html?q=${encodeURIComponent(v)}`;
+          }
+        });
+
+        // Quick filters (legacy)
+        $$("[data-cat]").forEach(a=>{
+          a.addEventListener("click",(e)=>{
+            e.preventDefault();
+            const name=a.getAttribute("data-cat");
+            localStorage.setItem("ts_user_cat",name);
+            const anchor=$("#productsSection");
+            if(anchor) anchor.scrollIntoView({behavior:"smooth"});
+            window.applyHomeFilters?.();
+          });
+        });
+
+        refreshCartBadge();
+      }
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', init);
+
+      function getId(){
+        return Number(new URL(location.href).searchParams.get('id') || 0);
+      }
+
+      async function init(){
+        await injectPartials();
+        initNavInteractions();
+
+        const id = getId();
+        const p  = AppDB.get('Product', id);
+        if (!p){
+          $('#viewRoot').innerHTML = '<section class="p-6 rounded-2xl ring-1 ring-slate-200 bg-white">Product not found.</section>';
+          return;
+        }
+
+        // Build gallery (max 4 for 2x2)
+        const extras = (AppDB.select('Product_Images')||[]).filter(i=>i.Linked_Product_Id===p.id);
+        const gallery = [p.Thumbnail].concat(extras.map(i=>i.Image)).filter(Boolean).slice(1,5);
+
+        const cats = AppDB.select('Category');
+        const cat = cats.find(c=>c.id===p.Categories_Id);
+        const parentCat = cat && cats.find(c=>c.id===cat.Parent_Category_Id);
+
+        const related = AppDB.select('Product')
+          .filter(x=>x.id!==p.id && (x.Categories_Id===p.Categories_Id ||
+             (parentCat && (AppDB.get('Category', x.Categories_Id)?.Parent_Category_Id===parentCat.id))))
+          .slice(0,4);
+
+        // Page
+        $('#viewRoot').innerHTML =
+          '<nav class="text-sm mb-5 text-slate-600">' +
+            '<a href="/user/index.html" class="hover:underline">Home</a> / ' +
+            '<a href="/user/index.html#productsSection" class="hover:underline">Products</a> / ' +
+            (parentCat ? ('<a href="/user/index.html" class="hover:underline">'+ parentCat.Display_Text +'</a> / ') : '') +
+            (cat ? ('<a href="/user/index.html" class="hover:underline">'+ cat.Display_Text +'</a> / ') : '') +
+            '<span class="text-slate-900">'+ p.Name +'</span>' +
+          '</nav>' +
+
+          '<section class="grid lg:grid-cols-[1.05fr_.95fr] gap-8">' +
+            // Left: 2x2 Gallery grid
+            '<div>' +
+              '<div id="galleryGrid" class="grid grid-cols-2 gap-3">' +
+                gallery.map(function(src, i){
+                  return '<button data-img="'+ src +'" class="group relative rounded-2xl overflow-hidden bg-slate-100 ring-1 ring-slate-200 shadow-sm">' +
+                           '<img src="'+ src +'" alt="Product image '+ (i+1) +'" class="w-full object-fit transition duration-300 group-hover:scale-[1.02]">' +
+                         '</button>';
+                }).join('') +
+              '</div>' +
+              (gallery.length < 4
+                ? '<p class="text-xs text-slate-500 mt-2">More images coming soon.</p>'
+                : '') +
+            '</div>' +
+
+            // Right: Details
+            '<div>' +
+              '<div class="text-xs uppercase tracking-wide text-slate-500">'+ (p.Brand||'TrueStyle') +'</div>' +
+              '<h1 class="mt-1 text-2xl md:text-3xl font-semibold">'+ p.Name +'</h1>' +
+              '<div class="mt-2 text-2xl font-extrabold">'+ fmtINR(p.price) +'</div>' +
+
+              '<div class="mt-4 text-slate-700 leading-7">'+ (p.Description||'') +'</div>' +
+
+              // Size + size guide
+              '<div class="mt-6">' +
+                '<div class="flex items-center justify-between mb-2">' +
+                  '<div class="text-sm font-medium">Size</div>' +
+                  '<button id="openSizeGuide" class="px-4 py-2 rounded-lg cursor-pointer text-md ring-1 ring-slate-200 hover:bg-slate-50">Size Guide</button>' +
+                '</div>' +
+                '<div class="flex flex-wrap gap-2" id="sizeGroup">' +
+                  ['S','M','L','XL'].map(function(s){
+                    return '<button class="sizeOpt px-4 py-2 rounded-lg cursor-pointer text-md ring-1 ring-slate-200" data-size="'+ s +'">'+ s +'</button>';
+                  }).join('') +
+                '</div>' +
+                '<p id="sizeMsg" class="text-xs text-slate-600 mt-1">Select a size</p>' +
+              '</div>' +
+
+              // Qty + actions
+              '<div class="mt-5 flex flex-wrap items-center gap-3">' +
+                '<div class="flex items-center rounded-xl ring-1 ring-slate-200">' +
+                  '<button id="qtyDec" class="px-4 py-2 rounded-lg cursor-pointer text-md">−</button>' +
+                  '<input id="qty" type="number" min="1" value="1" class="w-16 h-10 text-center outline-none" />' +
+                  '<button id="qtyInc" class="px-4 py-2 rounded-lg cursor-pointer text-md">＋</button>' +
+                '</div>' +
+                '<button id="addToBag" class="px-6 py-2 rounded-lg cursor-pointer text-md bg-slate-900 text-white hover:opacity-95">Add to Bag</button>' +
+                '<button id="wish"  class="px-4 py-2 rounded-lg cursor-pointer text-md ring-1 ring-slate-200 hover:bg-slate-50"><i data-lucide="heart"></i></button>' +
+                '<button id="share" class="px-4 py-2 rounded-lg cursor-pointer text-md ring-1 ring-slate-200 hover:bg-slate-50"><i data-lucide="share-2"></i></button>' +
+              '</div>' +
+
+              // Highlights
+              '<div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 text-center text-sm">' +
+                '<div class="flex flex-col items-center justify-center gap-2 bg-white shadow-sm rounded-2xl ring-1 ring-slate-200 p-2"> <img src="/assets/home/truck.png" class="w-15 h-15" />Free shipping</div>' +
+                '<div class="flex flex-col items-center justify-center gap-2 bg-white shadow-sm rounded-2xl ring-1 ring-slate-200 p-2"> <img src="/assets/home/sync.png" class="w-15 h-15" />Easy returns</div>' +
+                '<div class="flex flex-col items-center justify-center gap-2 bg-white shadow-sm rounded-2xl ring-1 ring-slate-200 p-2"> <img src="/assets/home/credit-card.png" class="w-15 h-15" />Secure checkout</div>' +
+              '</div>' +
+            '</div>' +
+          '</section>' +
+
+          // Related
+          (related.length
+            ? ('<section class="mt-12">' +
+                 '<h2 class="text-lg font-semibold mb-3">You may also like</h2>' +
+                 '<div class="grid grid-cols-2 md:grid-cols-4 gap-5" id="relGrid">' +
+                   related.map(ProductCard).join('') +
+                 '</div>' +
+               '</section>')
+            : '');
+
+        // Inject modals
+        appendModals();
+
+        lucide.createIcons();
+        bindProductEvents(p.id);
+        refreshCartBadge();
+      }
+
+      function ProductCard(p){
+        return (
+          '<article class="group rounded-3xl bg-white ring-1 ring-slate-200 shadow-sm hover:shadow-md transition overflow-hidden">' +
+            '<a href="/src/Features/Products/view-product.html?id='+ p.id +'" class="block">' +
+              '<img src="'+ p.Thumbnail +'" alt="'+ p.Name +'" class="object-fit transition duration-300 group-hover:scale-[1.02]">' +
+            '</a>' +
+            '<div class="p-3">' +
+              '<div class="text-sm text-slate-500">'+ (p.Brand||'TrueStyle') +'</div>' +
+              '<div class="text-sm font-medium line-clamp-1">'+ p.Name +'</div>' +
+              '<div class="mt-1 font-semibold">'+ fmtINR(p.price) +'</div>' +
+              '<div class="flex justify-center"><button data-add="'+ p.id +'" class="px-4 py-2 w-full rounded-lg cursor-pointer text-md bg-slate-900 text-white hover:opacity-95">Add to Bag</button></div>' +
+            '</div>' +
+          '</article>'
+        );
+      }
+
+      function appendModals(){
+        // Size Guide Modal
+        const sizeHtml =
+          '<div id="sizeModal" class="fixed inset-0 z-40 hidden top-20 p-4">' +
+            '<div class="absolute inset-0 bg-black/60"></div>' +
+            '<div class="relative z-10 max-w-2xl mx-auto mt-20 rounded-3xl bg-white ring-1 ring-slate-200 shadow-lg">' +
+              '<div class="flex items-center justify-between p-4 border-b">' +
+                '<h3 class="font-semibold">Size Guide</h3>' +
+                '<button id="sizeClose" class="px-3 py-2 rounded-lg cursor-pointer text-md ring-1 ring-slate-200 hover:bg-slate-50">Close</button>' +
+              '</div>' +
+              '<div class="p-4">' +
+                '<p class="text-sm text-slate-600 mb-3">Size chart.</p>' +
+                '<div class="overflow-x-auto">' +
+                  '<table class="w-full text-sm">' +
+                    '<thead class="text-slate-500">' +
+                      '<tr>' +
+                        '<th class="text-left py-2">Size</th>' +
+                        '<th class="text-left py-2">Chest (cm)</th>' +
+                        '<th class="text-left py-2">Waist (cm)</th>' +
+                        '<th class="text-left py-2">Hip (cm)</th>' +
+                      '</tr>' +
+                    '</thead>' +
+                    '<tbody>' +
+                      [['S','88-94','76-81','90-95'],['M','95-101','82-87','96-101'],['L','102-108','88-93','102-107'],['XL','109-115','94-100','108-113']]
+                        .map(function(r){
+                          return '<tr class="border-t">' +
+                                   '<td class="py-2 font-medium">'+ r[0] +'</td>' +
+                                   '<td class="py-2">'+ r[1] +'</td>' +
+                                   '<td class="py-2">'+ r[2] +'</td>' +
+                                   '<td class="py-2">'+ r[3] +'</td>' +
+                                 '</tr>';
+                        }).join('') +
+                    '</tbody>' +
+                  '</table>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+
+        // Image Viewer Modal
+        const imgHtml =
+          '<div id="imgModal" class="fixed inset-0 z-40 hidden">' +
+            '<div class="absolute inset-0 bg-black/80"></div>' +
+            '<div class="relative z-10 max-w-4xl mx-auto mt-10 rounded-3xl bg-white ring-1 ring-slate-200 shadow-xl overflow-hidden">' +
+              '<div class="flex items-center justify-between p-3 border-b">' +
+                '<h3 class="font-semibold">Image</h3>' +
+                '<button id="imgClose" class="px-3 py-2 rounded-lg cursor-pointer text-md ring-1 ring-slate-200 hover:bg-slate-50">Close</button>' +
+              '</div>' +
+              '<div class="p-3">' +
+                '<img id="imgView" src="" alt="Product image" class="w-full object-contain max-h-[75vh]">' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+
+        const wrap = document.createElement('div');
+        wrap.innerHTML = sizeHtml + imgHtml;
+        document.body.appendChild(wrap);
+      }
+
+      function bindProductEvents(productId){
+        // Gallery → open viewer
+        $$('#galleryGrid [data-img]').forEach(btn=>{
+          btn.addEventListener('click', function(){
+            const src = btn.getAttribute('data-img');
+            const m = $('#imgModal');
+            const iv = $('#imgView');
+            if (iv) iv.src = src;
+            if (m) m.classList.remove('hidden');
+          });
+        });
+        $('#imgClose')?.addEventListener('click', ()=>$('#imgModal')?.classList.add('hidden'));
+        $('#imgModal')?.addEventListener('click', function(e){
+          if (e.target === e.currentTarget.firstChild || e.target === e.currentTarget) $('#imgModal').classList.add('hidden');
+        });
+        document.addEventListener('keydown', function(e){ if (e.key==='Escape') $('#imgModal')?.classList.add('hidden'); });
+
+        // Qty
+        $('#qtyDec').onclick = function(){ const i=$('#qty'); i.value = Math.max(1, (+i.value||1)-1); };
+        $('#qtyInc').onclick = function(){ const i=$('#qty'); i.value = (+i.value||1)+1; };
+
+        // Size select
+        let selectedSize = null;
+        $$('#sizeGroup .sizeOpt').forEach(b=>{
+          b.addEventListener('click', function(){
+            selectedSize = b.getAttribute('data-size');
+            $$('#sizeGroup .sizeOpt').forEach(x=>x.classList.remove('bg-slate-900','text-white'));
+            b.classList.add('bg-slate-900','text-white');
+            $('#sizeMsg').textContent = 'Selected size: ' + selectedSize;
+          });
+        });
+
+        // Size guide modal
+        $('#openSizeGuide')?.addEventListener('click', ()=>$('#sizeModal')?.classList.remove('hidden'));
+        $('#sizeClose')?.addEventListener('click', ()=>$('#sizeModal')?.classList.add('hidden'));
+        $('#sizeModal')?.addEventListener('click', function(e){
+          if (e.target === e.currentTarget.firstChild || e.target === e.currentTarget) $('#sizeModal').classList.add('hidden');
+        });
+        document.addEventListener('keydown', function(e){ if (e.key==='Escape') $('#sizeModal')?.classList.add('hidden'); });
+
+        // Add to cart
+        $('#addToBag').onclick = function(){
+          const qty = Math.max(1, Number(($('#qty')||{}).value||1));
+          AppDBHelpers.addToCart(currentUserId(), productId, qty);
+          refreshCartBadge();
+          const btn = $('#addToBag');
+          btn.textContent = 'Added ✓';
+          setTimeout(()=>{ btn.textContent = 'Add to Bag'; }, 1200);
+        };
+
+        // Wishlist/share (demo)
+        $('#wish').onclick  = function(){ alert('Added to wishlist (demo)'); };
+        $('#share').onclick = function(){ navigator.clipboard?.writeText(location.href); };
+
+        // Related quick add
+        $$('#relGrid [data-add]')?.forEach(btn=>{
+          btn.addEventListener('click', function(){
+            const id = Number(btn.getAttribute('data-add'));
+            AppDBHelpers.addToCart(currentUserId(), id, 1);
+            refreshCartBadge();
+            btn.textContent = 'Added ✓';
+            setTimeout(()=>{ btn.textContent = 'Add to Bag'; }, 1200);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
