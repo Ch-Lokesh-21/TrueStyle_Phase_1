@@ -221,10 +221,12 @@ function initNavInteractions(){
 
 function currentUserId(){
   try{
+    alert(TSAuth.user.id);
     if (window.TSAuth && TSAuth.user && TSAuth.user.id) return TSAuth.user.id;
     var u = (AppDB.select('User')||[])[0];
     return (u && u.id) || 2001;
-  }catch(e){ return 2001; }
+  }catch(e){
+    return 2001; }
 }
 
 async function injectPartials(){
