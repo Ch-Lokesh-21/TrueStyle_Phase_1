@@ -4,8 +4,8 @@
 Traditional apparel shopping creates friction for both customers and shop owners. Customers want a convenient, secure way to discover styles, pick the correct sizes/colors, and receive reliable delivery with easy exchanges. Admins need precise control over fashion catalogs (sizes, colors, collections), inventory per SKU, promotions, and analytics (e.g., size curves, best-sellers). A smart online clothing store is required to simplify shopping for customers while enabling admins to manage products, content, and decisions efficiently.
 
 
-# 📂 Folder Structure
-
+# Folder Structure
+```
 └── trueStyle/
     ├── index.html
     ├── README.md
@@ -210,6 +210,7 @@ Traditional apparel shopping creates friction for both customers and shop owners
                 │   └── login.html
                 └── forgot-password/
                     └── forgot-password.html
+```
 # No external installation required
 
 Tailwind CSS is used via CDN
